@@ -1,0 +1,17 @@
+# dependencies
+node_modules
+
+# production
+dist
+build
+
+# next.js
+.next
+
+# environment variables
+.env
+
+# logs
+Nom-debug.log*
+Yarn-debug.log*
+Pnpm-debug.log*
