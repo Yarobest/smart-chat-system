@@ -6,7 +6,7 @@ export default function Home() {
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetch("http://localhost:4000")
+    fetch("http://localhost:4001")
       .then((res) => res.text())
       .then((data) => setMessage(data))
       .catch(() => setMessage("Error connecting to backend"));
