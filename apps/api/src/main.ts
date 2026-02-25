@@ -5,14 +5,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:3000', // allow frontend
+    origin: true,
     credentials: true,
   });
 
-  await app.listen(4001); // 👈 change port
-  console.log('Backend running on http://localhost:4001');
-}
+  const port = 4001;
 
-bootstrap().catch((err) => {
-  console.error('Error starting server:', err);
-});
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`Backend running on http://localhost:${port}`);
+}
+bootstrap();
