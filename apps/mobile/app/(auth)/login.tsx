@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
   const [studentId, setStudentId] = useState('');
@@ -72,9 +73,11 @@ export default function LoginScreen() {
             </Text>
           </Pressable>
 
-          <Text className="mt-5 text-center text-sm text-slate-500">
-            New here? <Text className="font-semibold text-blue-600">Create account</Text>
-          </Text>
+          <Pressable onPress={() => router.push('/Register')} className="mt-5">
+            <Text className="text-center text-sm text-slate-500">
+              New here? <Text className="font-semibold text-blue-600">Create account</Text>
+            </Text>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>
