@@ -13,8 +13,8 @@ export default function LoginScreen() {
         <LinearGradient
           colors={['#0A1628', '#1A3A6B']}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          className="items-center px-6 pb-8 pt-10">
+          end={{ x: 2, y: 2 }}
+          className="items-center px-6 pb-8 pt-20">
           <View className="h-14 w-14 items-center justify-center rounded-2xl bg-white">
             <Text className="text-3xl">💬</Text>
           </View>
@@ -51,10 +51,25 @@ export default function LoginScreen() {
               secureTextEntry
               className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900"
             />
+            <Pressable className="mt-3 self-end">
+              <Text className="text-sm font-semibold text-blue-600">Forgot password?</Text>
+            </Pressable>
           </View>
 
           <Pressable className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700">
             <Text className="text-base font-bold text-white">Sign In</Text>
+          </Pressable>
+
+          <View className="my-5 flex-row items-center">
+            <View className="h-px flex-1 bg-slate-200" />
+            <Text className="mx-3 text-xs font-medium text-slate-400">OR</Text>
+            <View className="h-px flex-1 bg-slate-200" />
+          </View>
+
+          <Pressable className="items-center rounded-xl border border-slate-300 bg-white px-4 py-4 active:bg-slate-50">
+            <Text className="text-base font-semibold text-slate-700">
+              Sign in with school email address
+            </Text>
           </Pressable>
 
           <Text className="mt-5 text-center text-sm text-slate-500">
