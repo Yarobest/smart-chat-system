@@ -1,20 +1,34 @@
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 type Role = 'student' | 'lecturer';
 
 export default function RegisterScreen() {
+  const router = useRouter();
   const [fullName, setFullName] = useState('');
   const [studentId, setStudentId] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<Role>('student');
+
+  const isWeakPassword = password.length > 0 && password.length <= 4;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasPasswordFormatError = password.length > 0 && (!hasUppercase || !hasNumber);
+  const hasPasswordMismatch = confirmPassword.length > 0 && password !== confirmPassword;
+  const canSubmit = password.length > 4 && hasUppercase && hasNumber && !hasPasswordMismatch;
 
   return (
     <SafeAreaView className="flex-1 bg-slate-100">
-      <View className="flex-1">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}>
+        <View className="flex-1">
         <LinearGradient
           colors={['#0A1628', '#1A3A6B']}
           start={{ x: 0, y: 0 }}
@@ -68,7 +82,7 @@ export default function RegisterScreen() {
             />
           </View>
 
-          <View className="mb-5">
+          <View className="mb-4">
             <Text className="mb-2 text-sm font-semibold text-slate-600">Password</Text>
             <TextInput
               value={password}
@@ -78,6 +92,33 @@ export default function RegisterScreen() {
               secureTextEntry
               className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900"
             />
+            {isWeakPassword ? (
+              <Text className="mt-2 text-xs font-medium text-rose-600">
+                Weak password: password must be more than 4 characters.
+              </Text>
+            ) : null}
+            {hasPasswordFormatError ? (
+              <Text className="mt-2 text-xs font-medium text-rose-600">
+                Password must include at least one uppercase letter and one number.
+              </Text>
+            ) : null}
+          </View>
+
+          <View className="mb-5">
+            <Text className="mb-2 text-sm font-semibold text-slate-600">Confirm Password</Text>
+            <TextInput
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholder="Confirm your password"
+              placeholderTextColor="#94A3B8"
+              secureTextEntry
+              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900"
+            />
+            {hasPasswordMismatch ? (
+              <Text className="mt-2 text-xs font-medium text-rose-600">
+                Password mismatch!
+              </Text>
+            ) : null}
           </View>
 
           <View className="mb-6">
@@ -117,15 +158,22 @@ export default function RegisterScreen() {
             </View>
           </View>
 
-          <Pressable className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700">
+          <Pressable
+            disabled={!canSubmit}
+            className={`items-center rounded-xl px-4 py-4 ${
+              canSubmit ? 'bg-blue-600 active:bg-blue-700' : 'bg-slate-300'
+            }`}>
             <Text className="text-base font-bold text-white">Create Account</Text>
           </Pressable>
           
-          <Text className="mt-5 text-center text-sm text-slate-500">
-            Already have an account? <Text className="font-semibold text-blue-600">Sign in</Text>
-          </Text>
+          <Pressable onPress={() => router.replace('/login')} className="mt-5">
+            <Text className="text-center text-sm text-slate-500">
+              Already have an account? <Text className="font-semibold text-blue-600">Sign in</Text>
+            </Text>
+          </Pressable>
         </View>
-      </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
