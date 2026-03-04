@@ -35,21 +35,20 @@ export default function RegisterScreen() {
           end={{ x: 2, y: 2 }}
           className="items-center px-6 pb-8 pt-20">
           <View className="h-14 w-14 items-center justify-center rounded-2xl bg-white">
-            <Text className="text-3xl">💬</Text>
+            <Text allowFontScaling className="text-3xl">💬</Text>
           </View>
-          <Text
-            className="mt-4 text-2xl font-bold text-white"
+          <Text allowFontScaling className="mt-4 text-2xl font-bold text-white"
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.85}>
             Create Account
           </Text>
-          <Text className="mt-2 text-sm text-white/70">Join the Campus Chat</Text>
+          <Text allowFontScaling className="mt-2 text-sm text-white/70">Join the Campus Chat</Text>
         </LinearGradient>
 
         <View className="-mt-3 flex-1 rounded-t-3xl bg-white px-6 pt-7">
           <View className="mb-4">
-            <Text className="mb-2 text-sm font-semibold text-slate-600">Full Name</Text>
+            <Text allowFontScaling className="mb-2 text-sm font-semibold text-slate-600">Full Name</Text>
             <TextInput
               value={fullName}
               onChangeText={setFullName}
@@ -60,7 +59,7 @@ export default function RegisterScreen() {
           </View>
 
           <View className="mb-4">
-            <Text className="mb-2 text-sm font-semibold text-slate-600">Student / Staff ID</Text>
+            <Text allowFontScaling className="mb-2 text-sm font-semibold text-slate-600">Student / Staff ID</Text>
             <TextInput
               value={studentId}
               onChangeText={setStudentId}
@@ -71,7 +70,7 @@ export default function RegisterScreen() {
           </View>
 
           <View className="mb-4">
-            <Text className="mb-2 text-sm font-semibold text-slate-600">Email Address</Text>
+            <Text allowFontScaling className="mb-2 text-sm font-semibold text-slate-600">Email Address</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
@@ -83,7 +82,7 @@ export default function RegisterScreen() {
           </View>
 
           <View className="mb-4">
-            <Text className="mb-2 text-sm font-semibold text-slate-600">Password</Text>
+            <Text allowFontScaling className="mb-2 text-sm font-semibold text-slate-600">Password</Text>
             <TextInput
               value={password}
               onChangeText={setPassword}
@@ -93,19 +92,19 @@ export default function RegisterScreen() {
               className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900"
             />
             {isWeakPassword ? (
-              <Text className="mt-2 text-xs font-medium text-rose-600">
+              <Text allowFontScaling className="mt-2 text-xs font-medium text-rose-600">
                 Weak password: password must be more than 4 characters.
               </Text>
             ) : null}
             {hasPasswordFormatError ? (
-              <Text className="mt-2 text-xs font-medium text-rose-600">
+              <Text allowFontScaling className="mt-2 text-xs font-medium text-rose-600">
                 Password must include at least one uppercase letter and one number.
               </Text>
             ) : null}
           </View>
 
           <View className="mb-5">
-            <Text className="mb-2 text-sm font-semibold text-slate-600">Confirm Password</Text>
+            <Text allowFontScaling className="mb-2 text-sm font-semibold text-slate-600">Confirm Password</Text>
             <TextInput
               value={confirmPassword}
               onChangeText={setConfirmPassword}
@@ -115,14 +114,14 @@ export default function RegisterScreen() {
               className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900"
             />
             {hasPasswordMismatch ? (
-              <Text className="mt-2 text-xs font-medium text-rose-600">
+              <Text allowFontScaling className="mt-2 text-xs font-medium text-rose-600">
                 Password mismatch!
               </Text>
             ) : null}
           </View>
 
           <View className="mb-6">
-            <Text className="mb-2 text-sm font-semibold text-slate-600">Select Role</Text>
+            <Text allowFontScaling className="mb-2 text-sm font-semibold text-slate-600">Select Role</Text>
             <View className="flex-row gap-3">
               <Pressable
                 onPress={() => setRole('student')}
@@ -131,9 +130,8 @@ export default function RegisterScreen() {
                     ? 'border-blue-600 bg-blue-50'
                     : 'border-slate-300 bg-slate-50 active:bg-slate-100'
                 }`}>
-                <Text className="text-2xl">🎓</Text>
-                <Text
-                  className={`mt-1 text-sm font-semibold ${
+                <Text allowFontScaling className="text-2xl">🎓</Text>
+                <Text allowFontScaling className={`mt-1 text-sm font-semibold ${
                     role === 'student' ? 'text-blue-700' : 'text-slate-700'
                   }`}>
                   Student
@@ -147,9 +145,8 @@ export default function RegisterScreen() {
                     ? 'border-blue-600 bg-blue-50'
                     : 'border-slate-300 bg-slate-50 active:bg-slate-100'
                 }`}>
-                <Text className="text-2xl">📚</Text>
-                <Text
-                  className={`mt-1 text-sm font-semibold ${
+                <Text allowFontScaling className="text-2xl">📚</Text>
+                <Text allowFontScaling className={`mt-1 text-sm font-semibold ${
                     role === 'lecturer' ? 'text-blue-700' : 'text-slate-700'
                   }`}>
                   Lecturer
@@ -163,12 +160,12 @@ export default function RegisterScreen() {
             className={`items-center rounded-xl px-4 py-4 ${
               canSubmit ? 'bg-blue-600 active:bg-blue-700' : 'bg-slate-300'
             }`}>
-            <Text className="text-base font-bold text-white">Create Account</Text>
+            <Text allowFontScaling className="text-base font-bold text-white">Create Account</Text>
           </Pressable>
           
           <Pressable onPress={() => router.replace('/login')} className="mt-5">
-            <Text className="text-center text-sm text-slate-500">
-              Already have an account? <Text className="font-semibold text-blue-600">Sign in</Text>
+            <Text allowFontScaling className="text-center text-sm text-slate-500">
+              Already have an account? <Text allowFontScaling className="font-semibold text-blue-600">Sign in</Text>
             </Text>
           </Pressable>
         </View>

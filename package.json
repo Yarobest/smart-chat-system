@@ -2,16 +2,18 @@
   "name": "smart-chat-system",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-  "dev": "turbo run dev",
-  "build": "turbo run build"
-},
+    "dev": "turbo run dev",
+    "build": "turbo run build"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.29.3",
   "devDependencies": {
-    "turbo": "^2.8.9"
+    "@types/react": "~19.1.10",
+    "turbo": "^2.8.9",
+    "typescript": "~5.9.2"
   }
 }
+
