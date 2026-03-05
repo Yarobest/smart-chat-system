@@ -70,7 +70,7 @@ export default function IndexPage() {
         </View>
 
         <Text className="pb-8 text-center text-lg text-white/50">
-          Version 1.0 · HTU © 2024
+          Version 1.0 · HTU © 2026
         </Text>
       </SafeAreaView>
     </LinearGradient>

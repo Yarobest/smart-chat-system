@@ -27,8 +27,13 @@ export default function ForgotPasswordScreen() {
             <Text className="mb-2 text-lg font-semibold text-slate-600">Email</Text>
             <TextInput value={email} onChangeText={setEmail} placeholder="Enter your email" placeholderTextColor="#94A3B8" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
           </View>
-          <Pressable className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700">
-            <Text className="text-lg font-bold text-white">Send Reset Link</Text>
+          <Pressable
+            onPress={() => router.push('/(auth)/Reset-Password')}
+            className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700"
+          >
+            <Text className="text-lg font-bold text-white">
+              Go To Reset Page
+            </Text>
           </Pressable>
           <Pressable onPress={() => router.back()} className="mt-6">
             <Text className="text-center text-lg text-slate-500">Remember your password? <Text className="font-semibold text-blue-600">Back to Login</Text></Text>
