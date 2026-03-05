@@ -181,8 +181,13 @@ export default function StudentHomeScreen() {
           {showRecentChats ? (
             <View className="mt-1">
               {chatItems.map((item) => (
-                <View
+                <Pressable
                   key={item.id}
+                  onPress={() =>
+                    item.id === "2"
+                      ? router.push("/(student)/chats/d1")
+                      : router.push(`/(student)/chats/group/g${item.id}`)
+                  }
                   className="flex-row items-center border-b border-slate-200 px-1 py-5"
                 >
                   <View className="relative">
@@ -227,7 +232,7 @@ export default function StudentHomeScreen() {
                       </View>
                     ) : null}
                   </View>
-                </View>
+                </Pressable>
               ))}
             </View>
           ) : null}

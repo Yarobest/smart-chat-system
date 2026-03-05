@@ -1,1 +1,1 @@
-export { default } from '@/src/components/auth/Reset-PasswordScreen';
+export { default } from "@/src/components/auth/Reset-PasswordScreen";
