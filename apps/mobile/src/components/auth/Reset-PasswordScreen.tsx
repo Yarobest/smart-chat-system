@@ -8,7 +8,6 @@ import { StatusBar } from "expo-status-bar";
 export default function ResetPasswordScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [secureEntry, setSecureEntry] = useState(true);
   const [error, setError] = useState("");
 
   const handleReset = () => {
@@ -30,7 +29,7 @@ export default function ResetPasswordScreen() {
     setError("");
     // TODO: Call backend API here
 
-    router.replace("/login"); // navigate after success
+    router.replace("/(auth)/login");
   };
 
   return (
@@ -46,10 +45,11 @@ export default function ResetPasswordScreen() {
         >
           <View className="items-center">
             <View className="h-14 w-14 items-center justify-center rounded-2xl bg-white">
-              <Text className="text-lg">🔑</Text>
+              <Text allowFontScaling className="text-lg">🔑</Text>
             </View>
 
             <Text
+              allowFontScaling
               className="mt-4 text-lg font-bold text-white"
               numberOfLines={1}
               adjustsFontSizeToFit
@@ -59,7 +59,7 @@ export default function ResetPasswordScreen() {
             </Text>
           </View>
 
-          <Text className="mt-2 text-center text-lg text-white/70">
+          <Text allowFontScaling className="mt-2 text-center text-lg text-white/70">
             Enter your new password below
           </Text>
         </LinearGradient>
@@ -68,45 +68,45 @@ export default function ResetPasswordScreen() {
         <View className="-mt-3 flex-1 rounded-t-3xl bg-white px-6 pt-7">
           {/* New Password */}
           <View className="mb-5">
-            <Text className="mb-2 text-lg font-semibold text-slate-600">
-              New Password
+            <Text
+              allowFontScaling
+              className="mb-2 text-sm font-semibold text-slate-600"
+            >
+              Password
             </Text>
-
-            <View className="flex-row items-center rounded-xl border border-slate-200 bg-slate-50 px-4">
+            <View className="flex-row items-center rounded-xl border border-slate-200 bg-slate-100 px-4 mb-3 py-2.5">
+              <Text allowFontScaling className="mr-3 text-sm">🔐</Text>
               <TextInput
                 value={password}
                 onChangeText={setPassword}
-                placeholder="Enter new password"
+                placeholder="••••••••"
                 placeholderTextColor="#94A3B8"
-                secureTextEntry={secureEntry}
-                className="flex-1 py-3 text-lg text-slate-900"
+                secureTextEntry
+                className="flex-1 text-lg text-slate-900"
               />
-
-              <Pressable onPress={() => setSecureEntry(!secureEntry)}>
-                <Text className="text-lg">{secureEntry ? "👁️" : "🙈"}</Text>
-              </Pressable>
             </View>
-          </View>
-
-          {/* Confirm Password */}
-          <View className="mb-4">
-            <Text className="mb-2 text-lg font-semibold text-slate-600">
+            <Text
+              allowFontScaling
+              className="mb-2 text-sm font-semibold text-slate-600"
+            >
               Confirm Password
             </Text>
-
-            <TextInput
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confirm new password"
-              placeholderTextColor="#94A3B8"
-              secureTextEntry
-              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-lg text-slate-900"
-            />
+            <View className="flex-row items-center rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5">
+              <Text allowFontScaling className="mr-3 text-sm">🔐</Text>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="••••••••"
+                placeholderTextColor="#94A3B8"
+                secureTextEntry
+                className="flex-1 text-lg text-slate-900"
+              />
+            </View>
+            
           </View>
-
           {/* Error Message */}
           {error ? (
-            <Text className="mb-4 text-center text-red-500">{error}</Text>
+            <Text allowFontScaling className="mb-4 text-center text-red-500">{error}</Text>
           ) : null}
 
           {/* Reset Button */}
@@ -114,15 +114,23 @@ export default function ResetPasswordScreen() {
             onPress={handleReset}
             className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700"
           >
-            <Text className="text-lg font-bold text-white">Reset Password</Text>
+            <Text
+              allowFontScaling
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              className="text-lg font-semibold text-white"
+            >
+              Reset Password
+            </Text>
           </Pressable>
 
           {/* Back to Login */}
-          <Pressable onPress={() => router.replace("/login")} className="mt-6">
-            <Text className="text-center text-lg text-slate-500">
-              Back to <Text className="font-semibold text-blue-600">Login</Text>
+          <Pressable onPress={() => router.replace("/(auth)/login")} className="mt-6">
+            <Text allowFontScaling className="text-center text-lg text-slate-500">
+              Back to <Text allowFontScaling className="text-sm font-semibold text-blue-600">Login</Text>
             </Text>
-          </Pressable>
+          </Pressable> 
         </View>
       </View>
     </SafeAreaView>
