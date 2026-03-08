@@ -1,1 +1,1 @@
-export { default } from '@/src/components/auth/RegisterScreen';
+export { default } from "@/src/components/auth/RegisterScreen";
