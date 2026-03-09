@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import {
   BackHandler,
   Pressable,
@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { IoChevronBack, IoEllipsisVertical, IoSearch } from 'react-icons/io5';
 
 export default function GroupChatScreen() {
   const handleBack = () => {
@@ -66,9 +67,9 @@ export default function GroupChatScreen() {
         <View className="flex-row items-center">
           <Pressable
             onPress={handleBack}
-            className="mr-3 h-8 w-8 items-center justify-center rounded-full"
+            className="mr-3 h-9 w-9 items-center justify-center rounded-full"
           >
-            <Text className="text-lg text-white">‹</Text>
+            <IoChevronBack size={20} color="white" />
           </Pressable>
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#DCE9F8]">
             <Text className="text-lg">📚</Text>
@@ -80,10 +81,14 @@ export default function GroupChatScreen() {
             <Text className="text-sm text-white/70">32 members · 8 online</Text>
           </View>
           <Pressable className="mr-2 h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">🔍</Text>
+            <Text className="text-lg text-white">
+               <IoSearch size={20} color="white" />
+            </Text>
           </Pressable>
           <Pressable className="h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">⋮</Text>
+            <Text className="text-lg text-white">
+              <IoEllipsisVertical size={20} color="white" />
+            </Text>
           </Pressable>
         </View>
       </View>

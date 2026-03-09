@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { IoCall, IoChevronBack, IoEllipsisVertical } from "react-icons/io5";
 
 export default function DirectMessageScreen() {
   const handleBack = () => {
@@ -65,7 +66,9 @@ export default function DirectMessageScreen() {
             onPress={handleBack}
             className="mr-3 h-8 w-8 items-center justify-center rounded-full"
           >
-            <Text className="text-lg text-white">‹</Text>
+            <Text className="text-lg text-white">
+              <IoChevronBack size={20} color="white" />
+            </Text>
           </Pressable>
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#C6F2D1]">
             <Text className="text-lg">🧑‍🏫</Text>
@@ -75,10 +78,14 @@ export default function DirectMessageScreen() {
             <Text className="text-sm text-[#9FD0C5]">● Online · Lecturer</Text>
           </View>
           <Pressable className="mr-3 h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-pink-400">📞</Text>
+            <Text className="text-lg text-pink-400">
+              <IoCall size={20} color="white" />
+            </Text>
           </Pressable>
           <Pressable className="h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">⋮</Text>
+            <Text className="text-lg text-white">
+              <IoEllipsisVertical size={20} color="white" />
+            </Text>
           </Pressable>
         </View>
       </View>
