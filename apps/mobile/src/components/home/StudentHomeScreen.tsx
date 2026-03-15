@@ -81,11 +81,14 @@ export default function StudentHomeScreen() {
                   🔔
                 </Text>
               </View>
-              <View className="h-16 w-16 items-center justify-center rounded-full bg-orange-400">
+              <Pressable
+                onPress={() => router.push("/(student)/profile")}
+                className="h-16 w-16 items-center justify-center rounded-full bg-orange-400"
+              >
                 <Text allowFontScaling className="text-lg font-bold text-white">
                   SA
                 </Text>
-              </View>
+              </Pressable>
             </View>
           </View>
 
