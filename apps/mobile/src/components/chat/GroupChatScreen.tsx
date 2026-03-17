@@ -10,8 +10,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
-import { IoChevronBack, IoEllipsisVertical, IoSearch } from 'react-icons/io5';
 
 export default function GroupChatScreen() {
   const handleBack = () => {
@@ -69,7 +69,7 @@ export default function GroupChatScreen() {
             onPress={handleBack}
             className="mr-3 h-9 w-9 items-center justify-center rounded-full"
           >
-            <IoChevronBack size={20} color="white" />
+            <Ionicons name="chevron-back" size={20} color="white" />
           </Pressable>
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#DCE9F8]">
             <Text className="text-lg">📚</Text>
@@ -82,12 +82,12 @@ export default function GroupChatScreen() {
           </View>
           <Pressable className="mr-2 h-8 w-8 items-center justify-center rounded-full">
             <Text className="text-lg text-white">
-               <IoSearch size={20} color="white" />
+              <Ionicons name="search" size={20} color="white" />
             </Text>
           </Pressable>
           <Pressable className="h-8 w-8 items-center justify-center rounded-full">
             <Text className="text-lg text-white">
-              <IoEllipsisVertical size={20} color="white" />
+              <Ionicons name="ellipsis-vertical" size={20} color="white" />
             </Text>
           </Pressable>
         </View>

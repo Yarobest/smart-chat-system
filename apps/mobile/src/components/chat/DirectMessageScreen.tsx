@@ -10,8 +10,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
-import { IoCall, IoChevronBack, IoEllipsisVertical } from "react-icons/io5";
 
 export default function DirectMessageScreen() {
   const handleBack = () => {
@@ -67,7 +67,7 @@ export default function DirectMessageScreen() {
             className="mr-3 h-8 w-8 items-center justify-center rounded-full"
           >
             <Text className="text-lg text-white">
-              <IoChevronBack size={20} color="white" />
+              <Ionicons name="chevron-back" size={20} color="white" />
             </Text>
           </Pressable>
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#C6F2D1]">
@@ -79,12 +79,12 @@ export default function DirectMessageScreen() {
           </View>
           <Pressable className="mr-3 h-8 w-8 items-center justify-center rounded-full">
             <Text className="text-lg text-pink-400">
-              <IoCall size={20} color="white" />
+              <Ionicons name="call" size={20} color="white" />
             </Text>
           </Pressable>
           <Pressable className="h-8 w-8 items-center justify-center rounded-full">
             <Text className="text-lg text-white">
-              <IoEllipsisVertical size={20} color="white" />
+              <Ionicons name="ellipsis-vertical" size={20} color="white" />
             </Text>
           </Pressable>
         </View>
