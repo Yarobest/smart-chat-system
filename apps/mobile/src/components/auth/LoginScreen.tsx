@@ -44,25 +44,25 @@ export default function LoginScreen() {
       >
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="flex-1">
+          <View className="flex-1 items-center">
             <LinearGradient
-              colors={["#0A1628", "#1A3A6B"]}
+              colors={["", ""]}
               start={{ x: 0, y: 0 }}
-              end={{ x: 2, y: 2 }}
-              className="items-center px-6 pb-8 pt-20"
+              end={{ x: 1, y: 1 }}
+              className="w-full max-w-[520px] items-center px-6 pb-8 pt-20"
             >
-              <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
+              <View className="h-16 w-16 items-center justify-center mx-auto rounded-2xl bg-white">
                 <Text allowFontScaling className="text-3xl">
                   🎓
                 </Text>
               </View>
               <Text
                 allowFontScaling
-                className="mt-4 text-xl font-extrabold text-white"
+                className="mt-4 text-xl font-extrabold mx-auto text-white"
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 minimumFontScale={0.85}
@@ -74,7 +74,7 @@ export default function LoginScreen() {
               </Text>
             </LinearGradient>
 
-            <View className="-mt-3 flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-7">
+            <View className="mt-10 w-full max-w-[520px] flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-7">
               <View className="mb-4">
                 <Text
                   allowFontScaling
@@ -137,7 +137,7 @@ export default function LoginScreen() {
               </Pressable>
 
               <Pressable
-                onPress={() => router.push("/(auth)/register")}
+                onPress={() => router.push("/(auth)/Register")}
                 className="mt-5"
               >
                 <Text

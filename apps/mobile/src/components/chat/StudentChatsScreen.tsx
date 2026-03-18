@@ -106,21 +106,22 @@ export default function StudentChatsScreen() {
           />
         </View>
 
-        <View className="mb-2 mt-4 flex-row flex-wrap gap-3 px-4">
+        <View className="mb-2 mt-4 flex-row flex-wrap px-4 -mr-3 -mb-3">
           {filters.map((filter) => {
             const active = filter === activeFilter;
             return (
-              <Pressable
-                key={filter}
-                onPress={() => setActiveFilter(filter)}
-                className={`rounded-full border px-5 py-2 ${active ? "border-[#2E63DF] bg-[#2E63DF]" : "border-[#CFD6E5] bg-[#E5EAF2]"}`}
-              >
-                <Text
-                  className={`text-sm font-semibold ${active ? "text-white" : "text-[#304567]"}`}
+              <View key={filter} className="mr-3 mb-3">
+                <Pressable
+                  onPress={() => setActiveFilter(filter)}
+                  className={`rounded-full border px-5 py-2 ${active ? "border-[#2E63DF] bg-[#2E63DF]" : "border-[#CFD6E5] bg-[#E5EAF2]"}`}
                 >
-                  {filter}
-                </Text>
-              </Pressable>
+                  <Text
+                    className={`text-sm font-semibold ${active ? "text-white" : "text-[#304567]"}`}
+                  >
+                    {filter}
+                  </Text>
+                </Pressable>
+              </View>
             );
           })}
         </View>

@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { LogBox } from 'react-native';
+import { LogBox, Text, TextInput } from 'react-native';
 import 'react-native-reanimated';
 import '../global.css';
 import { useColorScheme } from '@/src/hooks/use-color-scheme';
@@ -9,6 +9,15 @@ import { useColorScheme } from '@/src/hooks/use-color-scheme';
 LogBox.ignoreLogs([
   "SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead.",
 ]);
+
+// Keep typography consistent across platforms by disabling dynamic type scaling.
+if (!Text.defaultProps) Text.defaultProps = {};
+Text.defaultProps.allowFontScaling = false;
+Text.defaultProps.maxFontSizeMultiplier = 1;
+
+if (!TextInput.defaultProps) TextInput.defaultProps = {};
+TextInput.defaultProps.allowFontScaling = false;
+TextInput.defaultProps.maxFontSizeMultiplier = 1;
 
 export const unstable_settings = {
   initialRouteName: 'index',

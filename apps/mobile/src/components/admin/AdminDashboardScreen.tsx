@@ -5,11 +5,15 @@ import { AdminStatCard } from '@/src/components/admin/AdminStatCard';
 
 export default function AdminDashboardScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-white">
       <ScreenHeader title="Admin Dashboard" />
-      <View className="flex-row gap-3 p-4">
-        <AdminStatCard title="Users" value="2,340" />
-        <AdminStatCard title="Reports" value="14" />
+      <View className="flex-row p-4">
+        <View className="mr-3 flex-1">
+          <AdminStatCard title="Users" value="2,340" />
+        </View>
+        <View className="flex-1">
+          <AdminStatCard title="Reports" value="14" />
+        </View>
       </View>
     </SafeAreaView>
   );

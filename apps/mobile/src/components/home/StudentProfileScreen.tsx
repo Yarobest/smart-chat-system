@@ -47,8 +47,8 @@ export default function StudentProfileScreen() {
             <Text className="mb-3 text-sm font-extrabold tracking-wide text-slate-400">PERSONAL INFO</Text>
 
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                   <Text className="text-base">📧</Text>
                 </View>
                 <View className="flex-1">
@@ -59,8 +59,8 @@ export default function StudentProfileScreen() {
             </View>
 
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                   <Text className="text-base">🏛️</Text>
                 </View>
                 <View className="flex-1">
@@ -71,8 +71,8 @@ export default function StudentProfileScreen() {
             </View>
 
             <View className="mb-5 rounded-2xl border border-slate-200 bg-white px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                   <Text className="text-base">🗓️</Text>
                 </View>
                 <View className="flex-1">
@@ -88,9 +88,13 @@ export default function StudentProfileScreen() {
               { label: 'My Courses', icon: '📚' },
               { label: 'Settings', icon: '⚙️' },
             ].map((item) => (
-              <Pressable key={item.label} className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <Pressable
+                key={item.label}
+                onPress={item.label === 'Settings' ? () => router.push('/(student)/settings') : undefined}
+                className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4"
+              >
+                <View className="flex-row items-center">
+                  <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                     <Text className="text-base">{item.icon}</Text>
                   </View>
                   <Text className="text-lg font-semibold text-slate-900">{item.label}</Text>
@@ -100,8 +104,8 @@ export default function StudentProfileScreen() {
             ))}
 
             <Pressable className="mb-2 flex-row items-center justify-between rounded-2xl border border-red-100 bg-red-50 px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-red-100">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-red-100">
                   <Text className="text-base">🚪</Text>
                 </View>
                 <Text className="text-lg font-semibold text-red-500">Logout</Text>
@@ -123,7 +127,3 @@ export default function StudentProfileScreen() {
     </SafeAreaView>
   );
 }
-
-
-
-
