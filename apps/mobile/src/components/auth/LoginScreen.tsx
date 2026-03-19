@@ -14,24 +14,36 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
-const DEFAULT_EMAIL = "stephen@htu.edu.gh";
-const DEFAULT_PASSWORD = "Best1";
+const DEFAULT_STUDENT_EMAIL = "stephen@htu.edu.gh";
+const DEFAULT_STUDENT_PASSWORD = "Best1";
+
+const DEFAULT_LECTURER_EMAIL = "g.agordzo@htu.edu.gh";
+const DEFAULT_LECTURER_PASSWORD = "Lecturer1";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSignIn = () => {
-    const isValid =
-      email.trim().toLowerCase() === DEFAULT_EMAIL &&
-      password === DEFAULT_PASSWORD;
+    const isStudent =
+      email.trim().toLowerCase() === DEFAULT_STUDENT_EMAIL &&
+      password === DEFAULT_STUDENT_PASSWORD;
 
-    if (!isValid) {
-      Alert.alert("Invalid credentials", "Enter the correct credentials.");
+    const isLecturer =
+      email.trim().toLowerCase() === DEFAULT_LECTURER_EMAIL &&
+      password === DEFAULT_LECTURER_PASSWORD;
+
+    if (isStudent) {
+      router.replace("/(student)/home");
       return;
     }
 
-    router.replace("/(student)/home");
+    if (isLecturer) {
+      router.replace("/(lecturer)/home");
+      return;
+    }
+
+    Alert.alert("Invalid credentials", "Enter the correct credentials.");
   };
 
   return (
@@ -87,7 +99,7 @@ export default function LoginScreen() {
                   <TextInput
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="stephen@htu.edu.gh"
+                    placeholder="Enter your email"
                     placeholderTextColor="#94A3B8"
                     className="flex-1 text-lg text-slate-900"
                     autoCapitalize="none"
@@ -137,7 +149,7 @@ export default function LoginScreen() {
               </Pressable>
 
               <Pressable
-                onPress={() => router.push("/(auth)/Register")}
+                onPress={() => router.push("/(auth)/register")}
                 className="mt-5"
               >
                 <Text
@@ -176,4 +188,4 @@ export default function LoginScreen() {
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-}
+};

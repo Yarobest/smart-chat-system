@@ -1,1 +1,1 @@
-export { default } from '@/src/components/home/LecturerProfileScreen';
+export { default } from '@/src/components/home/Lecturer/LecturerProfileScreen';
