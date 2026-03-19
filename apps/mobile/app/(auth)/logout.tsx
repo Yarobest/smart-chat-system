@@ -1,0 +1,1 @@
+export {LogoutModal} from '@/src/components/auth/Logout';

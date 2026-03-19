@@ -3,8 +3,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
+import { useState } from 'react';
+import { LogoutModal } from '@/src/components/auth/Logout';
 
 export default function StudentProfileScreen() {
+  const [showLogout, setShowLogout] = useState(false);
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
@@ -85,10 +88,10 @@ export default function StudentProfileScreen() {
             <Text className="mb-3 text-sm font-extrabold tracking-wide text-slate-400">QUICK LINKS</Text>
 
             {[
-              { label: 'My Courses', icon: '📚' },
-              { label: 'Settings', icon: '⚙️' },
+              { label: 'My Courses', icon: '📚', onPress: () => router.push('/(student)/courses') },
+              { label: 'Settings', icon: '⚙️'},
             ].map((item) => (
-              <Pressable key={item.label} className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4">
+              <Pressable key={item.label} onPress={item.onPress} className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4">
                 <View className="flex-row items-center gap-3">
                   <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                     <Text className="text-base">{item.icon}</Text>
@@ -99,7 +102,7 @@ export default function StudentProfileScreen() {
               </Pressable>
             ))}
 
-            <Pressable className="mb-2 flex-row items-center justify-between rounded-2xl border border-red-100 bg-red-50 px-4 py-4">
+            <Pressable onPress={() => setShowLogout(true)} className="mb-2 flex-row items-center justify-between rounded-2xl border border-red-100 bg-red-50 px-4 py-4">
               <View className="flex-row items-center gap-3">
                 <View className="h-8 w-8 items-center justify-center rounded-md bg-red-100">
                   <Text className="text-base">🚪</Text>
@@ -119,11 +122,21 @@ export default function StudentProfileScreen() {
             { label: 'Profile', icon: '👤', active: true, onPress: () => router.replace('/(student)/profile') },
           ]}
         />
+
+        <LogoutModal
+          visible={showLogout}
+          onCancel={() => setShowLogout(false)}
+          onConfirm={() => {
+            setShowLogout(false);
+            router.replace('/(auth)/login');
+          }}
+        />
+
       </View>
     </SafeAreaView>
   );
 }
-
+         
 
 
 
