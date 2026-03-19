@@ -89,7 +89,7 @@ export default function StudentProfileScreen() {
 
             {[
               { label: 'My Courses', icon: '📚', onPress: () => router.push('/(student)/courses') },
-              { label: 'Settings', icon: '⚙️'},
+              { label: 'Settings', icon: '⚙️', onPress: () => router.push('/(student)/settings') },
             ].map((item) => (
               <Pressable key={item.label} onPress={item.onPress} className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4">
                 <View className="flex-row items-center gap-3">

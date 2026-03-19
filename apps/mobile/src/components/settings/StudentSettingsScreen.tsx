@@ -50,7 +50,7 @@ export default function StudentSettingsScreen() {
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
       <View className="bg-[#051839] px-4 pb-5 pt-6">
-        <Pressable onPress={() => router.back()} className="flex-row items-center">
+        <Pressable onPress={() => router.back()} className="flex-row gap-4 items-center">
           <Text className="text-2xl text-white">‹</Text>
           <Text className="ml-1 text-2xl font-bold text-white">Settings</Text>
         </Pressable>
