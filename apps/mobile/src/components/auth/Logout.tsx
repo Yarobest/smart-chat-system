@@ -29,7 +29,7 @@ export function LogoutModal({ visible, onCancel, onConfirm }: LogoutModalProps) 
 
         {/* Subtitle */}
         <Text className="mb-8 text-center text-sm leading-5 text-slate-400">
-          Are you sure you want to log out? You'll{'\n'}need to sign in again to access your{'\n'}messages.
+          Are you sure you want to log out? You&apos;ll{'\n'}need to sign in again to access your{'\n'}messages.
         </Text>
 
         {/* Yes, Log Out button */}

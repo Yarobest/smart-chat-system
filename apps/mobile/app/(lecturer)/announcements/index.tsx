@@ -1,1 +1,1 @@
-export { default } from '@/src/components/announcements/AnnouncementsListScreen';
+export { default } from '@/src/components/home/Lecturer/LecturerAnnouncement';

@@ -1,14 +1,11 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { useState } from 'react';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
 //import { LogoutModal } from '@/src/components/common/LogoutModal';
 
 export default function LecturerProfileScreen() {
-  const [showLogout, setShowLogout] = useState(false);
-
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
@@ -133,7 +130,7 @@ export default function LecturerProfileScreen() {
 
             {/* Logout */}
             <Pressable
-              onPress={() => setShowLogout(true)}
+              onPress={() => router.replace('/(auth)/login')}
               className="mb-2 flex-row items-center justify-between rounded-2xl border border-red-100 bg-red-50 px-4 py-4"
             >
               <View className="flex-row items-center gap-3">

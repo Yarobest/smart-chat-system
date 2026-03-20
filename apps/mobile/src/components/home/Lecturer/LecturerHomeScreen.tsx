@@ -161,7 +161,7 @@ export default function LecturerHomeScreen() {
               </View>
               <Text className="text-base font-bold text-slate-700">No messages yet</Text>
               <Text className="mt-1 text-center text-sm text-slate-400">
-                Students haven't sent you any direct{'\n'}messages yet.
+                Students haven&apos;t sent you any direct{'\n'}messages yet.
               </Text>
             </View>
 
@@ -170,7 +170,7 @@ export default function LecturerHomeScreen() {
 
         <BottomNav
           items={[
-            { label: 'Home', icon: '🏠', active: false, onPress: () => router.replace('/(lecturer)/home') },
+            { label: 'Home', icon: '🏠', active: true, onPress: () => router.replace('/(lecturer)/home') },
             { label: 'Chats', icon: '💬', onPress: () => router.replace('/(lecturer)/chats') },
             { label: 'Notices', icon: '📢', onPress: () => router.replace('/(lecturer)/announcements') },
             { label: 'Profile', icon: '👤', onPress: () => router.replace('/(lecturer)/profile') },

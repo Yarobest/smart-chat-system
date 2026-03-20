@@ -17,7 +17,7 @@ import { StatusBar } from "expo-status-bar";
 const DEFAULT_STUDENT_EMAIL = "stephen@htu.edu.gh";
 const DEFAULT_STUDENT_PASSWORD = "Best1";
 
-const DEFAULT_LECTURER_EMAIL = "g.agordzo@htu.edu.gh";
+const DEFAULT_LECTURER_EMAIL = "agordzo@htu.edu.gh";
 const DEFAULT_LECTURER_PASSWORD = "Lecturer1";
 
 export default function LoginScreen() {

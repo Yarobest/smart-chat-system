@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 type Item = {
@@ -17,10 +16,7 @@ export function BottomNav({ items }: Props) {
         <Pressable
           key={item.label}
           className="items-center"
-          onPress={() => {
-            router.dismissAll();
-            item.onPress?.();
-          }}
+          onPress={item.onPress}
         >
           <View className="relative">
             {item.badge && item.badge > 0 ? (

@@ -89,10 +89,6 @@ function getStatusStyle(status: CourseStatus): { bg: string; text: string } {
   }
 }
 
-function getProgressBarColor(status: CourseStatus, borderColor: string): string {
-  return borderColor;
-}
-
 export default function MyCoursesScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
 
