@@ -99,10 +99,28 @@ export default function GroupChatScreen() {
       </View>
 
       <View className="flex-1 bg-[#F2F4F8]">
-        <View className="border-b border-slate-200 bg-[#F7FAFF] px-4 py-3">
-          <Text className="text-sm font-semibold text-[#2E63DF]">
-            📌 Assignment 3 due Friday 5PM - submit via portal
-          </Text>
+       <View className="border-b border-slate-200 bg-[#F7FAFF] px-3 py-2">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            
+            {[
+              { label: "Take Home", route: "/(student)/tasks/takehome" },
+              { label: "Quiz", route: "/(student)/tasks/quiz" },
+              { label: "Assignment", route: "/(student)/tasks/assignment" },
+              { label: "Mid Sem", route: "/(student)/tasks/midsem" },
+               { label: "Notes", route: "/(student)/notes" },
+            ].map((item, index) => (
+              <Pressable
+                key={index}
+                onPress={() => router.push(item.route)}
+                className="mr-3 rounded-full bg-[#2E63DF] px-4 py-2"
+              >
+                <Text className="text-sm font-semibold text-white">
+                  {item.label}
+                </Text>
+              </Pressable>
+            ))}
+
+          </ScrollView>
         </View>
 
         <ScrollView
