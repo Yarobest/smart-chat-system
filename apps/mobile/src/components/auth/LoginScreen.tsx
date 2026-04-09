@@ -137,7 +137,7 @@ export default function LoginScreen() {
               </Pressable>
 
               <Pressable
-                onPress={() => router.push("/(auth)/register")}
+                onPress={() => router.push("/(auth)/Register")}
                 className="mt-5"
               >
                 <Text
