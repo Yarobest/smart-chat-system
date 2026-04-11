@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   BackHandler,
   Pressable,
@@ -14,6 +14,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
 
 export default function GroupChatScreen() {
+  const [showTaskNotification, setShowTaskNotification] = useState(true);
+
   const handleBack = () => {
     router.replace("/(student)/chats");
   };
@@ -106,7 +108,7 @@ export default function GroupChatScreen() {
             ].map((item, index) => (
               <Pressable
                 key={index}
-                onPress={() => router.push(item.route)}
+                onPress={() => router.push(item.route as any)}
                 className="mr-3 rounded-full bg-[#2E63DF] px-4 py-2"
               >
                 <Text className="text-sm font-semibold text-white">
@@ -121,6 +123,18 @@ export default function GroupChatScreen() {
         <ScrollView
           contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10 }}
         >
+          {showTaskNotification && (
+            <View className="mb-3 rounded-xl bg-[#FEF3C7] px-4 py-3 border border-[#FBBF24] flex-row items-center">
+              <Ionicons name="alert-circle" size={20} color="#D97706" />
+              <View className="flex-1 ml-3">
+                <Text className="font-bold text-[#92400E]">New Tasks Assigned ✓</Text>
+                <Text className="text-sm text-[#B45309]">You have 5 pending tasks. Complete them to dismiss this notification.</Text>
+              </View>
+              <Pressable onPress={() => setShowTaskNotification(false)}>
+                <Ionicons name="close" size={20} color="#D97706" />
+              </Pressable>
+            </View>
+          )}
           {groupMessages.map((message) => (
             <View
               key={message.id}
