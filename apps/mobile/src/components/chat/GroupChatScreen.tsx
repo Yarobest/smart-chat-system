@@ -8,10 +8,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { Routes } from "@/src/constants/routes";
 
 export default function GroupChatScreen() {
   const [showTaskNotification, setShowTaskNotification] = useState(true);
@@ -28,7 +29,7 @@ export default function GroupChatScreen() {
       });
 
       return () => sub.remove();
-    }, [])
+    }, [handleBack])
   );
 
   const groupMessages = [
