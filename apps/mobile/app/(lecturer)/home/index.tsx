@@ -1,1 +1,1 @@
-export { default } from '@/src/components/home/LecturerHomeScreen';
+export { default } from '@/src/components/home/Lecturer/LecturerHomeScreen';

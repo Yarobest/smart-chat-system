@@ -8,14 +8,20 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { Routes } from "@/src/constants/routes";
 
 export default function DirectMessageScreen() {
-  const handleBack = () => {
-    router.replace("/(student)/chats");
-  };
+  const segments = useSegments();
+  const chatsRoute =
+    segments[0] === "(lecturer)" ? Routes.LECTURER_CHATS : Routes.STUDENT_CHATS;
+
+  const handleBack = useCallback(() => {
+    router.replace(chatsRoute);
+  }, [chatsRoute]);
 
   useFocusEffect(
     useCallback(() => {
@@ -25,7 +31,7 @@ export default function DirectMessageScreen() {
       });
 
       return () => sub.remove();
-    }, [])
+    }, [handleBack])
   );
 
   const messages = [
@@ -65,7 +71,9 @@ export default function DirectMessageScreen() {
             onPress={handleBack}
             className="mr-3 h-8 w-8 items-center justify-center rounded-full"
           >
-            <Text className="text-lg text-white">‹</Text>
+            <Text className="text-lg text-white">
+              <Ionicons name="chevron-back" size={20} color="white" />
+            </Text>
           </Pressable>
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#C6F2D1]">
             <Text className="text-lg">🧑‍🏫</Text>
@@ -75,10 +83,14 @@ export default function DirectMessageScreen() {
             <Text className="text-sm text-[#9FD0C5]">● Online · Lecturer</Text>
           </View>
           <Pressable className="mr-3 h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-pink-400">📞</Text>
+            <Text className="text-lg text-pink-400">
+              <Ionicons name="call" size={20} color="white" />
+            </Text>
           </Pressable>
           <Pressable className="h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">⋮</Text>
+            <Text className="text-lg text-white">
+              <Ionicons name="ellipsis-vertical" size={20} color="white" />
+            </Text>
           </Pressable>
         </View>
       </View>

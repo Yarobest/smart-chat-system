@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   BackHandler,
   Pressable,
@@ -8,11 +8,15 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { Routes } from "@/src/constants/routes";
 
 export default function GroupChatScreen() {
+  const [showTaskNotification, setShowTaskNotification] = useState(true);
+
   const handleBack = () => {
     router.replace("/(student)/chats");
   };
@@ -25,7 +29,7 @@ export default function GroupChatScreen() {
       });
 
       return () => sub.remove();
-    }, [])
+    }, [handleBack])
   );
 
   const groupMessages = [
@@ -66,9 +70,9 @@ export default function GroupChatScreen() {
         <View className="flex-row items-center">
           <Pressable
             onPress={handleBack}
-            className="mr-3 h-8 w-8 items-center justify-center rounded-full"
+            className="mr-3 h-9 w-9 items-center justify-center rounded-full"
           >
-            <Text className="text-lg text-white">‹</Text>
+            <Ionicons name="chevron-back" size={20} color="white" />
           </Pressable>
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#DCE9F8]">
             <Text className="text-lg">📚</Text>
@@ -80,24 +84,58 @@ export default function GroupChatScreen() {
             <Text className="text-sm text-white/70">32 members · 8 online</Text>
           </View>
           <Pressable className="mr-2 h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">🔍</Text>
+            <Text className="text-lg text-white">
+              <Ionicons name="search" size={20} color="white" />
+            </Text>
           </Pressable>
           <Pressable className="h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">⋮</Text>
+            <Text className="text-lg text-white">
+              <Ionicons name="ellipsis-vertical" size={20} color="white" />
+            </Text>
           </Pressable>
         </View>
       </View>
 
       <View className="flex-1 bg-[#F2F4F8]">
-        <View className="border-b border-slate-200 bg-[#F7FAFF] px-4 py-3">
-          <Text className="text-sm font-semibold text-[#2E63DF]">
-            📌 Assignment 3 due Friday 5PM - submit via portal
-          </Text>
+       <View className="border-b border-slate-200 bg-[#F7FAFF] px-3 py-2">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            
+            {[
+              { label: "Take Home", route: "/(student)/tasks/takehome" },
+              { label: "Quiz", route: "/(student)/tasks/quiz" },
+              { label: "Assignment", route: "/(student)/tasks/assignment" },
+              { label: "Mid Sem", route: "/(student)/tasks/midsem" },
+               { label: "Notes", route: "/(student)/notes" },
+            ].map((item, index) => (
+              <Pressable
+                key={index}
+                onPress={() => router.push(item.route as any)}
+                className="mr-3 rounded-full bg-[#2E63DF] px-4 py-2"
+              >
+                <Text className="text-sm font-semibold text-white">
+                  {item.label}
+                </Text>
+              </Pressable>
+            ))}
+
+          </ScrollView>
         </View>
 
         <ScrollView
           contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10 }}
         >
+          {showTaskNotification && (
+            <View className="mb-3 rounded-xl bg-[#FEF3C7] px-4 py-3 border border-[#FBBF24] flex-row items-center">
+              <Ionicons name="alert-circle" size={20} color="#D97706" />
+              <View className="flex-1 ml-3">
+                <Text className="font-bold text-[#92400E]">New Tasks Assigned ✓</Text>
+                <Text className="text-sm text-[#B45309]">You have 5 pending tasks. Complete them to dismiss this notification.</Text>
+              </View>
+              <Pressable onPress={() => setShowTaskNotification(false)}>
+                <Ionicons name="close" size={20} color="#D97706" />
+              </Pressable>
+            </View>
+          )}
           {groupMessages.map((message) => (
             <View
               key={message.id}
