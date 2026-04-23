@@ -76,20 +76,45 @@ const quickActions = [
   },
 ] as const;
 
+const notifications = [
+  {
+    title: 'Suspicious login detected',
+    message: 'A new admin login was detected from an unfamiliar device.',
+    time: '2m ago',
+    tone: 'bg-rose-50',
+  },
+  {
+    title: 'Storage usage at 78%',
+    message: 'Media uploads are approaching the configured warning limit.',
+    time: '18m ago',
+    tone: 'bg-amber-50',
+  },
+  {
+    title: '12 new user registrations',
+    message: 'Pending approvals are waiting for review in user management.',
+    time: '1h ago',
+    tone: 'bg-blue-50',
+  },
+] as const;
+
 function StatCard({
   icon,
   value,
   label,
   trend,
   trendColor,
-}: (typeof stats)[number]) {
+  onPress,
+}: (typeof stats)[number] & { onPress?: () => void }) {
   return (
-    <View className="mb-3 w-[48.5%] rounded-[22px] bg-white p-4 shadow-sm shadow-slate-200">
+    <Pressable
+      onPress={onPress}
+      className="mb-3 w-[48.5%] rounded-[22px] bg-white p-4 shadow-sm shadow-slate-200"
+    >
       <Text className="text-lg">{icon}</Text>
       <Text className="mt-3 text-xl font-extrabold text-slate-900">{value}</Text>
       <Text className="mt-1 text-sm text-slate-500">{label}</Text>
       <Text className={`mt-2 text-xs font-semibold ${trendColor}`}>{trend}</Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -106,17 +131,28 @@ export default function AdminDashboardScreen() {
         >
           <View className="flex-row items-start justify-between">
             <View className="flex-1">
-              <Text className="-mt-5 text-sm font-semibold text-white/80">Good Morning 👋</Text>
-              <Text className="mt-1 text-2xl font-extrabold text-white">System Admin</Text>
+              <Text className="-mt-5 text-base font-semibold text-white/80">Good Morning 👋</Text>
+              <Text className="mt-1 text-3xl font-extrabold text-white">System Admin</Text>
             </View>
 
             <View className="mb-3 ml-4 flex-row items-center gap-2 self-end">
-              <View className="rounded-full bg-emerald-100 px-4 py-2">
-                <Text className="text-xs font-extrabold tracking-wide text-emerald-700">LIVE</Text>
-              </View>
-              <View className="h-12 w-12 items-center justify-center rounded-full bg-[#F26157]">
+              <Pressable
+                onPress={() => router.push('/(admin)/notifications?filter=Alerts')}
+                className="relative h-12 w-12 items-center justify-center rounded-full bg-white/10 active:bg-white/20"
+              >
+                <View className="absolute right-2 top-2 z-10 min-w-5 rounded-full bg-[#F26157] px-1 py-[1px]">
+                  <Text className="text-center text-xs font-bold text-white">
+                    {notifications.length}
+                  </Text>
+                </View>
+                <Text className="text-lg text-white">🔔</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push('/(admin)/profile')}
+                className="h-12 w-12 items-center justify-center rounded-full bg-[#F26157] active:opacity-90"
+              >
                 <Text className="text-sm font-extrabold text-white">AD</Text>
-              </View>
+              </Pressable>
             </View>
           </View>
 
@@ -139,11 +175,22 @@ export default function AdminDashboardScreen() {
           <View className="px-5 pb-6 pt-4">
             <View className="flex-row flex-wrap justify-between">
               {stats.map((stat) => (
-                <StatCard key={stat.label} {...stat} />
+                <StatCard
+                  key={stat.label}
+                  {...stat}
+                  onPress={
+                    stat.label === 'Active Alerts'
+                      ? () => router.push('/(admin)/notifications')
+                      : undefined
+                  }
+                />
               ))}
             </View>
 
-            <View className="mb-4 rounded-[22px] border border-rose-200 bg-rose-50 px-4 py-4">
+            <Pressable
+              onPress={() => router.push('/(admin)/notifications')}
+              className="mb-4 rounded-[22px] border border-rose-200 bg-rose-50 px-4 py-4"
+            >
               <View className="flex-row items-start">
                 <Text className="mr-3 mt-0.5 text-2xl">🚨</Text>
                 <View className="flex-1">
@@ -153,7 +200,7 @@ export default function AdminDashboardScreen() {
                   </Text>
                 </View>
               </View>
-            </View>
+            </Pressable>
 
             <View className="mb-5 rounded-[24px] bg-white p-4 shadow-sm shadow-slate-200">
               <View className="flex-row items-center justify-between">

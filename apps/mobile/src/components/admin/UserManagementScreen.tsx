@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { adminUsers } from '@/src/components/admin/adminUsers';
 import { BottomNav } from '@/src/components/common/BottomNav';
 import { StatusBar } from '@/src/components/common/StatusBar';
 
-const filters = ['All', 'Students', 'Lecturers', 'Suspended'] as const;
+const filters = ['All', 'Students', 'Lecturers', 'Suspended', 'Pending'] as const;
 
 const summary = [
   {
@@ -28,62 +29,12 @@ const summary = [
   },
 ] as const;
 
-const users = [
-  {
-    initials: 'SA',
-    avatarColor: 'bg-[#3B6AE3]',
-    name: 'Stephen Appiah',
-    meta: '0323080542 · Student · CS ·',
-    statusDot: 'bg-lime-500',
-    statusText: 'Online',
-    rowBg: 'bg-white',
-    actions: ['👁️', '✉️', '🚫'],
-  },
-  {
-    initials: 'RG',
-    avatarColor: 'bg-[#4CB37C]',
-    name: 'Rudolf S. K. Gavor',
-    meta: '0323080246 · Student · CS ·',
-    statusDot: 'bg-lime-500',
-    statusText: 'Online',
-    rowBg: 'bg-white',
-    actions: ['👁️', '✉️', '🚫'],
-  },
-  {
-    initials: 'GA',
-    avatarColor: 'bg-[#E79B2C]',
-    name: 'Mr. George Agordzo',
-    meta: 'STAFF-001 · Lecturer · CS ·',
-    statusDot: 'bg-lime-500',
-    statusText: 'Online',
-    rowBg: 'bg-white',
-    actions: ['👁️', '✉️', '🚫'],
-  },
-  {
-    initials: 'AY',
-    avatarColor: 'bg-[#4294DB]',
-    name: 'Ama Yeboah',
-    meta: '0323080421 · Student · CS ·',
-    statusDot: 'bg-amber-500',
-    statusText: 'Pending',
-    rowBg: 'bg-white',
-    actions: ['⏳', '✅', '✕'],
-  },
-  {
-    initials: 'KA',
-    avatarColor: 'bg-[#DF5147]',
-    name: 'Kofi Agyemang',
-    meta: '0323080310 · Student · CS ·',
-    statusDot: 'bg-red-500',
-    statusText: 'Suspended',
-    rowBg: 'bg-[#FFF7F7]',
-    actions: ['🔴', '👁️', '✅'],
-  },
-] as const;
-
-function ActionButton({ icon }: { icon: string }) {
+function ActionButton({ icon, onPress }: { icon: string; onPress?: () => void }) {
   return (
-    <Pressable className="ml-2 h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 active:bg-slate-200">
+    <Pressable
+      onPress={onPress}
+      className="ml-2 h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 active:bg-slate-200"
+    >
       <Text className="text-sm">{icon}</Text>
     </Pressable>
   );
@@ -92,9 +43,26 @@ function ActionButton({ icon }: { icon: string }) {
 export default function UserManagementScreen() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]>('All');
 
-  const filteredUsers = users.filter((user) => {
+  const suspendedCount = adminUsers.filter((user) => user.statusText === 'Suspended').length;
+  const pendingCount = adminUsers.filter((user) => user.statusText === 'Pending').length;
+
+  const filteredUsers = adminUsers.filter((user) => {
     const query = searchQuery.trim().toLowerCase();
+
+    const matchesFilter =
+      activeFilter === 'All'
+        ? true
+        : activeFilter === 'Students'
+          ? user.role === 'Student'
+          : activeFilter === 'Lecturers'
+            ? user.role === 'Lecturer'
+            : activeFilter === 'Suspended'
+              ? user.statusText === 'Suspended'
+              : user.statusText === 'Pending';
+
+    if (!matchesFilter) return false;
 
     if (!query) return true;
 
@@ -117,7 +85,7 @@ export default function UserManagementScreen() {
             <View>
               <Text className="-mt-3 text-3xl font-extrabold text-white">User Management</Text>
               <Text className="mt-1 text-sm font-medium text-white/65">
-                1,248 users · 3 suspended
+                {adminUsers.length} users · {suspendedCount} suspended · {pendingCount} pending
               </Text>
             </View>
 
@@ -146,13 +114,19 @@ export default function UserManagementScreen() {
               />
             </View>
 
-            <View className="mt-5 flex-row items-center justify-between">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mt-5"
+              contentContainerStyle={{ paddingRight: 12 }}
+            >
               {filters.map((filter, index) => {
-                const active = index === 0;
+                const active = activeFilter === filter;
                 return (
                   <Pressable
                     key={filter}
-                    className={`flex-1 items-center rounded-full border py-3 ${
+                    onPress={() => setActiveFilter(filter)}
+                    className={`items-center rounded-full border px-5 py-3 ${
                       active
                         ? 'border-blue-600 bg-[#3D6EE8]'
                         : 'border-slate-200 bg-[#EEF3FB]'
@@ -168,7 +142,7 @@ export default function UserManagementScreen() {
                   </Pressable>
                 );
               })}
-            </View>
+            </ScrollView>
           </View>
 
           <View className="border-t border-slate-200 bg-[#FBFCFF] px-4 py-3">
@@ -189,28 +163,37 @@ export default function UserManagementScreen() {
           <View className="bg-white">
             {filteredUsers.map((user) => (
               <View
-                key={user.name}
+                key={user.id}
                 className={`flex-row items-center border-b border-slate-100 px-4 py-4 ${user.rowBg}`}
               >
-                <View
-                  className={`mr-4 h-16 w-16 items-center justify-center rounded-full ${user.avatarColor}`}
+                <View className="flex-1 flex-row items-center"
                 >
-                  <Text className="text-sm font-extrabold text-white">{user.initials}</Text>
-                </View>
+                  <View
+                    className={`mr-4 h-16 w-16 items-center justify-center rounded-full ${user.avatarColor}`}
+                  >
+                    <Text className="text-sm font-extrabold text-white">{user.initials}</Text>
+                  </View>
 
-                <View className="flex-1">
-                  <Text className="text-base font-extrabold text-slate-900">{user.name}</Text>
-                  <Text className="mt-1 text-sm text-slate-400">{user.meta}</Text>
+                  <View className="flex-1">
+                    <Text className="text-base font-extrabold text-slate-900">{user.name}</Text>
+                    <Text className="mt-1 text-sm text-slate-400">{user.meta}</Text>
 
-                  <View className="mt-1 flex-row items-center">
-                    <View className={`mr-2 h-4 w-4 rounded-full ${user.statusDot}`} />
-                    <Text className="text-sm text-slate-400">{user.statusText}</Text>
+                    <View className="mt-1 flex-row items-center">
+                      <View className={`mr-2 h-4 w-4 rounded-full ${user.statusDot}`} />
+                      <Text className="text-sm text-slate-400">{user.statusText}</Text>
+                    </View>
                   </View>
                 </View>
 
                 <View className="ml-3 flex-row items-center">
                   {user.actions.map((action, index) => (
-                    <ActionButton key={`${user.name}-${index}`} icon={action} />
+                    <ActionButton
+                      key={`${user.name}-${index}`}
+                      icon={action}
+                      onPress={
+                        action === '👁️' ? () => router.push(`/(admin)/users/${user.id}`) : undefined
+                      }
+                    />
                   ))}
                 </View>
               </View>
