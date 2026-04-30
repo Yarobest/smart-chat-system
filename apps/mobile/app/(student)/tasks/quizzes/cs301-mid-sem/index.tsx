@@ -1,12 +1,29 @@
 import React from 'react';
 import { SafeAreaView, Text, View, Pressable, ScrollView, TextInput } from 'react-native';
 import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { getReturnPath, clearReturnPath } from '@/src/stores/navigationStore';
 
 export default function CS301MidSemQuizScreen() {
+  const navigation = useNavigation();
+
   const handleBack = () => {
-    router.back();
+    // Check if we have a return path in the navigation store
+    const returnPath = getReturnPath();
+    
+    if (returnPath) {
+      // Navigate back to the specified return path (e.g., group chat)
+      clearReturnPath();
+      router.navigate(returnPath as any);
+    } else if (navigation.canGoBack()) {
+      // Try to go back using navigation stack
+      router.back();
+    } else {
+      // Fallback to home if nothing else works
+      router.navigate("/(student)/home" as any);
+    }
   };
 
   const handleStartQuiz = () => {
