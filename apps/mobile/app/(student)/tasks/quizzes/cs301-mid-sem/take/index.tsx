@@ -31,10 +31,6 @@ export default function TakeQuizScreen() {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  const handleExit = () => {
-    router.back();
-  };
-
   const answers = [
     { id: 0, text: '0 — both subtrees must be equal height' },
     { id: 1, text: '1 — heights may differ by at most 1' },

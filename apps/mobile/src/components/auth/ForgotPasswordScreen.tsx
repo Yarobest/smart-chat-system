@@ -43,7 +43,7 @@ export default function ForgotPasswordScreen() {
                 <TextInput value={email} onChangeText={setEmail} placeholder="Enter your email" placeholderTextColor="#94A3B8" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
               </View>
               <Pressable
-                onPress={() => router.push('/(auth)/Reset-Password')}
+                onPress={() => router.push('/(auth)/reset-password')}
                 className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700"
               >
                 <Text className="text-lg font-bold text-white">
@@ -60,5 +60,4 @@ export default function ForgotPasswordScreen() {
     </SafeAreaView>
   );
 }
-
 
