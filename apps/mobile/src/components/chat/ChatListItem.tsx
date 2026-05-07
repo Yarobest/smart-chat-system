@@ -43,9 +43,11 @@ export function ChatListItem({
           {preview}
         </Text>
       </View>
-      <View className="items-end gap-1">
+      <View className="items-end">
         <Text className="text-sm text-slate-400">{time}</Text>
-        <Badge count={unreadCount} />
+        <View className="mt-1">
+          <Badge count={unreadCount} />
+        </View>
       </View>
     </Pressable>
   );

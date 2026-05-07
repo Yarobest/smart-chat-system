@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -22,38 +22,43 @@ export default function RegisterScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0A1628]">
       <StatusBar style="light" hidden={false} backgroundColor="#0A1628" />
-      <ScrollView
+      <KeyboardAvoidingView
         className="flex-1"
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
       >
-        <View className="flex-1">
-          <LinearGradient
-            colors={["#0A1628", "#1A3A6B"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 2, y: 2 }}
-            className="items-center px-6 pb-8 pt-20"
-          >
-            <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
-              <Text allowFontScaling className="text-3xl">
-                🎓
-              </Text>
-            </View>
-            <Text
-              allowFontScaling
-              className="mt-4 text-xl font-extrabold text-white"
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.85}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="flex-1 items-center">
+            <LinearGradient
+              colors={["", ""]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="w-full max-w-[520px] items-center px-6 pb-8 pt-20"
             >
-              Create Account
-            </Text>
-            <Text allowFontScaling className="mt-2 text-lg text-white/75">
-              Join the campus network
-            </Text>
-          </LinearGradient>
+              <View className="h-16 w-16 items-center justify-center mx-auto rounded-2xl bg-white">
+                <Text allowFontScaling className="text-3xl">
+                  🎓
+                </Text>
+              </View>
+              <Text
+                allowFontScaling
+                className="mt-4 text-xl font-extrabold mx-auto text-white"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.85}
+              >
+                Create Account
+              </Text>
+              <Text allowFontScaling className="mt-2 text-lg text-white/75">
+                Join the campus network
+              </Text>
+            </LinearGradient>
 
-          <View className="-mt-3 flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-6">
+            <View className="mt-5 w-full max-w-[520px] flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-6">
             <View className="mb-4">
               <Text
                 allowFontScaling
@@ -148,10 +153,10 @@ export default function RegisterScreen() {
               >
                 Select Role
               </Text>
-              <View className="flex-row gap-2.5">
+              <View className="flex-row">
                 <Pressable
                   onPress={() => setRole("student")}
-                  className={`flex-1 items-center rounded-xl border px-3 py-3 ${role === "student" ? "border-blue-600 bg-blue-50" : "border-slate-300 bg-slate-100"}`}
+                  className={`mr-2.5 flex-1 items-center rounded-xl border px-3 py-3 ${role === "student" ? "border-blue-600 bg-blue-50" : "border-slate-300 bg-slate-100"}`}
                 >
                   <Text allowFontScaling className="text-lg">
                     🎓
@@ -203,9 +208,10 @@ export default function RegisterScreen() {
                 </Text>
               </Text>
             </Pressable>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

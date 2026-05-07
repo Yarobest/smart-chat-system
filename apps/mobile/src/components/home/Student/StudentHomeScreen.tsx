@@ -75,25 +75,22 @@ export default function StudentHomeScreen() {
                 Stephen Appiah
               </Text>
             </View>
-            <View className="mt-1 flex-row items-center gap-3 self-start">
-              <View className="h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
+            <View className="mt-1 flex-row items-center self-start">
+              <View className="mr-3 h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
                 <Text allowFontScaling className="text-lg">
                   🔔
                 </Text>
               </View>
-              <Pressable
-                onPress={() => router.push("/(student)/profile")}
-                className="h-16 w-16 items-center justify-center rounded-full bg-orange-400"
-              >
+              <View className="h-16 w-16 items-center justify-center rounded-full bg-orange-400">
                 <Text allowFontScaling className="text-lg font-bold text-white">
                   SA
                 </Text>
-              </Pressable>
+              </View>
             </View>
           </View>
 
-          <View className="mt-6 flex-row gap-3">
-            <View className="flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
+          <View className="mt-6 flex-row">
+            <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
               <Text
                 allowFontScaling
                 className="text-2xl font-extrabold text-orange-300"
@@ -107,7 +104,7 @@ export default function StudentHomeScreen() {
                 Courses
               </Text>
             </View>
-            <View className="flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
+            <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
               <Text
                 allowFontScaling
                 className="text-2xl font-extrabold text-orange-300"
@@ -143,8 +140,8 @@ export default function StudentHomeScreen() {
           contentContainerStyle={{ paddingBottom: 18 }}
         >
           <View className="rounded-3xl border-l-[6px] border-amber-500 bg-amber-100 px-4 py-4">
-            <View className="flex-row items-start gap-3">
-              <Text allowFontScaling className="pt-1 text-lg">
+            <View className="flex-row items-start">
+              <Text allowFontScaling className="mr-3 pt-1 text-lg">
                 🔈
               </Text>
               <View className="flex-1">
