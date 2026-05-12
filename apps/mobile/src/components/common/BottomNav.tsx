@@ -11,7 +11,7 @@ type Props = { items: Item[] };
 
 export function BottomNav({ items }: Props) {
   return (
-    <View className="flex-row items-center justify-around border-t border-slate-200 bg-white pb-2 pt-3">
+    <View className="mb-4 flex-row items-center justify-around border-t border-slate-200 bg-white pb-2 pt-3">
       {items.map((item) => (
         <Pressable
           key={item.label}

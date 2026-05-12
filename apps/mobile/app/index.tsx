@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, Text, View } from "react-native";
+import { ActivityIndicator, Animated, Easing, Image, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -42,8 +42,12 @@ export default function IndexPage() {
         <View className="absolute -bottom-10 -left-10 h-[200px] w-[200px] rounded-full bg-amber-400/20" />
 
         <View className="flex-1 items-center justify-center px-8">
-          <View className="h-[90px] w-[90px] items-center justify-center rounded-3xl bg-white shadow-2xl">
-            <Text className="text-4xl">🎓</Text>
+          <View className="h-[96px] w-[96px] items-center justify-center rounded-3xl bg-white shadow-2xl">
+            <Image
+              source={require("../assets/images/icon.png")}
+              style={{ width: 64, height: 64 }}
+              resizeMode="contain"
+            />
           </View>
 
           <Text
@@ -67,6 +71,7 @@ export default function IndexPage() {
               className="h-1 w-6 rounded-full bg-amber-400"
             />
           </View>
+          <ActivityIndicator size="small" color="#F59E0B" style={{ marginTop: 16 }} />
         </View>
 
         <Text className="pb-8 text-center text-lg text-white/50">

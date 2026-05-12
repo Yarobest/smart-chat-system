@@ -8,7 +8,7 @@ import { getReturnPath, clearReturnPath } from '@/src/stores/navigationStore';
 
 export default function ReadNoteScreen() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize] = useState(16);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const navigation = useNavigation();

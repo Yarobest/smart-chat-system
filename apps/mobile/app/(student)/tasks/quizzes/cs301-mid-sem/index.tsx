@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, Text, View, Pressable, ScrollView, TextInput } from 'react-native';
+import { SafeAreaView, Text, View, Pressable, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';

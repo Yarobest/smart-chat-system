@@ -87,14 +87,6 @@ export default function QuizResultsScreen() {
     },
   ];
 
-  const getScoreGrade = () => {
-    if (quizResult.percentage >= 90) return 'Outstanding';
-    if (quizResult.percentage >= 80) return 'Excellent';
-    if (quizResult.percentage >= 70) return 'Good';
-    if (quizResult.percentage >= 60) return 'Fair';
-    return 'Needs Improvement';
-  };
-
   const getScoreGradeColor = () => {
     if (quizResult.percentage >= 80) return '#10B981';
     if (quizResult.percentage >= 70) return '#3B82F6';

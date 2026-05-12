@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import type { ReactNode } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -21,7 +20,7 @@ function SettingRow({
 }: {
   icon: string;
   label: string;
-  right?: ReactNode;
+  right?: React.ReactNode;
   onPress?: () => void;
 }) {
   return (
@@ -50,7 +49,7 @@ export default function StudentSettingsScreen() {
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
       <View className="bg-[#051839] px-4 pb-5 pt-6">
-        <Pressable onPress={() => router.back()} className="flex-row gap-4 items-center">
+        <Pressable onPress={() => router.back()} className="flex-row items-center">
           <Text className="text-2xl text-white">‹</Text>
           <Text className="ml-1 text-2xl font-bold text-white">Settings</Text>
         </Pressable>
@@ -105,11 +104,7 @@ export default function StudentSettingsScreen() {
           <SectionTitle>ACCOUNT</SectionTitle>
           <SettingRow icon="👤" label="Edit Profile" onPress={() => {}} />
           <SettingRow icon="🔒" label="Change Password" onPress={() => {}} />
-          <SettingRow
-            icon="🌐"
-            label="Language"
-            right={<Text className="text-sm text-slate-400">English ›</Text>}
-          />
+          <SettingRow icon="🌐" label="Language" right={<Text className="text-sm text-slate-400">English ›</Text>} />
         </View>
 
         <View className="mt-3">

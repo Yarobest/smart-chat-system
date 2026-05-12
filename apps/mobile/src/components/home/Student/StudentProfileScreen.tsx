@@ -1,15 +1,28 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
+import { LogoutModal } from '@/src/components/auth/Logout';
 
 export default function StudentProfileScreen() {
+  const [logoutVisible, setLogoutVisible] = useState(false);
+
+  const handleLogout = () => {
+    setLogoutVisible(false);
+    router.replace('/(auth)/login');
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
       <View className="flex-1 bg-white">
-        <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 12 }} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 12 }}
+          showsVerticalScrollIndicator={false}
+        >
           <View className="bg-[#102B57] px-4 pb-6 pt-6">
             <View className="items-center">
               <View className="relative h-24 w-24 items-center justify-center rounded-full border-2 border-orange-300 bg-orange-500">
@@ -44,53 +57,67 @@ export default function StudentProfileScreen() {
           </View>
 
           <View className="bg-[#F5F7FA] px-4 py-4">
-            <Text className="mb-3 text-sm font-extrabold tracking-wide text-slate-400">PERSONAL INFO</Text>
+            <Text className="mb-3 text-sm font-extrabold tracking-wide text-slate-400">
+              PERSONAL INFO
+            </Text>
 
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                   <Text className="text-base">📧</Text>
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Email</Text>
-                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>stephen@htu.edu.gh</Text>
+                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>
+                    stephen@htu.edu.gh
+                  </Text>
                 </View>
               </View>
             </View>
 
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                   <Text className="text-base">🏛️</Text>
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Department</Text>
-                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>Computer Science</Text>
+                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>
+                    Computer Science
+                  </Text>
                 </View>
               </View>
             </View>
 
             <View className="mb-5 rounded-2xl border border-slate-200 bg-white px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                   <Text className="text-base">🗓️</Text>
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Year</Text>
-                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>HND Year 2 · 2024/2025</Text>
+                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>
+                    HND Year 2 · 2024/2025
+                  </Text>
                 </View>
               </View>
             </View>
 
-            <Text className="mb-3 text-sm font-extrabold tracking-wide text-slate-400">QUICK LINKS</Text>
+            <Text className="mb-3 text-sm font-extrabold tracking-wide text-slate-400">
+              QUICK LINKS
+            </Text>
 
             {[
               { label: 'My Courses', icon: '📚' },
-              { label: 'Settings', icon: '⚙️' },
+              { label: 'Settings', icon: '⚙️', onPress: () => router.push('/(student)/settings') },
             ].map((item) => (
-              <Pressable key={item.label} className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4">
-                <View className="flex-row items-center gap-3">
-                  <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
+              <Pressable
+                key={item.label}
+                onPress={item.onPress}
+                className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4"
+              >
+                <View className="flex-row items-center">
+                  <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                     <Text className="text-base">{item.icon}</Text>
                   </View>
                   <Text className="text-lg font-semibold text-slate-900">{item.label}</Text>
@@ -99,9 +126,12 @@ export default function StudentProfileScreen() {
               </Pressable>
             ))}
 
-            <Pressable className="mb-2 flex-row items-center justify-between rounded-2xl border border-red-100 bg-red-50 px-4 py-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-red-100">
+            <Pressable
+              onPress={() => setLogoutVisible(true)}
+              className="mb-2 flex-row items-center justify-between rounded-2xl border border-red-100 bg-red-50 px-4 py-4"
+            >
+              <View className="flex-row items-center">
+                <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-red-100">
                   <Text className="text-base">🚪</Text>
                 </View>
                 <Text className="text-lg font-semibold text-red-500">Logout</Text>
@@ -119,11 +149,12 @@ export default function StudentProfileScreen() {
             { label: 'Profile', icon: '👤', active: true, onPress: () => router.replace('/(student)/profile') },
           ]}
         />
+        <LogoutModal
+          visible={logoutVisible}
+          onCancel={() => setLogoutVisible(false)}
+          onConfirm={handleLogout}
+        />
       </View>
     </SafeAreaView>
   );
 }
-
-
-
-
