@@ -8,20 +8,15 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useSegments } from "expo-router";
+import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
-import { Routes } from "@/src/constants/routes";
 
 export default function DirectMessageScreen() {
-  const segments = useSegments();
-  const chatsRoute =
-    segments[0] === "(lecturer)" ? Routes.LECTURER_CHATS : Routes.STUDENT_CHATS;
-
-  const handleBack = useCallback(() => {
-    router.replace(chatsRoute);
-  }, [chatsRoute]);
+  const handleBack = () => {
+    router.replace("/(student)/chats");
+  };
 
   useFocusEffect(
     useCallback(() => {
