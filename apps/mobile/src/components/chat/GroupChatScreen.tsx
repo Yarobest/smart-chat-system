@@ -8,18 +8,17 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useSegments } from "expo-router";
+import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
-import { Routes } from "@/src/constants/routes";
 
 export default function GroupChatScreen() {
   const [showTaskNotification, setShowTaskNotification] = useState(true);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.replace("/(student)/chats");
-  };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -105,11 +104,15 @@ export default function GroupChatScreen() {
               { label: "Quiz", route: "/(student)/tasks/quiz" },
               { label: "Assignment", route: "/(student)/tasks/assignment" },
               { label: "Mid Sem", route: "/(student)/tasks/midsem" },
-               { label: "Notes", route: "/(student)/notes" },
+              { label: "Notes", route: "/(student)/tasks/notes" },
             ].map((item, index) => (
               <Pressable
                 key={index}
-                onPress={() => router.push(item.route as any)}
+                onPress={() => {
+                  // Set the return path so user can navigate back to group chat
+                  setReturnPath("/(student)/chats/group/cs301");
+                  router.push(item.route as any);
+                }}
                 className="mr-3 rounded-full bg-[#2E63DF] px-4 py-2"
               >
                 <Text className="text-sm font-semibold text-white">

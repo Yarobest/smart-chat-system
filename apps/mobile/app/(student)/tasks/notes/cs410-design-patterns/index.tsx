@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { SafeAreaView, Text, View, Pressable, ScrollView, Alert, ActivityIndicator, Platform } from 'react-native';
 import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { getReturnPath, clearReturnPath } from '@/src/stores/navigationStore';
 
 export default function ReadNoteScreen() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize] = useState(16);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
+  const navigation = useNavigation();
 
   // Mock data - replace with actual data from params
   const noteData = {
@@ -46,7 +49,20 @@ export default function ReadNoteScreen() {
   };
 
   const handleBack = () => {
-    router.back();
+    // Check if we have a return path in the navigation store
+    const returnPath = getReturnPath();
+    
+    if (returnPath) {
+      // Navigate back to the specified return path (e.g., group chat)
+      clearReturnPath();
+      router.navigate(returnPath as any);
+    } else if (navigation.canGoBack()) {
+      // Try to go back using navigation stack
+      router.back();
+    } else {
+      // Fallback to home if nothing else works
+      router.navigate("/(student)/home" as any);
+    }
   };
 
   const handlePreviousPage = () => {

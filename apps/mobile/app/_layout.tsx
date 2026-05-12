@@ -11,13 +11,26 @@ LogBox.ignoreLogs([
 ]);
 
 // Keep typography consistent across platforms by disabling dynamic type scaling.
-if (!Text.defaultProps) Text.defaultProps = {};
-Text.defaultProps.allowFontScaling = false;
-Text.defaultProps.maxFontSizeMultiplier = 1;
+const TextComponent = Text as typeof Text & {
+  defaultProps?: {
+    allowFontScaling?: boolean;
+    maxFontSizeMultiplier?: number;
+  };
+};
+const TextInputComponent = TextInput as typeof TextInput & {
+  defaultProps?: {
+    allowFontScaling?: boolean;
+    maxFontSizeMultiplier?: number;
+  };
+};
 
-if (!TextInput.defaultProps) TextInput.defaultProps = {};
-TextInput.defaultProps.allowFontScaling = false;
-TextInput.defaultProps.maxFontSizeMultiplier = 1;
+if (!TextComponent.defaultProps) TextComponent.defaultProps = {};
+TextComponent.defaultProps.allowFontScaling = false;
+TextComponent.defaultProps.maxFontSizeMultiplier = 1;
+
+if (!TextInputComponent.defaultProps) TextInputComponent.defaultProps = {};
+TextInputComponent.defaultProps.allowFontScaling = false;
+TextInputComponent.defaultProps.maxFontSizeMultiplier = 1;
 
 export const unstable_settings = {
   initialRouteName: 'index',

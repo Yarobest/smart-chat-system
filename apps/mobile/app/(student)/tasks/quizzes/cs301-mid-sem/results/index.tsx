@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { SafeAreaView, Text, View, Pressable, ScrollView } from 'react-native';
 import { router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { getReturnPath, clearReturnPath } from '@/src/stores/navigationStore';
 
 export default function QuizResultsScreen() {
   // Mock data - replace with actual data from store/route params
   const [expandedQuestion, setExpandedQuestion] = useState<number | null>(null);
+  const navigation = useNavigation();
 
   const quizResult = {
     title: 'CS301 - Mid-Semester Quiz',
@@ -84,14 +87,6 @@ export default function QuizResultsScreen() {
     },
   ];
 
-  const getScoreGrade = () => {
-    if (quizResult.percentage >= 90) return 'Outstanding';
-    if (quizResult.percentage >= 80) return 'Excellent';
-    if (quizResult.percentage >= 70) return 'Good';
-    if (quizResult.percentage >= 60) return 'Fair';
-    return 'Needs Improvement';
-  };
-
   const getScoreGradeColor = () => {
     if (quizResult.percentage >= 80) return '#10B981';
     if (quizResult.percentage >= 70) return '#3B82F6';
@@ -100,7 +95,20 @@ export default function QuizResultsScreen() {
   };
 
   const handleBackToLMS = () => {
-    router.push('/(student)/tasks' as any);
+    // Check if we have a return path in the navigation store
+    const returnPath = getReturnPath();
+    
+    if (returnPath) {
+      // Navigate back to the specified return path (e.g., group chat)
+      clearReturnPath();
+      router.navigate(returnPath as any);
+    } else if (navigation.canGoBack()) {
+      // Try to go back using navigation stack
+      router.back();
+    } else {
+      // Fallback to home if nothing else works
+      router.navigate("/(student)/home" as any);
+    }
   };
 
   return (

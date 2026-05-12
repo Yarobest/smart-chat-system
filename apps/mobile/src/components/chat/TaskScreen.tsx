@@ -4,6 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { useNavigation } from "@react-navigation/native";
+import { getReturnPath, clearReturnPath } from "@/src/stores/navigationStore";
 
 type TaskFilter = {
   id: string;
@@ -22,13 +24,28 @@ type TaskCard = {
   ctaRoute: string;
   accent: string;
   badge?: string;
+  type: "quiz" | "assignment" | "note";
 };
 
 export default function TaskScreen() {
   const [activeFilter, setActiveFilter] = useState("all");
+  const navigation = useNavigation();
 
   const handleBack = () => {
-    router.back();
+    // Check if we have a return path in the navigation store
+    const returnPath = getReturnPath();
+    
+    if (returnPath) {
+      // Navigate back to the specified return path (e.g., group chat)
+      clearReturnPath();
+      router.navigate(returnPath as any);
+    } else if (navigation.canGoBack()) {
+      // Try to go back using navigation stack
+      router.back();
+    } else {
+      // Fallback to home if nothing else works
+      router.navigate("/(student)/home" as any);
+    }
   };
 
   const filters: TaskFilter[] = [
@@ -53,6 +70,7 @@ export default function TaskScreen() {
       ctaLabel: "Start Quiz Now →",
       ctaRoute: "/(student)/tasks/quizzes/cs301-mid-sem",
       accent: "#EF4444",
+      type: "quiz",
     },
   ];
 
@@ -68,6 +86,7 @@ export default function TaskScreen() {
       ctaRoute: "/(student)/tasks/assignments/cs205-network",
       accent: "#2563EB",
       badge: "New",
+      type: "assignment",
     },
     {
       id: "cs410-design-patterns-notes",
@@ -80,6 +99,7 @@ export default function TaskScreen() {
       ctaRoute: "/(student)/tasks/notes/cs410-design-patterns",
       accent: "#8B5CF6",
       badge: "New",
+      type: "note",
     },
   ];
 
@@ -95,6 +115,7 @@ export default function TaskScreen() {
       ctaRoute: "/(student)/tasks/quizzes",
       accent: "#10B981",
       badge: "Submitted",
+      type: "quiz",
     },
     {
       id: "cs102-html-assignment",
@@ -107,6 +128,7 @@ export default function TaskScreen() {
       ctaRoute: "/(student)/tasks/assignments",
       accent: "#18219a",
       badge: "Submitted",
+      type: "assignment",
     },
     {
       id: "cs401-sql-quiz",
@@ -118,6 +140,7 @@ export default function TaskScreen() {
       ctaLabel: "View Result →",
       ctaRoute: "/(student)/tasks/quizzes",
       accent: "#325b22",
+      type: "quiz",
     },
   ];
 
@@ -185,10 +208,19 @@ export default function TaskScreen() {
     </View>
   );
 
-  const handleFilterPress = (filterId: string, route: string) => {
+  const handleFilterPress = (filterId: string) => {
     setActiveFilter(filterId);
-    router.push(route as any);
   };
+
+  // Filter cards based on active filter
+  const getAllCards = () => [...urgentCards, ...activeCards, ...completedCards];
+  const filteredCards = getAllCards().filter((card) => {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "quizzes") return card.type === "quiz";
+    if (activeFilter === "assignments") return card.type === "assignment";
+    if (activeFilter === "notes") return card.type === "note";
+    return true;
+  });
 
   return (
     <SafeAreaView className="flex-1 bg-[#F2F4F8]">
@@ -221,7 +253,7 @@ export default function TaskScreen() {
           {filters.map((filter) => (
             <Pressable
               key={filter.id}
-              onPress={() => handleFilterPress(filter.id, filter.route)}
+              onPress={() => handleFilterPress(filter.id)}
               className={`mr-2 rounded-full px-4 py-2 ${
                 activeFilter === filter.id ? "bg-[#2E63DF]" : "bg-[#E5E9F2]"
               }`}
@@ -252,9 +284,14 @@ export default function TaskScreen() {
           </View>
         </View>
 
-        {urgentCards.map(renderTaskCard)}
-        {activeCards.map(renderTaskCard)}
-        {completedCards.map(renderTaskCard)}
+        {filteredCards.length > 0 ? (
+          filteredCards.map(renderTaskCard)
+        ) : (
+          <View className="mt-8 items-center justify-center py-8">
+            <Text className="text-lg font-semibold text-slate-400">No tasks found</Text>
+            <Text className="text-sm text-slate-500">Try selecting a different filter</Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
