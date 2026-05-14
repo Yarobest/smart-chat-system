@@ -7,6 +7,8 @@ export default function LecturerLayout() {
       <Stack.Screen name="chats/index" options={{ title: 'Chats' }}/>
       <Stack.Screen name="announcements/index" options={{ title: 'Announcements' }}/>
       <Stack.Screen name="profile/index" options={{ title: 'Profile' }}/>
+      <Stack.Screen name="courses/index" options={{ title: 'My Courses' }} />
+      <Stack.Screen name="settings/index" options={{ title: 'Settings' }} />
       <Stack.Screen name="groups/index" />
       <Stack.Screen name="groups/[id]" />
       <Stack.Screen name="announcements/compose" />
