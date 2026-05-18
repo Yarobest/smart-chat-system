@@ -17,6 +17,9 @@
     "@types/react": "~19.1.10",
     "turbo": "^2.8.9",
     "typescript": "~5.9.2"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "pg": "^8.20.0"
   }
 }
-
