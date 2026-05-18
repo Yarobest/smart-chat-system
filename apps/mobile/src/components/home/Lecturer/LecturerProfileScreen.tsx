@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
-//import { LogoutModal } from '@/src/components/common/LogoutModal';
+import { LogoutModal } from '@/src/components/auth/Logout';
 
 export default function LecturerProfileScreen() {
+  const [logoutVisible, setLogoutVisible] = useState(false);
+
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
@@ -110,8 +113,11 @@ export default function LecturerProfileScreen() {
             </Text>
 
             {[
-              //{ label: 'My Courses', icon: '📚', onPress: () => router.push('/(lecturer)/courses') },
-              { label: 'Settings', icon: '⚙️', onPress: () => {} },
+              { label: 'My Courses', icon: '📚', onPress: () => router.push('./courses') },
+              { label: 'Post Announcement', icon: '📣', onPress: () => router.push('./announcements/compose') },
+              { label: 'My Students', icon: '👥', onPress: () => router.push('./groups') },
+              { label: 'Notifications', icon: '🔔', onPress: () => router.push('./announcements') },
+              { label: 'Settings', icon: '⚙️', onPress: () => router.push('./settings') },
             ].map((item) => (
               <Pressable
                 key={item.label}
@@ -130,7 +136,7 @@ export default function LecturerProfileScreen() {
 
             {/* Logout */}
             <Pressable
-              onPress={() => router.replace('/(auth)/login')}
+              onPress={() => setLogoutVisible(true)}
               className="mb-2 flex-row items-center justify-between rounded-2xl border border-red-100 bg-red-50 px-4 py-4"
             >
               <View className="flex-row items-center gap-3">
@@ -153,14 +159,14 @@ export default function LecturerProfileScreen() {
           ]}
         />
 
-        {/* <LogoutModal
-          visible={showLogout}
-          onCancel={() => setShowLogout(false)}
+        <LogoutModal
+          visible={logoutVisible}
+          onCancel={() => setLogoutVisible(false)}
           onConfirm={() => {
-            setShowLogout(false);
+            setLogoutVisible(false);
             router.replace('/(auth)/login');
           }}
-        /> */}
+        />
       </View>
     </SafeAreaView>
   );
