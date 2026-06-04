@@ -4,118 +4,55 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
+import { formatTime } from '@/src/utils/formatTime';
+import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 
 type FilterTab = 'All' | 'Course Groups' | 'Direct' | 'Unread';
-
-const COURSE_GROUPS = [
-  {
-    id: '1',
-    code: 'CS301',
-    name: 'Data Structures',
-    lastSender: 'Stephen',
-    lastMessage: '"Sir, can you clarify Q3?"',
-    time: '10:22',
-    unread: 5,
-    icon: '📚',
-    iconBg: '#EEF2FF',
-  },
-  {
-    id: '2',
-    code: 'CS205',
-    name: 'Networking',
-    lastSender: 'Rudolf',
-    lastMessage: '"Can someone share OSI..."',
-    time: '9:05',
-    unread: 1,
-    icon: '🛰️',
-    iconBg: '#F0FDF4',
-  },
-  {
-    id: '3',
-    code: 'CS410',
-    name: 'Software Engineering',
-    lastSender: 'You',
-    lastMessage: '"Project deadline is Friday."',
-    time: 'Mon',
-    unread: 0,
-    icon: '🧑‍💻',
-    iconBg: '#FFF7ED',
-  },
-];
-
-const DIRECT_MESSAGES = [
-  {
-    id: '1',
-    name: 'Stephen Appiah',
-    lastMessage: 'Thank you sir, I\'ll resubmit today.',
-    time: '9:30',
-    unread: 1,
-    avatar: '👨‍🎓',
-    avatarBg: '#EEF2FF',
-    online: true,
-  },
-  {
-    id: '2',
-    name: 'Abena Asante',
-    lastMessage: 'Sir, can we reschedule office hour...',
-    time: '8:50',
-    unread: 0,
-    avatar: '👩‍🎓',
-    avatarBg: '#FDF4FF',
-    online: false,
-  },
-  {
-    id: '3',
-    name: 'Kwame Mensah',
-    lastMessage: 'I have submitted the assignment.',
-    time: 'Mon',
-    unread: 0,
-    avatar: '👨‍💻',
-    avatarBg: '#F0FDF4',
-    online: false,
-  },
-  {
-    id: '4',
-    name: 'Ama Owusu',
-    lastMessage: 'Please sir, what is the format for...',
-    time: 'Mon',
-    unread: 2,
-    avatar: '👩‍💻',
-    avatarBg: '#FFF7ED',
-    online: true,
-  },
-  {
-    id: '5',
-    name: 'Kofi Boateng',
-    lastMessage: 'Good morning sir, I need help with...',
-    time: 'Sun',
-    unread: 0,
-    avatar: '🧑‍🎓',
-    avatarBg: '#FFF1F2',
-    online: false,
-  },
-];
 
 export default function LecturerChatsScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
   const [search, setSearch] = useState('');
+  const { threads, loading, unreadCount: totalUnread } = useLiveThreads();
 
   const filters: FilterTab[] = ['All', 'Course Groups', 'Direct', 'Unread'];
 
-  const showGroups = activeFilter === 'All' || activeFilter === 'Course Groups';
-  const showDirect = activeFilter === 'All' || activeFilter === 'Direct';
+  const groupThreads = threads.filter((thread) => thread.type === 'group');
+  const directThreads = threads.filter((thread) => thread.type === 'direct');
+  const sortedThreads = [...threads].sort(
+    (first, second) =>
+      new Date(second.updatedAt ?? second.createdAt ?? 0).getTime() -
+      new Date(first.updatedAt ?? first.createdAt ?? 0).getTime(),
+  );
 
-  const filteredGroups = COURSE_GROUPS.filter((g) => {
-    if (activeFilter === 'Unread') return g.unread > 0;
-    if (search) return g.name.toLowerCase().includes(search.toLowerCase());
+  const filteredGroups = groupThreads.filter((g) => {
+    if (activeFilter === 'Unread') return g.unreadCount > 0;
+    if (search) return g.title.toLowerCase().includes(search.toLowerCase());
     return true;
   });
 
-  const filteredDirect = DIRECT_MESSAGES.filter((d) => {
-    if (activeFilter === 'Unread') return d.unread > 0;
-    if (search) return d.name.toLowerCase().includes(search.toLowerCase());
+  const filteredDirect = directThreads.filter((d) => {
+    if (activeFilter === 'Unread') return d.unreadCount > 0;
+    if (search) return d.title.toLowerCase().includes(search.toLowerCase());
     return true;
   });
+  const filteredAll =
+    activeFilter === 'Unread'
+      ? sortedThreads.filter((thread) => thread.unreadCount > 0)
+      : sortedThreads.filter((thread) =>
+          search ? thread.title.toLowerCase().includes(search.toLowerCase()) : true,
+        );
+
+  const preview = (thread: Thread) =>
+    thread.lastMessage
+      ? `${thread.lastMessage.sender?.name ?? 'Someone'}: ${thread.lastMessage.text}`
+      : 'No messages yet';
+
+  const time = (thread: Thread) =>
+    thread.lastMessage?.createdAt
+      ? formatTime(thread.lastMessage.createdAt)
+      : thread.updatedAt
+        ? formatTime(thread.updatedAt)
+        : '';
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
@@ -127,9 +64,12 @@ export default function LecturerChatsScreen() {
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-xl font-extrabold text-white">Messages</Text>
-              <Text className="text-xs text-slate-400">7 unread</Text>
+              <Text className="text-xs text-slate-400">{totalUnread} unread</Text>
             </View>
-            <Pressable className="h-9 w-9 items-center justify-center rounded-full bg-white/10">
+            <Pressable
+              onPress={() => router.push('/(lecturer)/chats/new' as any)}
+              className="h-9 w-9 items-center justify-center rounded-full bg-white/10"
+            >
               <Text className="text-base text-white">✏️</Text>
             </Pressable>
           </View>
@@ -180,7 +120,53 @@ export default function LecturerChatsScreen() {
           contentContainerStyle={{ paddingBottom: 12 }}
         >
           {/* Course Groups Section */}
-          {showGroups && filteredGroups.length > 0 && (
+          {!loading && threads.length === 0 ? (
+            <View className="mt-20 items-center justify-center">
+              <Text className="text-4xl">💬</Text>
+              <Text className="mt-3 text-base font-extrabold text-slate-400">NO MESSAGES YET</Text>
+            </View>
+          ) : null}
+
+          {threads.length > 0 && (activeFilter === 'All' || activeFilter === 'Unread') && (
+            <View>
+              <Text className="px-4 pb-2 pt-4 text-xs font-extrabold tracking-widest text-slate-400">
+                RECENT MESSAGES
+              </Text>
+              {filteredAll.map((thread) => (
+                <Pressable
+                  key={thread.id}
+                  onPress={() =>
+                    router.push(
+                      thread.type === 'group'
+                        ? (`/(lecturer)/groups/${thread.id}` as any)
+                        : (`/(lecturer)/chats/${thread.id}` as any),
+                    )
+                  }
+                  className="flex-row items-center gap-3 border-b border-slate-100 px-4 py-3"
+                >
+                  <View className="h-12 w-12 items-center justify-center rounded-2xl bg-blue-50">
+                    <Text className="text-2xl">{thread.type === 'group' ? '👥' : '💬'}</Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-sm font-extrabold text-slate-900">{thread.title}</Text>
+                    <Text className="mt-0.5 text-xs text-slate-400" numberOfLines={1}>
+                      {preview(thread)}
+                    </Text>
+                  </View>
+                  <View className="items-end gap-1">
+                    <Text className="text-xs text-slate-400">{time(thread)}</Text>
+                    {thread.unreadCount > 0 ? (
+                      <View className="h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1">
+                        <Text className="text-xs font-bold text-white">{thread.unreadCount}</Text>
+                      </View>
+                    ) : null}
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          )}
+
+          {threads.length > 0 && activeFilter === 'Course Groups' && filteredGroups.length > 0 && (
             <View>
               <Text className="px-4 pb-2 pt-4 text-xs font-extrabold tracking-widest text-slate-400">
                 MY COURSE GROUPS
@@ -188,32 +174,33 @@ export default function LecturerChatsScreen() {
               {filteredGroups.map((group) => (
                 <Pressable
                   key={group.id}
+                  onPress={() => router.push(`/(lecturer)/groups/${group.id}` as any)}
                   className="flex-row items-center gap-3 border-b border-slate-100 px-4 py-3"
                 >
                   {/* Icon */}
                   <View
                     className="h-12 w-12 items-center justify-center rounded-2xl"
-                    style={{ backgroundColor: group.iconBg }}
+                    style={{ backgroundColor: '#EEF2FF' }}
                   >
-                    <Text className="text-2xl">{group.icon}</Text>
+                    <Text className="text-2xl">👥</Text>
                   </View>
 
                   {/* Info */}
                   <View className="flex-1">
                     <Text className="text-sm font-extrabold text-slate-900">
-                      {group.code} · {group.name}
+                      {group.title}
                     </Text>
                     <Text className="mt-0.5 text-xs text-slate-400" numberOfLines={1}>
-                      {group.lastSender}: {group.lastMessage}
+                      {preview(group)}
                     </Text>
                   </View>
 
                   {/* Time + Badge */}
                   <View className="items-end gap-1">
-                    <Text className="text-xs text-slate-400">{group.time}</Text>
-                    {group.unread > 0 && (
+                    <Text className="text-xs text-slate-400">{time(group)}</Text>
+                    {group.unreadCount > 0 && (
                       <View className="h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1">
-                        <Text className="text-xs font-bold text-white">{group.unread}</Text>
+                        <Text className="text-xs font-bold text-white">{group.unreadCount}</Text>
                       </View>
                     )}
                   </View>
@@ -221,9 +208,21 @@ export default function LecturerChatsScreen() {
               ))}
             </View>
           )}
+          {threads.length > 0 && activeFilter === 'Course Groups' && filteredGroups.length === 0 ? (
+            <View>
+              <Text className="px-4 pb-2 pt-4 text-xs font-extrabold tracking-widest text-slate-400">
+                MY COURSE GROUPS
+              </Text>
+              <View className="mt-16 items-center px-6">
+                <Text className="text-center text-lg font-extrabold text-slate-400">
+                  NO MESSAGES YET
+                </Text>
+              </View>
+            </View>
+          ) : null}
 
           {/* Direct Messages Section */}
-          {showDirect && filteredDirect.length > 0 && (
+          {threads.length > 0 && activeFilter === 'Direct' && filteredDirect.length > 0 && (
             <View>
               <Text className="px-4 pb-2 pt-4 text-xs font-extrabold tracking-widest text-slate-400">
                 DIRECT MESSAGES FROM STUDENTS
@@ -231,35 +230,36 @@ export default function LecturerChatsScreen() {
               {filteredDirect.map((dm) => (
                 <Pressable
                   key={dm.id}
+                  onPress={() => router.push(`/(lecturer)/chats/${dm.id}` as any)}
                   className="flex-row items-center gap-3 border-b border-slate-100 px-4 py-3"
                 >
                   {/* Avatar */}
                   <View className="relative">
                     <View
                       className="h-12 w-12 items-center justify-center rounded-full"
-                      style={{ backgroundColor: dm.avatarBg }}
+                      style={{ backgroundColor: '#F0FDF4' }}
                     >
-                      <Text className="text-2xl">{dm.avatar}</Text>
+                      <Text className="text-2xl">💬</Text>
                     </View>
-                    {dm.online && (
+                    {dm.type === 'direct' && (
                       <View className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
                     )}
                   </View>
 
                   {/* Info */}
                   <View className="flex-1">
-                    <Text className="text-sm font-extrabold text-slate-900">{dm.name}</Text>
+                    <Text className="text-sm font-extrabold text-slate-900">{dm.title}</Text>
                     <Text className="mt-0.5 text-xs text-slate-400" numberOfLines={1}>
-                      {dm.lastMessage}
+                      {preview(dm)}
                     </Text>
                   </View>
 
                   {/* Time + Badge */}
                   <View className="items-end gap-1">
-                    <Text className="text-xs text-slate-400">{dm.time}</Text>
-                    {dm.unread > 0 && (
+                    <Text className="text-xs text-slate-400">{time(dm)}</Text>
+                    {dm.unreadCount > 0 && (
                       <View className="h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1">
-                        <Text className="text-xs font-bold text-white">{dm.unread}</Text>
+                        <Text className="text-xs font-bold text-white">{dm.unreadCount}</Text>
                       </View>
                     )}
                   </View>
@@ -267,9 +267,25 @@ export default function LecturerChatsScreen() {
               ))}
             </View>
           )}
+          {threads.length > 0 && activeFilter === 'Direct' && filteredDirect.length === 0 ? (
+            <View>
+              <Text className="px-4 pb-2 pt-4 text-xs font-extrabold tracking-widest text-slate-400">
+                DIRECT MESSAGES FROM STUDENTS
+              </Text>
+              <View className="mt-16 items-center px-6">
+                <Text className="text-center text-lg font-extrabold text-slate-400">
+                  NO MESSAGES YET
+                </Text>
+              </View>
+            </View>
+          ) : null}
 
           {/* Empty state */}
-          {filteredGroups.length === 0 && filteredDirect.length === 0 && (
+          {!loading &&
+          threads.length > 0 &&
+          filteredAll.length === 0 &&
+          filteredGroups.length === 0 &&
+          filteredDirect.length === 0 && (
             <View className="mt-20 items-center justify-center">
               <Text className="text-4xl">💬</Text>
               <Text className="mt-3 text-base font-semibold text-slate-400">No conversations found</Text>
@@ -280,7 +296,7 @@ export default function LecturerChatsScreen() {
         <BottomNav
           items={[
             { label: 'Home', icon: '🏠', onPress: () => router.replace('/(lecturer)/home') },
-            { label: 'Chats', icon: '💬', badge: 7, active: true, onPress: () => router.replace('/(lecturer)/chats') },
+            { label: 'Chats', icon: '💬', badge: totalUnread, active: true, onPress: () => router.replace('/(lecturer)/chats') },
             { label: 'Notices', icon: '📢', onPress: () => router.replace('/(lecturer)/announcements') },
             { label: 'Profile', icon: '👤', onPress: () => router.replace('/(lecturer)/profile') },
           ]}

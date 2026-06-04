@@ -6,8 +6,7 @@ import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
 import { FilterRow } from '@/src/components/common/FilterRow';
 import { Tag } from '@/src/components/common/Tag';
-
-const unreadCount = 12;
+import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 
 const notices = [
   {
@@ -44,6 +43,7 @@ const notices = [
 
 export default function AnnouncementsListScreen() {
   const [activeFilter, setActiveFilter] = useState('All');
+  const { unreadCount } = useLiveThreads();
   const filters = ['All', 'Academic', 'Exams', 'Events'];
 
   const filteredNotices =
@@ -117,7 +117,6 @@ export default function AnnouncementsListScreen() {
     </SafeAreaView>
   );
 }
-
 
 
 

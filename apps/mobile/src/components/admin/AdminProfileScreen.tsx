@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LogoutModal } from '@/src/components/auth/Logout';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { authService } from '@/src/services/auth.service';
+import { useAuth } from '@/src/hooks/useAuth';
+import { getInitials } from '@/src/utils/getInitials';
 
 const profileStats = [
   { label: 'Users', value: '1,248' },
@@ -20,41 +23,52 @@ const adminControls = [
   { label: 'System Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
 ] as const;
 
-const adminInfo = [
-  {
-    label: 'Email',
-    value: '[email protected]',
-    icon: '📧',
-    valueColor: 'text-blue-600',
-  },
-  {
-    label: 'Institution',
-    value: 'Ho Technical University',
-    icon: '🏛️',
-    valueColor: 'text-slate-900',
-  },
-  {
-    label: 'Access Level',
-    value: 'Full System Access',
-    icon: '🛡️',
-    valueColor: 'text-slate-900',
-  },
-  {
-    label: 'Last Login',
-    value: 'Today · 09:32 AM · Chrome',
-    icon: '📅',
-    valueColor: 'text-slate-900',
-  },
-] as const;
-
 export default function AdminProfileScreen() {
   const insets = useSafeAreaInsets();
   const [logoutVisible, setLogoutVisible] = useState(false);
+  const { user, token } = useAuth();
 
-  const handleLogout = () => {
+  useEffect(() => {
+    if (token) {
+      authService.me().catch(() => null);
+    }
+  }, [token]);
+
+  const handleLogout = async () => {
     setLogoutVisible(false);
+    await authService.logout();
     router.replace('/(auth)/login');
   };
+
+  const displayName = user?.name ?? 'System Admin';
+  const displayRole = (user?.role ?? 'admin').toUpperCase();
+  const initials = getInitials(displayName) || 'AD';
+  const adminInfo = [
+    {
+      label: 'Email',
+      value: user?.email ?? 'Not available',
+      icon: '📧',
+      valueColor: 'text-blue-600',
+    },
+    {
+      label: 'Institution',
+      value: 'Ho Technical University',
+      icon: '🏛️',
+      valueColor: 'text-slate-900',
+    },
+    {
+      label: 'Access Level',
+      value: displayRole,
+      icon: '🛡️',
+      valueColor: 'text-slate-900',
+    },
+    {
+      label: 'User ID',
+      value: user?.staffId ?? user?.studentId ?? user?.id ?? 'Not available',
+      icon: '📅',
+      valueColor: 'text-slate-900',
+    },
+  ] as const;
 
   return (
     <SafeAreaView className="flex-1 bg-[#1A2E57]" edges={['top']}>
@@ -74,14 +88,14 @@ export default function AdminProfileScreen() {
 
           <View className="-mt-20 items-center">
             <View className="relative h-24 w-24 items-center justify-center rounded-full border-2 border-white/20 bg-[#F26157]">
-              <Text className="text-5xl font-extrabold text-white">AD</Text>
+              <Text className="text-5xl font-extrabold text-white">{initials}</Text>
               <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full border-2 border-[#1A2E57] bg-[#3D6EE8]">
                 <Text className="text-sm text-white">✏️</Text>
               </View>
             </View>
 
-            <Text className="mt-4 text-3xl font-extrabold text-white">System Admin</Text>
-            <Text className="mt-1 text-base font-medium text-white/65">Admin ID: ADMIN-001</Text>
+            <Text className="mt-4 text-3xl font-extrabold text-white">{displayName}</Text>
+            <Text className="mt-1 text-base font-medium text-white/65">Admin ID: {user?.id ?? 'Not available'}</Text>
 
             <View className="mt-4 rounded-full bg-[#F26157] px-5 py-2">
               <Text className="text-sm font-extrabold tracking-wide text-white">

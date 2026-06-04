@@ -11,11 +11,11 @@ type Props = { items: Item[] };
 
 export function BottomNav({ items }: Props) {
   return (
-    <View className="mb-4 flex-row items-center justify-around border-t border-slate-200 bg-white pb-2 pt-3">
+    <View className="flex-row items-center justify-around border-t border-slate-200 bg-white px-1 pb-3 pt-2">
       {items.map((item) => (
         <Pressable
           key={item.label}
-          className="items-center"
+          className="min-w-[64px] flex-1 items-center"
           onPress={item.onPress}
         >
           <View className="relative">
@@ -29,6 +29,7 @@ export function BottomNav({ items }: Props) {
             <Text className="text-2xl">{item.icon}</Text>
           </View>
           <Text
+            numberOfLines={1}
             className={`text-sm ${item.active ? "font-bold text-blue-600" : "text-slate-400"}`}
           >
             {item.label}
