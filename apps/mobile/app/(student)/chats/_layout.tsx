@@ -8,8 +8,8 @@ export default function ChatsLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="[id]" options={{ animationEnabled: true }} />
-      <Stack.Screen name="group/[id]" options={{ animationEnabled: true }} />
+      <Stack.Screen name="[id]" />
+      <Stack.Screen name="group/[id]" />
     </Stack>
   );
 }

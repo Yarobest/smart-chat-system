@@ -9,6 +9,10 @@ export const Routes = {
   LECTURER_HOME: '/(lecturer)/home',
   LECTURER_CHATS: '/(lecturer)/chats',
   LECTURER_ANNOUNCEMENTS: '/(lecturer)/announcements',
+  LECTURER_ANNOUNCEMENTS_COMPOSE: '/(lecturer)/announcements/compose',
+  LECTURER_GROUPS: '/(lecturer)/groups',
+  LECTURER_COURSES: '/(lecturer)/courses',
+  LECTURER_SETTINGS: '/(lecturer)/settings',
   LECTURER_PROFILE: '/(lecturer)/profile',
   ADMIN_DASHBOARD: '/(admin)/dashboard',
 } as const;
