@@ -137,6 +137,27 @@ export default function LecturerMyCoursesScreen() {
                   <Text className="text-sm font-semibold text-amber-700">Announce</Text>
                 </Pressable>
               </View>
+
+              <View className="mt-4 flex-row flex-wrap gap-2">
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/courses/set-quiz')}
+                  className="min-w-[30%] items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-2 py-2"
+                >
+                  <Text className="text-[10px] font-semibold text-slate-700 text-center">Set Quiz</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/courses/upload-notes')}
+                  className="min-w-[30%] items-center justify-center rounded-full bg-slate-100 px-2 py-2"
+                >
+                  <Text className="text-[10px] font-semibold text-slate-700 text-center">Upload Notes</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/courses/submissions')}
+                  className="min-w-[30%] items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-2 py-2"
+                >
+                  <Text className="text-[10px] font-semibold text-slate-700 text-center">Submissions</Text>
+                </Pressable>
+              </View>
             </View>
           );
         })}

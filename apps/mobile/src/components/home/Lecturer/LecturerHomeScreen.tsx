@@ -52,12 +52,18 @@ export default function LecturerHomeScreen() {
                 <Text className="text-2xl font-extrabold text-white">Mr. G. Agordzo</Text>
               </View>
               <View className="flex-row items-center gap-3">
-                <Pressable className="h-10 w-10 items-center justify-center rounded-full bg-white/10">
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/notifications')}
+                  className="h-10 w-10 items-center justify-center rounded-full bg-white/10"
+                >
                   <Text className="text-lg">🔔</Text>
                 </Pressable>
-                <View className="h-10 w-10 items-center justify-center rounded-full bg-orange-500">
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/profile')}
+                  className="h-10 w-10 items-center justify-center rounded-full bg-orange-500"
+                >
                   <Text className="text-sm font-bold text-white">GA</Text>
-                </View>
+                </Pressable>
               </View>
             </View>
 
@@ -94,12 +100,13 @@ export default function LecturerHomeScreen() {
               </Text>
               <View className="flex-row gap-3">
                 <Pressable
-                  onPress={() => router.push('/(lecturer)/announcements')}
+                  onPress={() => router.push('/(lecturer)/announcements/compose')}
                   className="flex-1 flex-row items-center justify-center gap-2 rounded-xl bg-amber-500 py-3"
                 >
                   <Text className="text-sm font-bold text-white">📣  Post Announcement</Text>
                 </Pressable>
                 <Pressable
+                  onPress={() => router.push('/(lecturer)/courses')}
                   className="flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3"
                 >
                   <Text className="text-sm font-bold text-slate-700">📚  My Courses</Text>
@@ -110,7 +117,7 @@ export default function LecturerHomeScreen() {
             {/* My Course Groups */}
             <View className="mb-3 flex-row items-center justify-between">
               <Text className="text-base font-extrabold text-slate-900">My Course Groups</Text>
-              <Pressable>
+              <Pressable onPress={() => router.push('/(lecturer)/courses')}>
                 <Text className="text-sm font-semibold text-blue-600">See All</Text>
               </Pressable>
             </View>
