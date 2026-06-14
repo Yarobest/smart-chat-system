@@ -190,12 +190,13 @@ export default function BroadcastScreen() {
           </View>
         </ScrollView>
 
-        <BottomNav
+      <BottomNav
           items={[
-            { label: 'Home', icon: '🏠', onPress: () => router.replace('/(admin)/dashboard') },
+            { label: 'Home', icon: '🏠', active: true, onPress: () => router.replace('/(admin)/dashboard') },
             { label: 'Users', icon: '👥', onPress: () => router.replace('/(admin)/users') },
-            { label: 'Reports', icon: '📊', badge: 3, onPress: () => router.replace('/(admin)/audit') },
-            { label: 'Settings', icon: '⚙️', active: true, onPress: () => router.replace('/(admin)/broadcast') },
+            { label: 'Broadcast', icon: '📣', badge: 3, onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
+            { label: 'Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
+            { label: 'Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/settings') },
           ]}
         />
         <LogoutModal
