@@ -47,32 +47,32 @@ const chartData = [
 
 const quickActions = [
   {
-    icon: '👥',
-    title: 'User Mgmt',
-    subtitle: 'Add, suspend',
-    accent: 'border-blue-500',
-    onPress: () => router.push('/(admin)/users'),
-  },
-  {
-    icon: '📡',
-    title: 'Broadcast',
-    subtitle: 'Send to all',
-    accent: 'border-rose-400',
-    onPress: () => router.push('/(admin)/broadcast'),
-  },
-  {
-    icon: '📊',
-    title: 'Analytics',
-    subtitle: 'Usage reports',
-    accent: 'border-amber-400',
-    onPress: () => router.push('/(admin)/dashboard'),
-  },
-  {
     icon: '🔐',
     title: 'Security',
     subtitle: 'Alerts',
     accent: 'border-emerald-400',
-    onPress: () => router.push('/(admin)/dashboard'),
+    onPress: () => router.push('/(admin)/dashboard/security-center'),
+  },
+    {
+    icon: '📍',
+    title: 'Live Activity',
+    subtitle: 'View activity',
+    accent: 'border-purple-400',
+    onPress: () => router.push('/(admin)/dashboard/live-activity'),
+  },
+  {
+    icon: '💚',
+    title: 'System Health',
+    subtitle: 'Check status',
+    accent: 'border-emerald-500',
+    onPress: () => router.push('/(admin)/dashboard/system-health'),
+  },
+  {
+    icon: '🟢',
+    title: 'User Presence',
+    subtitle: 'Online users',
+    accent: 'border-cyan-400',
+    onPress: () => router.push('/(admin)/dashboard/user-presence'),
   },
 ] as const;
 
@@ -253,8 +253,9 @@ export default function AdminDashboardScreen() {
           items={[
             { label: 'Home', icon: '🏠', active: true, onPress: () => router.replace('/(admin)/dashboard') },
             { label: 'Users', icon: '👥', onPress: () => router.replace('/(admin)/users') },
-            { label: 'Reports', icon: '📊', badge: 3, onPress: () => router.replace('/(admin)/audit') },
-            { label: 'Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
+            { label: 'Broadcast', icon: '📣', badge: 3, onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
+            { label: 'Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
+            { label: 'Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/settings') },
           ]}
         />
       </View>
