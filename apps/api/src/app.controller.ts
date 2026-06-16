@@ -7,6 +7,6 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return "Backend is connected successfully!";
+    return this.appService.getHello();
   }
 }

@@ -7,8 +7,10 @@ export default function StudentLayout() {
       <Tabs.Screen name="chats" options={{ title: 'Chats', href: null }} />
       <Tabs.Screen name="announcements/index" options={{ title: 'Announcements' }} />
       <Tabs.Screen name="profile/index" options={{ title: 'Profile' }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
       <Tabs.Screen name="settings/index" options={{ href: null }} />
       <Tabs.Screen name="chats/[id]" options={{ href: null }} />
+      <Tabs.Screen name="chats/new" options={{ href: null }} />
       <Tabs.Screen name="chats/group/[id]" options={{ href: null }} />
       <Tabs.Screen name="announcements/[id]" options={{ href: null }} />
     </Tabs>

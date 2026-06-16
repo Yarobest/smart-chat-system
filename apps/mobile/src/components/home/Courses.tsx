@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
+import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 
 type CourseStatus = 'ACTIVE' | 'EXAM SOON' | 'COMPLETED';
 type FilterTab = 'All' | 'In Progress' | 'Completed';
@@ -91,6 +92,7 @@ function getStatusStyle(status: CourseStatus): { bg: string; text: string } {
 
 export default function MyCoursesScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
+  const { unreadCount } = useLiveThreads();
 
   const filteredCourses = COURSES.filter((course) => {
     if (activeFilter === 'All') return true;
@@ -236,7 +238,7 @@ export default function MyCoursesScreen() {
         <BottomNav
           items={[
             { label: 'Home', icon: '🏠', onPress: () => router.replace('/(student)/home') },
-            { label: 'Chats', icon: '💬', badge: 12, onPress: () => router.replace('/(student)/chats') },
+            { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(student)/chats') },
             { label: 'Notices', icon: '📢', onPress: () => router.replace('/(student)/announcements') },
             { label: 'Profile', icon: '👤', active: true, onPress: () => router.replace('/(student)/profile') },
           ]}

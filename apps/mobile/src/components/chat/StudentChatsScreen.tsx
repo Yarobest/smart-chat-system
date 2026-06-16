@@ -1,84 +1,73 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { StatusBar } from "@/src/components/common/StatusBar";
 import { ChatListItem } from "@/src/components/chat/ChatListItem";
 import { BottomNav } from "@/src/components/common/BottomNav";
-
-const unreadCount = 12;
-const groupChats = [
-  {
-    id: "g1",
-    title: "CS301 · Data Structures",
-    preview: "Mr. Agordzo: Assignment due Friday...",
-    time: "10:22",
-    unreadCount: 4,
-    avatar: "📚",
-    toneClass: "bg-[#DCE9F8]",
-  },
-  {
-    id: "g2",
-    title: "CS205 · Networking",
-    preview: "Rudolf: Can someone share notes?",
-    time: "Yesterday",
-    unreadCount: 8,
-    avatar: "📡",
-    toneClass: "bg-[#F3E9B8]",
-  },
-  {
-    id: "g3",
-    title: "CS102 · Math for CS",
-    preview: "You: Thanks everyone!",
-    time: "Mon",
-    unreadCount: 0,
-    avatar: "🧮",
-    toneClass: "bg-[#EDDEF3]",
-  },
-];
-const directChats = [
-  {
-    id: "d1",
-    title: "Dr. Ama Mensah",
-    preview: "Your project report looks great!",
-    time: "9:05",
-    unreadCount: 1,
-    avatar: "🧑‍🏫",
-    toneClass: "bg-[#BDECCD]",
-    online: true,
-  },
-  {
-    id: "d2",
-    title: "Rudolf",
-    preview: "Can we meet after class?",
-    time: "8:53",
-    unreadCount: 0,
-    avatar: "🧑‍💻",
-    toneClass: "bg-[#F2DCE9]",
-  },
-];
+import { formatTime } from "@/src/utils/formatTime";
+import { useLiveThreads } from "@/src/hooks/useLiveThreads";
 
 export default function StudentChatsScreen() {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [search, setSearch] = useState("");
   const filters = ["All", "Direct", "Groups", "Unread"];
+  const { threads, loading, unreadCount } = useLiveThreads();
 
-  const showGroups =
-    activeFilter === "All" ||
-    activeFilter === "Groups" ||
-    activeFilter === "Unread";
-  const showDirect =
-    activeFilter === "All" ||
-    activeFilter === "Direct" ||
-    activeFilter === "Unread";
+  useEffect(() => {
+    if (threads.length === 0 && activeFilter !== "All") setActiveFilter("All");
+  }, [activeFilter, threads.length]);
+
+  const groupChats = useMemo(
+    () => threads.filter((thread) => thread.type === "group"),
+    [threads],
+  );
+  const directChats = useMemo(
+    () => threads.filter((thread) => thread.type === "direct"),
+    [threads],
+  );
+  const sortedThreads = useMemo(
+    () =>
+      [...threads].sort(
+        (first, second) =>
+          new Date(second.updatedAt ?? second.createdAt ?? 0).getTime() -
+          new Date(first.updatedAt ?? first.createdAt ?? 0).getTime(),
+      ),
+    [threads],
+  );
+
+  const matchesSearch = (chat: { title: string }) =>
+    chat.title.toLowerCase().includes(search.trim().toLowerCase());
+
+  const visibleAllChats =
+    activeFilter === "Unread"
+      ? sortedThreads.filter((chat) => chat.unreadCount > 0)
+      : sortedThreads.filter(matchesSearch);
 
   const visibleGroupChats =
     activeFilter === "Unread"
       ? groupChats.filter((chat) => chat.unreadCount > 0)
-      : groupChats;
+      : groupChats.filter(matchesSearch);
   const visibleDirectChats =
     activeFilter === "Unread"
       ? directChats.filter((chat) => chat.unreadCount > 0)
-      : directChats;
+      : directChats.filter(matchesSearch);
+
+  const toChatListItem = (chat: Thread) => ({
+    title: chat.title,
+    preview: chat.lastMessage
+      ? `${chat.lastMessage.sender?.name ?? "Someone"}: ${chat.lastMessage.text}`
+      : "No messages yet",
+    time: chat.lastMessage?.createdAt
+      ? formatTime(chat.lastMessage.createdAt)
+      : chat.updatedAt
+        ? formatTime(chat.updatedAt)
+        : "",
+    unreadCount: chat.unreadCount,
+    avatar: chat.type === "group" ? "👥" : "💬",
+    toneClass: chat.type === "group" ? "bg-[#DCE9F8]" : "bg-[#BDECCD]",
+    online: chat.type === "direct",
+  });
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
@@ -89,7 +78,12 @@ export default function StudentChatsScreen() {
             <Text className="text-lg font-bold text-white">Messages</Text>
             <Text className="text-lg text-white/80">{unreadCount} unread</Text>
           </View>
-          <Text className="mt-2 text-lg">✏️</Text>
+          <Pressable
+            onPress={() => router.push("/(student)/chats/new" as any)}
+            className="mt-1 h-10 w-10 items-center justify-center rounded-full bg-white/10"
+          >
+            <Text className="text-lg">✏️</Text>
+          </Pressable>
         </View>
       </View>
 
@@ -102,6 +96,8 @@ export default function StudentChatsScreen() {
           <TextInput
             placeholder="Search conversations..."
             placeholderTextColor="#8B97B1"
+            value={search}
+            onChangeText={setSearch}
             className="flex-1 text-sm text-slate-700"
           />
         </View>
@@ -126,33 +122,89 @@ export default function StudentChatsScreen() {
           })}
         </View>
 
-        {showGroups ? (
+        {!loading && threads.length === 0 ? (
+          <View className="mt-24 items-center px-6">
+            <Text className="text-4xl">💬</Text>
+            <Text className="mt-3 text-center text-lg font-extrabold text-slate-600">
+              NO MESSAGES YET
+            </Text>
+          </View>
+        ) : null}
+
+        {threads.length > 0 && (activeFilter === "All" || activeFilter === "Unread") ? (
           <View>
             <Text className="border-t border-slate-200 px-4 pb-2 pt-4 text-sm font-extrabold tracking-wider text-[#8C9BB4]">
-              GROUP CHATS
+              RECENT MESSAGES
             </Text>
-            {visibleGroupChats.map((chat) => (
+            {visibleAllChats.map((chat) => (
               <ChatListItem
                 key={chat.id}
-                {...chat}
-                onPress={() => router.push(`/(student)/chats/group/${chat.id}`)}
+                {...toChatListItem(chat)}
+                onPress={() =>
+                  router.push(
+                    chat.type === "group"
+                      ? (`/(student)/chats/group/${chat.id}` as any)
+                      : (`/(student)/chats/${chat.id}` as any),
+                  )
+                }
               />
             ))}
           </View>
         ) : null}
 
-        {showDirect ? (
+        {threads.length > 0 && activeFilter === "Groups" ? (
+          <View>
+            <Text className="border-t border-slate-200 px-4 pb-2 pt-4 text-sm font-extrabold tracking-wider text-[#8C9BB4]">
+              GROUP CHATS
+            </Text>
+            {visibleGroupChats.length === 0 ? (
+              <View className="mt-16 items-center px-6">
+                <Text className="text-center text-lg font-extrabold text-slate-500">
+                  NO MESSAGES YET
+                </Text>
+              </View>
+            ) : null}
+            {visibleGroupChats.map((chat) => (
+              <ChatListItem
+                key={chat.id}
+                {...toChatListItem(chat)}
+                onPress={() => router.push(`/(student)/chats/group/${chat.id}` as any)}
+              />
+            ))}
+          </View>
+        ) : null}
+
+        {threads.length > 0 && activeFilter === "Direct" ? (
           <View>
             <Text className="px-4 pb-2 pt-4 text-sm font-extrabold tracking-wider text-[#8C9BB4]">
               DIRECT MESSAGES
             </Text>
+            {visibleDirectChats.length === 0 ? (
+              <View className="mt-16 items-center px-6">
+                <Text className="text-center text-lg font-extrabold text-slate-500">
+                  NO MESSAGES YET
+                </Text>
+              </View>
+            ) : null}
             {visibleDirectChats.map((chat) => (
               <ChatListItem
                 key={chat.id}
-                {...chat}
-                onPress={() => router.push(`/(student)/chats/${chat.id}`)}
+                {...toChatListItem(chat)}
+                onPress={() => router.push(`/(student)/chats/${chat.id}` as any)}
               />
             ))}
+          </View>
+        ) : null}
+        {!loading &&
+        threads.length > 0 &&
+        visibleAllChats.length === 0 &&
+        visibleGroupChats.length === 0 &&
+        visibleDirectChats.length === 0 ? (
+          <View className="mt-16 items-center px-6">
+            <Text className="text-4xl">💬</Text>
+            <Text className="mt-3 text-center text-base font-semibold text-slate-500">
+              No conversations yet
+            </Text>
           </View>
         ) : null}
       </ScrollView>

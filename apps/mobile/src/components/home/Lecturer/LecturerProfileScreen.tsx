@@ -1,13 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
 import { LogoutModal } from '@/src/components/auth/Logout';
+import { authService } from '@/src/services/auth.service';
+import { useAuth } from '@/src/hooks/useAuth';
+import { getInitials } from '@/src/utils/getInitials';
+import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 
 export default function LecturerProfileScreen() {
   const [logoutVisible, setLogoutVisible] = useState(false);
+  const { user, token } = useAuth();
+  const { unreadCount, groupCount, memberCount } = useLiveThreads();
+
+  useEffect(() => {
+    if (token) {
+      authService.me().catch(() => null);
+    }
+  }, [token]);
+
+  const displayName = user?.name ?? 'Lecturer';
+  const displayEmail = user?.email ?? 'Not available';
+  const displayRole = (user?.role ?? 'lecturer').toUpperCase();
+  const initials = getInitials(displayName) || 'LE';
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
@@ -23,35 +40,35 @@ export default function LecturerProfileScreen() {
             <View className="items-center">
               {/* Avatar */}
               <View className="relative h-24 w-24 items-center justify-center rounded-full border-2 border-orange-300 bg-orange-500">
-                <Text className="text-5xl font-bold text-white">GA</Text>
+                <Text className="text-5xl font-bold text-white">{initials}</Text>
                 <View className="absolute -bottom-0.5 -right-0.5 h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-500">
                   <Text className="text-lg text-white">✏️</Text>
                 </View>
               </View>
 
-              <Text className="mt-4 text-xl font-extrabold text-white">Mr. George Agordzo</Text>
-              <Text className="mt-1 text-sm text-slate-300">Staff ID: STAFF-001</Text>
+              <Text className="mt-4 text-xl font-extrabold text-white">{displayName}</Text>
+              <Text className="mt-1 text-sm text-slate-300">Staff ID: {user?.staffId ?? user?.id ?? 'Not available'}</Text>
 
               <View className="mt-3 rounded-full bg-amber-400 px-5 py-1.5">
-                <Text className="text-sm font-bold tracking-wide text-[#4A3700]">LECTURER</Text>
+                <Text className="text-sm font-bold tracking-wide text-[#4A3700]">{displayRole}</Text>
               </View>
             </View>
 
             {/* Stats */}
             <View className="mt-5 flex-row overflow-hidden rounded-2xl border border-white/15 bg-white/10">
               <View className="flex-1 items-center py-4">
-                <Text className="text-xl font-extrabold text-white">3</Text>
-                <Text className="text-sm text-slate-300">Courses</Text>
+                <Text className="text-xl font-extrabold text-white">{groupCount}</Text>
+                <Text className="text-sm text-slate-300">Groups</Text>
               </View>
               <View className="w-px bg-white/10" />
               <View className="flex-1 items-center py-4">
-                <Text className="text-xl font-extrabold text-white">90</Text>
-                <Text className="text-sm text-slate-300">Students</Text>
+                <Text className="text-xl font-extrabold text-white">{memberCount}</Text>
+                <Text className="text-sm text-slate-300">Members</Text>
               </View>
               <View className="w-px bg-white/10" />
               <View className="flex-1 items-center py-4">
-                <Text className="text-xl font-extrabold text-white">18</Text>
-                <Text className="text-sm text-slate-300">Posts</Text>
+                <Text className="text-xl font-extrabold text-white">{unreadCount}</Text>
+                <Text className="text-sm text-slate-300">Unread</Text>
               </View>
             </View>
           </View>
@@ -71,7 +88,7 @@ export default function LecturerProfileScreen() {
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Email</Text>
                   <Text className="text-lg font-semibold text-blue-600" numberOfLines={1}>
-                    g.agordzo@htu.edu.gh
+                    {displayEmail}
                   </Text>
                 </View>
               </View>
@@ -86,7 +103,7 @@ export default function LecturerProfileScreen() {
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Department</Text>
                   <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>
-                    Computer Science
+                    {user?.department ?? 'Not available'}
                   </Text>
                 </View>
               </View>
@@ -153,7 +170,7 @@ export default function LecturerProfileScreen() {
         <BottomNav
           items={[
             { label: 'Home', icon: '🏠', onPress: () => router.replace('/(lecturer)/home') },
-            { label: 'Chats', icon: '💬', badge: 7, onPress: () => router.replace('/(lecturer)/chats') },
+            { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(lecturer)/chats') },
             { label: 'Notices', icon: '📢', onPress: () => router.replace('/(lecturer)/announcements') },
             { label: 'Profile', icon: '👤', active: true, onPress: () => router.replace('/(lecturer)/profile') },
           ]}
@@ -164,6 +181,7 @@ export default function LecturerProfileScreen() {
           onCancel={() => setLogoutVisible(false)}
           onConfirm={() => {
             setLogoutVisible(false);
+            authService.logout();
             router.replace('/(auth)/login');
           }}
         />
