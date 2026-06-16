@@ -13,15 +13,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-
-const DEFAULT_STUDENT_EMAIL = "stephen@htu.edu.gh";
-const DEFAULT_STUDENT_PASSWORD = "Best1";
-
-const DEFAULT_LECTURER_EMAIL = "agordzo@htu.edu.gh";
-const DEFAULT_LECTURER_PASSWORD = "Lecturer1";
-
-const DEFAULT_ADMIN_EMAIL = "admin@htu.edu.gh";
-const DEFAULT_ADMIN_PASSWORD = "Admin1";
+import { Ionicons } from "@expo/vector-icons";
+import { authService } from "@/src/services/auth.service";
+import { Role } from "@/src/types/auth.types";
 
 const STUDENT_HOME_ROUTE: Href = "/(student)/home";
 const LECTURER_HOME_ROUTE: Href = "/(lecturer)/home";
@@ -32,36 +26,37 @@ const REGISTER_ROUTE: Href = "/(auth)/register";
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSignIn = () => {
-    const isStudent =
-      email.trim().toLowerCase() === DEFAULT_STUDENT_EMAIL &&
-      password === DEFAULT_STUDENT_PASSWORD;
+  const routeForRole = (role: Role) => {
+    if (role === "lecturer") return LECTURER_HOME_ROUTE;
+    if (role === "admin") return ADMIN_DASHBOARD_ROUTE;
 
-    const isLecturer =
-      email.trim().toLowerCase() === DEFAULT_LECTURER_EMAIL &&
-      password === DEFAULT_LECTURER_PASSWORD;
+    return STUDENT_HOME_ROUTE;
+  };
 
-    const isAdmin =
-      email.trim().toLowerCase() === DEFAULT_ADMIN_EMAIL &&
-      password === DEFAULT_ADMIN_PASSWORD;
-
-    if (isStudent) {
-      router.replace(STUDENT_HOME_ROUTE);
+  const handleSignIn = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert("Missing details", "Enter your email and password.");
       return;
     }
 
-    if (isLecturer) {
-      router.replace(LECTURER_HOME_ROUTE);
-      return;
+    try {
+      setLoading(true);
+      const session = await authService.login({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      router.replace(routeForRole(session.user.role));
+    } catch (error) {
+      Alert.alert(
+        "Login failed",
+        error instanceof Error ? error.message : "Please try again.",
+      );
+    } finally {
+      setLoading(false);
     }
-
-    if (isAdmin) {
-      router.replace(ADMIN_DASHBOARD_ROUTE);
-      return;
-    }
-
-    Alert.alert("Invalid credentials", "Enter the correct credentials.");
   };
 
   return (
@@ -140,9 +135,21 @@ export default function LoginScreen() {
                     onChangeText={setPassword}
                     placeholder="••••••••"
                     placeholderTextColor="#94A3B8"
-                    secureTextEntry
+                    secureTextEntry={!passwordVisible}
                     className="flex-1 text-lg text-slate-900"
                   />
+                  <Pressable
+                    onPress={() => setPasswordVisible((visible) => !visible)}
+                    className="ml-2 h-9 w-9 items-center justify-center rounded-full active:bg-slate-200"
+                    accessibilityRole="button"
+                    accessibilityLabel={passwordVisible ? "Hide password" : "Show password"}
+                  >
+                    <Ionicons
+                      name={passwordVisible ? "eye-off-outline" : "eye-outline"}
+                      size={20}
+                      color="#64748B"
+                    />
+                  </Pressable>
                 </View>
                 <Pressable
                   onPress={() => router.push(FORGOT_PASSWORD_ROUTE)}
@@ -159,10 +166,11 @@ export default function LoginScreen() {
 
               <Pressable
                 onPress={handleSignIn}
-                className="items-center rounded-xl bg-blue-600 px-4 py-3.5 shadow-md shadow-blue-600/30 active:bg-blue-700"
+                disabled={loading}
+                className={`items-center rounded-xl px-4 py-3.5 shadow-md shadow-blue-600/30 ${loading ? "bg-slate-400" : "bg-blue-600 active:bg-blue-700"}`}
               >
                 <Text allowFontScaling className="text-lg font-bold text-white">
-                  Sign In
+                  {loading ? "Signing In..." : "Sign In"}
                 </Text>
               </Pressable>
 

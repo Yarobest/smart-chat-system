@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
+import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 
 type FilterTab = 'All' | 'From Admin' | 'My Posts' | 'Urgent';
 type BadgeType = 'URGENT' | 'STAFF' | 'YOU POSTED';
@@ -101,6 +102,7 @@ function getBadgeStyle(badge: BadgeType): { bg: string; text: string } {
 
 export default function LecturerAnnouncementsScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
+  const { unreadCount } = useLiveThreads();
 
   const filters: FilterTab[] = ['All', 'From Admin', 'My Posts', 'Urgent'];
 
@@ -213,7 +215,7 @@ export default function LecturerAnnouncementsScreen() {
         <BottomNav
           items={[
             { label: 'Home', icon: '🏠', onPress: () => router.replace('/(lecturer)/home') },
-            { label: 'Chats', icon: '💬', badge: 7, onPress: () => router.replace('/(lecturer)/chats') },
+            { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(lecturer)/chats') },
             { label: 'Notices', icon: '📢', active: true, onPress: () => router.replace('/(lecturer)/announcements') },
             { label: 'Profile', icon: '👤', onPress: () => router.replace('/(lecturer)/profile') },
           ]}

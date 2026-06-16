@@ -1,8 +1,14 @@
-import { useMemo } from 'react';
+import { useSyncExternalStore } from 'react';
+import {
+  getAuthSnapshot,
+  getServerAuthSnapshot,
+  subscribeAuthStore,
+} from '@/src/stores/authStore';
 
 export function useAuth() {
-  return useMemo(() => ({
-    isAuthenticated: false,
-    role: 'student' as const,
-  }), []);
+  return useSyncExternalStore(
+    subscribeAuthStore,
+    getAuthSnapshot,
+    getServerAuthSnapshot,
+  );
 }
