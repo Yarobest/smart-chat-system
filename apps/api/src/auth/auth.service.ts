@@ -7,7 +7,6 @@ import {
 import { randomBytes, pbkdf2Sync, timingSafeEqual, createHash } from 'crypto';
 import { User, UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { getCourseTemplates } from '../academics/course-catalog';
 
 @Injectable()
 export class AuthService {
@@ -45,7 +44,6 @@ export class AuthService {
         awardType: input.awardType,
       },
     });
-    await this.enrollStudentInCourseGroups(user);
     const token = await this.createSession(user.id);
 
     return {
@@ -146,60 +144,6 @@ export class AuthService {
     });
 
     return token;
-  }
-
-  private async enrollStudentInCourseGroups(user: User) {
-    if (user.role !== UserRole.STUDENT) return;
-
-    const courses = getCourseTemplates(
-      user.awardType ?? undefined,
-      user.programme ?? undefined,
-      user.yearGroup ?? undefined,
-    );
-
-    for (const course of courses) {
-      const courseKey = [
-        user.awardType,
-        user.programme,
-        user.yearGroup,
-        course.code,
-      ].join('::');
-      const existingConversation = await this.prisma.conversation.findFirst({
-        where: { courseKey },
-        select: { id: true },
-      });
-      const conversation =
-        existingConversation ??
-        (await this.prisma.conversation.create({
-          data: {
-            type: 'GROUP',
-            title: `${course.code} · ${course.name}`,
-            courseKey,
-            courseCode: course.code,
-            courseName: course.name,
-            faculty: user.faculty,
-            department: user.department,
-            programme: user.programme,
-            yearGroup: user.yearGroup,
-            awardType: user.awardType,
-          },
-          select: { id: true },
-        }));
-
-      await this.prisma.conversationMember.upsert({
-        where: {
-          conversationId_userId: {
-            conversationId: conversation.id,
-            userId: user.id,
-          },
-        },
-        update: {},
-        create: {
-          conversationId: conversation.id,
-          userId: user.id,
-        },
-      });
-    }
   }
 
   private parseRegisterBody(body: unknown) {

@@ -2,27 +2,43 @@ import { authStore } from '@/src/stores/authStore';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+const API_PORT = 4001;
+
+const getHostFromUri = (uri?: string | null) => {
+  if (!uri) return null;
+
+  return uri
+    .replace(/^[a-z]+:\/\//i, '')
+    .split('/')[0]
+    .split(':')[0] || null;
+};
+
 const getDefaultApiUrl = () => {
   if (Platform.OS === 'web') {
-    return 'http://localhost:4001';
+    return `http://localhost:${API_PORT}`;
   }
 
-  const expoHost =
-    Constants.expoConfig?.hostUri ??
-    Constants.manifest2?.extra?.expoClient?.hostUri;
-  const host = expoHost?.split(':')[0];
+  const host =
+    getHostFromUri(Constants.expoConfig?.hostUri) ??
+    getHostFromUri(Constants.manifest2?.extra?.expoClient?.hostUri) ??
+    getHostFromUri(Constants.linkingUri) ??
+    getHostFromUri(Constants.debuggerHost);
 
   if (host) {
-    return `http://${host}:4001`;
+    return `http://${host}:${API_PORT}`;
   }
 
   return Platform.OS === 'android'
-    ? 'http://10.0.2.2:4001'
-    : 'http://localhost:4001';
+    ? `http://10.0.2.2:${API_PORT}`
+    : `http://localhost:${API_PORT}`;
 };
 
 export const API_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ?? getDefaultApiUrl();
+
+if (__DEV__) {
+  console.log(`Mobile API URL: ${API_URL}`);
+}
 
 type ApiOptions = RequestInit & {
   auth?: boolean;
