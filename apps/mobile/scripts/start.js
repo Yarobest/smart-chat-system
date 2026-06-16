@@ -5,9 +5,15 @@ const path = require("node:path");
 
 const expoCli = require.resolve("expo/bin/cli");
 const args = process.argv.slice(2);
+const shouldStartApi = !args.includes("--skip-api");
+const expoArgs = args.filter((arg) => arg !== "--skip-api");
 
 const API_PORT = 4001;
 const API_HOST = "127.0.0.1";
+const apiDir = path.resolve(__dirname, "../../api");
+const nestCli = require.resolve("@nestjs/cli/bin/nest.js", {
+  paths: [apiDir],
+});
 
 function getLanAddress() {
   const interfaces = os.networkInterfaces();
@@ -17,8 +23,14 @@ function getLanAddress() {
       .map((item) => ({ name, address: item.address })),
   );
 
+  const realNetworkAddresses = addresses.filter(
+    (item) => !/virtual|vmware|vbox|loopback/i.test(item.name),
+  );
+
   return (
-    addresses.find((item) => ["en0", "en1"].includes(item.name))?.address ??
+    realNetworkAddresses.find((item) => /wi-?fi|wlan|wireless|en0|en1/i.test(item.name))
+      ?.address ??
+    realNetworkAddresses[0]?.address ??
     addresses[0]?.address ??
     "localhost"
   );
@@ -48,11 +60,11 @@ function isApiRunning() {
 async function main() {
   const children = [];
 
-  if (!(await isApiRunning())) {
+  if (shouldStartApi && !(await isApiRunning())) {
     console.log("API is not running. Starting API on port 4001...");
 
-    const api = spawn("npm", ["run", "start:dev"], {
-      cwd: path.resolve(__dirname, "../../api"),
+    const api = spawn(process.execPath, [nestCli, "start", "--watch"], {
+      cwd: apiDir,
       stdio: "inherit",
       env: process.env,
     });
@@ -60,7 +72,7 @@ async function main() {
     children.push(api);
   }
 
-  const expo = spawn(process.execPath, [expoCli, "start", ...args], {
+  const expo = spawn(process.execPath, [expoCli, "start", ...expoArgs], {
     stdio: "inherit",
     env: {
       ...process.env,
