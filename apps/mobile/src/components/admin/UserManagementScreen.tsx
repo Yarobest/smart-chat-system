@@ -1,33 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { adminUsers } from '@/src/components/admin/adminUsers';
 import { BottomNav } from '@/src/components/common/BottomNav';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { AdminUser, adminService } from '@/src/services/admin.service';
+import { getInitials } from '@/src/utils/getInitials';
 
 const filters = ['All', 'Students', 'Lecturers', 'Suspended', 'Pending'] as const;
-
-const summary = [
-  {
-    label: '3 Alerts',
-    icon: '🚨',
-    container: 'bg-rose-50',
-    text: 'text-rose-500',
-  },
-  {
-    label: '1 Pending',
-    icon: '⏳',
-    container: 'bg-amber-50',
-    text: 'text-amber-500',
-  },
-  {
-    label: '1,244 Active',
-    icon: '✅',
-    container: 'bg-emerald-50',
-    text: 'text-emerald-600',
-  },
-] as const;
 
 function ActionButton({ icon, onPress }: { icon: string; onPress?: () => void }) {
   return (
@@ -44,23 +24,75 @@ export default function UserManagementScreen() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]>('All');
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const suspendedCount = adminUsers.filter((user) => user.statusText === 'Suspended').length;
-  const pendingCount = adminUsers.filter((user) => user.statusText === 'Pending').length;
+  useEffect(() => {
+    let mounted = true;
 
-  const filteredUsers = adminUsers.filter((user) => {
+    adminService
+      .users()
+      .then((data) => {
+        if (mounted) {
+          setUsers(data.users);
+          setTotal(data.total);
+          setError('');
+        }
+      })
+      .catch((caught) => {
+        if (mounted) {
+          setError(caught instanceof Error ? caught.message : 'Unable to load users');
+        }
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const studentsCount = users.filter((user) => user.role === 'student').length;
+  const lecturersCount = users.filter((user) => user.role === 'lecturer').length;
+  const onlineCount = users.filter((user) => user.isOnline).length;
+
+  const summary = [
+    {
+      label: `${studentsCount} Students`,
+      icon: '🎓',
+      container: 'bg-blue-50',
+      text: 'text-blue-600',
+    },
+    {
+      label: `${lecturersCount} Lecturers`,
+      icon: '👨‍🏫',
+      container: 'bg-amber-50',
+      text: 'text-amber-600',
+    },
+    {
+      label: `${onlineCount} Online`,
+      icon: '✅',
+      container: 'bg-emerald-50',
+      text: 'text-emerald-600',
+    },
+  ] as const;
+
+  const filteredUsers = useMemo(() => users.filter((user) => {
     const query = searchQuery.trim().toLowerCase();
 
     const matchesFilter =
       activeFilter === 'All'
         ? true
         : activeFilter === 'Students'
-          ? user.role === 'Student'
+          ? user.role === 'student'
           : activeFilter === 'Lecturers'
-            ? user.role === 'Lecturer'
+            ? user.role === 'lecturer'
             : activeFilter === 'Suspended'
-              ? user.statusText === 'Suspended'
-              : user.statusText === 'Pending';
+              ? false
+              : false;
 
     if (!matchesFilter) return false;
 
@@ -68,10 +100,12 @@ export default function UserManagementScreen() {
 
     return (
       user.name.toLowerCase().includes(query) ||
-      user.meta.toLowerCase().includes(query) ||
-      user.statusText.toLowerCase().includes(query)
+      user.email.toLowerCase().includes(query) ||
+      (user.studentId ?? '').toLowerCase().includes(query) ||
+      (user.staffId ?? '').toLowerCase().includes(query) ||
+      (user.department ?? '').toLowerCase().includes(query)
     );
-  });
+  }), [activeFilter, searchQuery, users]);
 
   return (
     <SafeAreaView className="flex-1 bg-[#203765]" edges={['top']}>
@@ -85,7 +119,7 @@ export default function UserManagementScreen() {
             <View>
               <Text className="-mt-3 text-3xl font-extrabold text-white">User Management</Text>
               <Text className="mt-1 text-sm font-medium text-white/65">
-                {adminUsers.length} users · {suspendedCount} suspended · {pendingCount} pending
+                {loading ? 'Loading live users...' : `${total} users · ${onlineCount} online`}
               </Text>
             </View>
 
@@ -164,44 +198,43 @@ export default function UserManagementScreen() {
             {filteredUsers.map((user) => (
               <View
                 key={user.id}
-                className={`flex-row items-center border-b border-slate-100 px-4 py-4 ${user.rowBg}`}
+                className="flex-row items-center border-b border-slate-100 bg-white px-4 py-4"
               >
                 <View className="flex-1 flex-row items-center"
                 >
                   <View
-                    className={`mr-4 h-16 w-16 items-center justify-center rounded-full ${user.avatarColor}`}
+                    className="mr-4 h-16 w-16 items-center justify-center rounded-full bg-[#3B6AE3]"
                   >
-                    <Text className="text-sm font-extrabold text-white">{user.initials}</Text>
+                    <Text className="text-sm font-extrabold text-white">
+                      {getInitials(user.name)}
+                    </Text>
                   </View>
 
                   <View className="flex-1">
                     <Text className="text-base font-extrabold text-slate-900">{user.name}</Text>
-                    <Text className="mt-1 text-sm text-slate-400">{user.meta}</Text>
+                    <Text className="mt-1 text-sm text-slate-400">
+                      {user.studentId ?? user.staffId ?? user.email} · {user.role} · {user.department ?? 'No department'}
+                    </Text>
 
                     <View className="mt-1 flex-row items-center">
-                      <View className={`mr-2 h-4 w-4 rounded-full ${user.statusDot}`} />
-                      <Text className="text-sm text-slate-400">{user.statusText}</Text>
+                      <View className={`mr-2 h-4 w-4 rounded-full ${user.isOnline ? 'bg-lime-500' : 'bg-slate-300'}`} />
+                      <Text className="text-sm text-slate-400">{user.isOnline ? 'Online' : 'Offline'}</Text>
                     </View>
                   </View>
                 </View>
 
                 <View className="ml-3 flex-row items-center">
-                  {user.actions.map((action, index) => (
-                    <ActionButton
-                      key={`${user.name}-${index}`}
-                      icon={action}
-                      onPress={
-                        action === '👁️' ? () => router.push(`/(admin)/users/${user.id}`) : undefined
-                      }
-                    />
-                  ))}
+                  <ActionButton icon="👁️" onPress={() => router.push(`/(admin)/users/${user.id}`)} />
+                  <ActionButton icon="✉️" />
                 </View>
               </View>
             ))}
 
             {filteredUsers.length === 0 ? (
               <View className="items-center px-4 py-10">
-                <Text className="text-sm font-semibold text-slate-500">No users found</Text>
+                <Text className="text-sm font-semibold text-slate-500">
+                  {error || (loading ? 'Loading users...' : 'No users found')}
+                </Text>
                 <Text className="mt-1 text-sm text-slate-400">
                   Try another name, ID, or department.
                 </Text>
@@ -214,7 +247,7 @@ export default function UserManagementScreen() {
           items={[
             { label: 'Home', icon: '🏠', onPress: () => router.replace('/(admin)/dashboard') },
             { label: 'Users', icon: '👥', active: true, onPress: () => router.replace('/(admin)/users') },
-            { label: 'Reports', icon: '📊', badge: 3, onPress: () => router.replace('/(admin)/audit') },
+            { label: 'Courses', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
             { label: 'Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
           ]}
         />

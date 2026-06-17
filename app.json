@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "b8c07997-4401-4a9c-a269-2baaf975c73e"
+      }
+    },
+    "android": {
+      "package": "com.ramsey_maurix.smartchatsystem"
+    }
+  }
+}

@@ -7,17 +7,12 @@ import { StatusBar } from '@/src/components/common/StatusBar';
 import { authService } from '@/src/services/auth.service';
 import { useAuth } from '@/src/hooks/useAuth';
 import { getInitials } from '@/src/utils/getInitials';
-
-const profileStats = [
-  { label: 'Users', value: '1,248' },
-  { label: 'Courses', value: '48' },
-  { label: 'Broadcasts', value: '27' },
-  { label: 'Uptime', value: '98%' },
-] as const;
+import { AdminDashboard, adminService } from '@/src/services/admin.service';
 
 const adminControls = [
   { label: 'Live Dashboard', icon: '📊', onPress: () => router.replace('/(admin)/dashboard') },
   { label: 'User Management', icon: '👥', onPress: () => router.replace('/(admin)/users') },
+  { label: 'Courses & Assignments', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
   { label: 'Security Center', icon: '🔐', onPress: () => router.replace('/(admin)/notifications?filter=Security') },
   { label: 'Reports & Analytics', icon: '📈', onPress: () => router.replace('/(admin)/audit') },
   { label: 'System Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
@@ -26,6 +21,7 @@ const adminControls = [
 export default function AdminProfileScreen() {
   const insets = useSafeAreaInsets();
   const [logoutVisible, setLogoutVisible] = useState(false);
+  const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
   const { user, token } = useAuth();
 
   useEffect(() => {
@@ -33,6 +29,10 @@ export default function AdminProfileScreen() {
       authService.me().catch(() => null);
     }
   }, [token]);
+
+  useEffect(() => {
+    adminService.dashboard().then(setDashboard).catch(() => null);
+  }, []);
 
   const handleLogout = async () => {
     setLogoutVisible(false);
@@ -43,6 +43,12 @@ export default function AdminProfileScreen() {
   const displayName = user?.name ?? 'System Admin';
   const displayRole = (user?.role ?? 'admin').toUpperCase();
   const initials = getInitials(displayName) || 'AD';
+  const profileStats = [
+    { label: 'Users', value: String(dashboard?.stats.totalUsers ?? 0) },
+    { label: 'Chats', value: String(dashboard?.stats.conversations ?? 0) },
+    { label: 'Messages', value: String(dashboard?.stats.messages ?? 0) },
+    { label: 'Online', value: String(dashboard?.stats.onlineUsers ?? 0) },
+  ] as const;
   const adminInfo = [
     {
       label: 'Email',

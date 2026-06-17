@@ -24,6 +24,16 @@ enum ConversationMemberRole {
   OWNER
 }
 
+enum Semester {
+  SEMESTER_1
+  SEMESTER_2
+}
+
+enum CourseOfferingStatus {
+  ACTIVE
+  ARCHIVED
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -47,6 +57,7 @@ model User {
   ownedConversations  Conversation[]       @relation("ConversationOwner")
   memberships         ConversationMember[]
   messages            Message[]
+  courseOfferings     CourseOffering[]     @relation("CourseLecturer")
 
   @@index([role])
   @@index([email])
@@ -93,6 +104,7 @@ model Conversation {
   owner   User?                @relation("ConversationOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   members ConversationMember[]
   messages Message[]
+  courseOffering CourseOffering?
 
   @@index([type])
   @@index([ownerId])
@@ -101,6 +113,67 @@ model Conversation {
   @@index([programme])
   @@index([yearGroup])
   @@index([awardType])
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  code        String
+  name        String
+  description String?
+  creditHours Int?
+  faculty     String
+  department  String
+  programme   String
+  awardType   String
+  yearGroup   String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  offerings CourseOffering[]
+
+  @@unique([code, programme, awardType, yearGroup])
+  @@index([faculty])
+  @@index([department])
+  @@index([programme])
+  @@index([awardType])
+  @@index([yearGroup])
+}
+
+model AcademicSession {
+  id           String   @id @default(cuid())
+  academicYear String
+  semester     Semester
+  startsAt     DateTime?
+  endsAt       DateTime?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  offerings CourseOffering[]
+
+  @@unique([academicYear, semester])
+  @@index([isActive])
+}
+
+model CourseOffering {
+  id                String               @id @default(cuid())
+  courseId          String
+  academicSessionId String
+  lecturerId        String
+  conversationId    String?              @unique
+  status            CourseOfferingStatus @default(ACTIVE)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  academicSession AcademicSession  @relation(fields: [academicSessionId], references: [id], onDelete: Cascade)
+  lecturer        User             @relation("CourseLecturer", fields: [lecturerId], references: [id], onDelete: Restrict)
+  conversation    Conversation?    @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+
+  @@unique([courseId, academicSessionId])
+  @@index([lecturerId])
+  @@index([status])
 }
 
 model ConversationMember {
