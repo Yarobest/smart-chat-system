@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { BottomNav } from "@/src/components/common/BottomNav";
+import { StudentBottomNav } from "@/src/components/common/StudentBottomNav";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useNotifications } from "@/src/hooks/useNotifications";
 import { authService } from "@/src/services/auth.service";
@@ -167,14 +167,7 @@ export default function StudentHomeScreen() {
           ) : null}
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: "Home", icon: "🏠", active: true, onPress: () => router.replace("/(student)/home") },
-            { label: "Chats", icon: "💬", badge: unreadCount, onPress: () => router.replace("/(student)/chats") },
-            { label: "Notices", icon: "📢", onPress: () => router.replace("/(student)/announcements") },
-            { label: "Profile", icon: "👤", onPress: () => router.replace("/(student)/profile") },
-          ]}
-        />
+        <StudentBottomNav active="home" unreadCount={unreadCount} />
       </View>
     </SafeAreaView>
   );

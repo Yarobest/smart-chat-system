@@ -4,7 +4,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { StatusBar } from "@/src/components/common/StatusBar";
 import { ChatListItem } from "@/src/components/chat/ChatListItem";
-import { BottomNav } from "@/src/components/common/BottomNav";
+import { StudentBottomNav } from "@/src/components/common/StudentBottomNav";
 import { formatTime } from "@/src/utils/formatTime";
 import { useLiveThreads } from "@/src/hooks/useLiveThreads";
 import { Thread } from "@/src/types/chat.types";
@@ -209,32 +209,7 @@ export default function StudentChatsScreen() {
           </View>
         ) : null}
       </ScrollView>
-      <BottomNav
-        items={[
-          {
-            label: "Home",
-            icon: "🏠",
-            onPress: () => router.replace("/(student)/home"),
-          },
-          {
-            label: "Chats",
-            icon: "💬",
-            active: true,
-            badge: unreadCount,
-            onPress: () => router.replace("/(student)/chats"),
-          },
-          {
-            label: "Notices",
-            icon: "📢",
-            onPress: () => router.replace("/(student)/announcements"),
-          },
-          {
-            label: "Profile",
-            icon: "👤",
-            onPress: () => router.replace("/(student)/profile"),
-          },
-        ]}
-      />
+      <StudentBottomNav active="chats" unreadCount={unreadCount} />
     </SafeAreaView>
   );
 }

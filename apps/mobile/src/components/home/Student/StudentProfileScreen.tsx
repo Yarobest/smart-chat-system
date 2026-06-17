@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { StudentBottomNav } from '@/src/components/common/StudentBottomNav';
 import { LogoutModal } from '@/src/components/auth/Logout';
 import { authService } from '@/src/services/auth.service';
 import { useAuth } from '@/src/hooks/useAuth';
@@ -161,14 +161,7 @@ export default function StudentProfileScreen() {
           </View>
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', onPress: () => router.replace('/(student)/home') },
-            { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(student)/chats') },
-            { label: 'Notices', icon: '📢', onPress: () => router.replace('/(student)/announcements') },
-            { label: 'Profile', icon: '👤', active: true, onPress: () => router.replace('/(student)/profile') },
-          ]}
-        />
+        <StudentBottomNav unreadCount={unreadCount} />
         <LogoutModal
           visible={logoutVisible}
           onCancel={() => setLogoutVisible(false)}

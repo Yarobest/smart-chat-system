@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StatusBar } from '@/src/components/common/StatusBar';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
 import { formatTime } from '@/src/utils/formatTime';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 import { Thread } from '@/src/types/chat.types';
@@ -294,14 +294,7 @@ export default function LecturerChatsScreen() {
           )}
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', onPress: () => router.replace('/(lecturer)/home') },
-            { label: 'Chats', icon: '💬', badge: totalUnread, active: true, onPress: () => router.replace('/(lecturer)/chats') },
-            { label: 'Notices', icon: '📢', onPress: () => router.replace('/(lecturer)/announcements') },
-            { label: 'Profile', icon: '👤', onPress: () => router.replace('/(lecturer)/profile') },
-          ]}
-        />
+        <LecturerBottomNav active="chats" unreadCount={totalUnread} />
       </View>
     </SafeAreaView>
   );

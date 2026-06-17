@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useNotifications } from '@/src/hooks/useNotifications';
 import { authService } from '@/src/services/auth.service';
@@ -138,14 +138,7 @@ export default function LecturerHomeScreen() {
           </ScrollView>
         </View>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', active: true, onPress: () => router.replace('/(lecturer)/home') },
-            { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(lecturer)/chats') },
-            { label: 'Notices', icon: '📢', onPress: () => router.replace('/(lecturer)/announcements') },
-            { label: 'Profile', icon: '👤', onPress: () => router.replace('/(lecturer)/profile') },
-          ]}
-        />
+        <LecturerBottomNav active="home" unreadCount={unreadCount} />
       </View>
     </SafeAreaView>
   );

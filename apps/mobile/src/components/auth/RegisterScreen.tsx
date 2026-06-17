@@ -18,7 +18,6 @@ import {
   AWARD_TYPES,
   AwardType,
   HTU_FACULTIES,
-  YEAR_GROUPS,
   getDepartments,
   getProgrammes,
 } from "@/src/constants/htuAcademics";
@@ -27,6 +26,9 @@ import { authService } from "@/src/services/auth.service";
 type Role = "student" | "lecturer";
 type Step = "account" | "details";
 type DropdownKey = "faculty" | "department" | "awardType" | "programme" | "yearGroup";
+
+const HND_LEVELS = ["Level 100", "Level 200", "Level 300"] as const;
+const BTECH_LEVELS = ["Level 100", "Level 200", "Level 300", "Level 400"] as const;
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -53,6 +55,7 @@ export default function RegisterScreen() {
     () => getProgrammes(faculty, department, awardType),
     [awardType, department, faculty],
   );
+  const yearGroups = awardType === "BTech" ? BTECH_LEVELS : HND_LEVELS;
   const passwordOk =
     password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password);
   const accountComplete =
@@ -357,8 +360,12 @@ export default function RegisterScreen() {
                   {role === "student" ? (
                     <>
                       {dropdown("awardType", "Award Type", awardType, AWARD_TYPES, (value) => {
-                        setAwardType(value as AwardType);
+                        const nextAwardType = value as AwardType;
+                        const nextYearGroups = nextAwardType === "BTech" ? BTECH_LEVELS : HND_LEVELS;
+
+                        setAwardType(nextAwardType);
                         setProgramme("");
+                        setYearGroup((current) => nextYearGroups.includes(current as never) ? current : nextYearGroups[0]);
                       })}
                       {dropdown(
                         "programme",
@@ -368,7 +375,7 @@ export default function RegisterScreen() {
                         setProgramme,
                         department ? "Select programme" : "Select department first",
                       )}
-                      {dropdown("yearGroup", "Year Group", yearGroup, YEAR_GROUPS, setYearGroup)}
+                      {dropdown("yearGroup", "Year Group", yearGroup, yearGroups, setYearGroup)}
                     </>
                   ) : null}
 
