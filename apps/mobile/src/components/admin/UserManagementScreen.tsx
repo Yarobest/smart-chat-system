@@ -95,7 +95,6 @@ export default function UserManagementScreen() {
               : false;
 
     if (!matchesFilter) return false;
-
     if (!query) return true;
 
     return (
@@ -110,6 +109,7 @@ export default function UserManagementScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#203765]" edges={['top']}>
       <StatusBar style="light" backgroundColor="#203765" />
+
       <View className="flex-1 bg-[#F3F6FD]">
         <View
           className="bg-[#203765] px-5 pb-5"
@@ -148,29 +148,19 @@ export default function UserManagementScreen() {
               />
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mt-5"
-              contentContainerStyle={{ paddingRight: 12 }}
-            >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-5">
               {filters.map((filter, index) => {
                 const active = activeFilter === filter;
+
                 return (
                   <Pressable
                     key={filter}
                     onPress={() => setActiveFilter(filter)}
                     className={`items-center rounded-full border px-5 py-3 ${
-                      active
-                        ? 'border-blue-600 bg-[#3D6EE8]'
-                        : 'border-slate-200 bg-[#EEF3FB]'
+                      active ? 'border-blue-600 bg-[#3D6EE8]' : 'border-slate-200 bg-[#EEF3FB]'
                     } ${index === 0 ? '' : 'ml-2'}`}
                   >
-                    <Text
-                      className={`text-sm font-bold ${
-                        active ? 'text-white' : 'text-slate-600'
-                      }`}
-                    >
+                    <Text className={`text-sm font-bold ${active ? 'text-white' : 'text-slate-600'}`}>
                       {filter}
                     </Text>
                   </Pressable>
@@ -182,10 +172,7 @@ export default function UserManagementScreen() {
           <View className="border-t border-slate-200 bg-[#FBFCFF] px-4 py-3">
             <View className="flex-row flex-wrap justify-between">
               {summary.map((item) => (
-                <View
-                  key={item.label}
-                  className={`mb-2 rounded-full px-4 py-2 ${item.container}`}
-                >
+                <View key={item.label} className={`mb-2 rounded-full px-4 py-2 ${item.container}`}>
                   <Text className={`text-sm font-bold ${item.text}`}>
                     {item.icon} {item.label}
                   </Text>
@@ -200,8 +187,7 @@ export default function UserManagementScreen() {
                 key={user.id}
                 className="flex-row items-center border-b border-slate-100 bg-white px-4 py-4"
               >
-                <View className="flex-1 flex-row items-center"
-                >
+                <View className="flex-1 flex-row items-center">
                   <View
                     className="mr-4 h-16 w-16 items-center justify-center rounded-full bg-[#3B6AE3]"
                   >
@@ -224,7 +210,7 @@ export default function UserManagementScreen() {
                 </View>
 
                 <View className="ml-3 flex-row items-center">
-                  <ActionButton icon="👁️" onPress={() => router.push(`/(admin)/users/${user.id}`)} />
+                  <ActionButton icon="👁️" onPress={() => router.push(`/(admin)/users/${user.id}` as never)} />
                   <ActionButton icon="✉️" />
                 </View>
               </View>
@@ -243,12 +229,13 @@ export default function UserManagementScreen() {
           </View>
         </ScrollView>
 
-        <BottomNav
+         <BottomNav
           items={[
             { label: 'Home', icon: '🏠', onPress: () => router.replace('/(admin)/dashboard') },
             { label: 'Users', icon: '👥', active: true, onPress: () => router.replace('/(admin)/users') },
             { label: 'Courses', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
-            { label: 'Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
+            { label: 'Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
+            { label: 'Broadcast', icon: '📣', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
           ]}
         />
       </View>

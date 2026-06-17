@@ -82,7 +82,28 @@ const quickActions = [
     title: 'Security',
     subtitle: 'Alerts',
     accent: 'border-emerald-400',
-    onPress: () => router.push('/(admin)/dashboard'),
+    onPress: () => router.push('/(admin)/dashboard/security-center'),
+  },
+    {
+    icon: '📍',
+    title: 'Live Activity',
+    subtitle: 'View activity',
+    accent: 'border-purple-400',
+    onPress: () => router.push('/(admin)/dashboard/live-activity'),
+  },
+  {
+    icon: '💚',
+    title: 'System Health',
+    subtitle: 'Check status',
+    accent: 'border-emerald-500',
+    onPress: () => router.push('/(admin)/dashboard/system-health'),
+  },
+  {
+    icon: '🟢',
+    title: 'User Presence',
+    subtitle: 'Online users',
+    accent: 'border-cyan-400',
+    onPress: () => router.push('/(admin)/dashboard/user-presence'),
   },
 ] as const;
 
@@ -297,7 +318,8 @@ export default function AdminDashboardScreen() {
             { label: 'Home', icon: '🏠', active: true, onPress: () => router.replace('/(admin)/dashboard') },
             { label: 'Users', icon: '👥', onPress: () => router.replace('/(admin)/users') },
             { label: 'Courses', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
-            { label: 'Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
+            { label: 'Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
+            { label: 'Broadcast', icon: '📣', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
           ]}
         />
       </View>
