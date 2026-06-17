@@ -8,6 +8,7 @@ export default function ChatsLayout() {
       }}
     >
       <Stack.Screen name="index" />
+      <Stack.Screen name="new" />
       <Stack.Screen name="[id]" />
       <Stack.Screen name="group/[id]" />
     </Stack>

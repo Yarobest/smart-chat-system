@@ -83,7 +83,7 @@ export default function LecturerMyCoursesScreen() {
           return (
             <View
               key={course.id}
-              className="rounded-[28px] border border-slate-200 bg-white px-5 py-5"
+              className="rounded-[28px] border border-slate-200 bg-white px-5 py-4"
               style={{
                 shadowColor: '#000',
                 shadowOpacity: 0.06,
@@ -92,7 +92,9 @@ export default function LecturerMyCoursesScreen() {
                 elevation: 3,
               }}
             >
-              <View className="flex-row items-start justify-between gap-3">
+              <View className="h-1 rounded-t-[28px]" style={{ backgroundColor: course.borderColor }} />
+
+              <View className="mt-3 flex-row items-start justify-between gap-3">
                 <View className="flex-1">
                   <Text className="text-base font-extrabold text-slate-900">{course.name}</Text>
                   <Text className="mt-1 text-xs text-slate-400">
@@ -123,18 +125,36 @@ export default function LecturerMyCoursesScreen() {
                 </View>
               </View>
 
-              <View className="mt-4 flex-row gap-3">
+              <View className="mt-4 flex-row flex-wrap gap-2">
                 <Pressable
                   onPress={() => router.push('/(lecturer)/chats')}
-                  className="flex-1 items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-3"
+                  className="min-w-[30%] items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-2 py-2"
                 >
-                  <Text className="text-sm font-semibold text-slate-700">Open Chat</Text>
+                  <Text className="text-[10px] font-semibold text-slate-700 text-center">Open Chat</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => router.push('/(lecturer)/announcements/compose')}
-                  className="flex-1 items-center justify-center rounded-full bg-amber-100 px-4 py-3"
+                  className="min-w-[30%] items-center justify-center rounded-full bg-amber-100 px-2 py-2"
                 >
-                  <Text className="text-sm font-semibold text-amber-700">Announce</Text>
+                  <Text className="text-[10px] font-semibold text-amber-700 text-center">Announce</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/courses/set-quiz')}
+                  className="min-w-[30%] items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-2 py-2"
+                >
+                  <Text className="text-[10px] font-semibold text-slate-700 text-center">Set Quiz</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/courses/push-note')}
+                  className="min-w-[30%] items-center justify-center rounded-full bg-slate-100 px-2 py-2"
+                >
+                  <Text className="text-[10px] font-semibold text-slate-700 text-center">Push Note</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push('/(lecturer)/courses/submissions')}
+                  className="min-w-[30%] items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-2 py-2"
+                >
+                  <Text className="text-[10px] font-semibold text-slate-700 text-center">Submissions</Text>
                 </Pressable>
               </View>
 

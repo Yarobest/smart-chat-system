@@ -62,6 +62,7 @@ export default function SetQuizScreen() {
                     setActiveTab(tab);
                   }
                 }}
+                onPress={() => setActiveTab(tab)}
                 className={`flex-1 rounded-2xl border px-3 py-2 items-center ${
                   activeTab === tab ? 'border-blue-600 bg-blue-100' : 'border-slate-200 bg-slate-50'
                 }`}

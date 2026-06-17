@@ -152,21 +152,13 @@ export default function SubmissionsScreen() {
         )}
 
         {/* Action Buttons */}
-        <View className="flex-col gap-3 mt-4">
-          <Pressable
-            onPress={() => router.push('/courses/results')}
-            className="w-full rounded-full bg-blue-600 px-4 py-3 items-center"
-          >
-            <Text className="text-sm font-semibold text-white">📊 View Course Results</Text>
+        <View className="flex-row gap-3 mt-4">
+          <Pressable className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-3 items-center">
+            <Text className="text-sm font-semibold text-slate-700">📊 Export CSV</Text>
           </Pressable>
-          <View className="flex-row gap-3">
-            <Pressable className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-3 items-center">
-              <Text className="text-sm font-semibold text-slate-700">📊 Export CSV</Text>
-            </Pressable>
-            <Pressable className="flex-1 rounded-full bg-slate-600 px-4 py-3 items-center">
-              <Text className="text-sm font-semibold text-white">📈 Full Report</Text>
-            </Pressable>
-          </View>
+          <Pressable className="flex-1 rounded-full bg-blue-600 px-4 py-3 items-center">
+            <Text className="text-sm font-semibold text-white">📈 Full Report</Text>
+          </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>

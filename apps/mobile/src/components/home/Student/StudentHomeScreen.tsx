@@ -1,44 +1,29 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { BottomNav } from "@/src/components/common/BottomNav";
-
-const chatItems = [
-  {
-    id: "1",
-    avatar: "📚",
-    title: "CS301 · Data Structures",
-    preview: "Mr. Agordzo: Assignment due Fri...",
-    time: "10:22",
-    unread: 4,
-    tone: "bg-sky-100",
-  },
-  {
-    id: "2",
-    avatar: "👨‍🏫",
-    title: "Dr. Mensah",
-    preview: "Your project report looks good!",
-    time: "9:05",
-    unread: 1,
-    tone: "bg-emerald-100",
-  },
-  {
-    id: "3",
-    avatar: "📖",
-    title: "CS205 · Networking",
-    preview: "Rudolf: Can someone share...",
-    time: "Yesterday",
-    unread: 0,
-    tone: "bg-amber-100",
-  },
-];
+import { useAuth } from "@/src/hooks/useAuth";
+import { useNotifications } from "@/src/hooks/useNotifications";
+import { authService } from "@/src/services/auth.service";
+import { Thread } from "@/src/types/chat.types";
+import { formatTime } from "@/src/utils/formatTime";
+import { getInitials } from "@/src/utils/getInitials";
+import { useLiveThreads } from "@/src/hooks/useLiveThreads";
 
 export default function StudentHomeScreen() {
+  const { user, token } = useAuth();
+  const { unreadCount: notificationCount } = useNotifications();
   const [showRecentChats, setShowRecentChats] = useState(true);
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
-  const unreadCount = chatItems.reduce((total, item) => total + item.unread, 0);
+  const { threads, unreadCount, groupCount } = useLiveThreads();
+
+  useEffect(() => {
+    if (token) {
+      authService.me().catch(() => null);
+    }
+  }, [token]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -48,6 +33,10 @@ export default function StudentHomeScreen() {
     return () => clearInterval(timer);
   }, []);
 
+  const recentThreads = useMemo(() => threads.slice(0, 3), [threads]);
+  const displayName = user?.name ?? "Student";
+  const initials = getInitials(displayName) || "ST";
+
   const greetingText =
     currentHour < 12
       ? "Good Morning"
@@ -55,213 +44,135 @@ export default function StudentHomeScreen() {
         ? "Good Afternoon"
         : "Good Evening";
 
+  const openThread = (thread: Thread) => {
+    router.push(
+      thread.type === "group"
+        ? (`/(student)/chats/group/${thread.id}` as any)
+        : (`/(student)/chats/${thread.id}` as any),
+    );
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-[#0A1628]">
       <StatusBar style="light" hidden={false} />
       <View className="flex-1 bg-white">
         <View className="bg-[#0A1628] px-6 pb-6 pt-6">
           <View className="flex-row items-start justify-between">
-            <View>
-              <Text
-                allowFontScaling
-                className="text-lg font-semibold text-white/85"
-              >
+            <View className="flex-1 pr-3">
+              <Text className="text-lg font-semibold text-white/85">
                 {greetingText} 👋
               </Text>
-              <Text
-                allowFontScaling
-                className="text-3xl font-extrabold text-white"
-              >
-                Stephen Appiah
+              <Text className="text-3xl font-extrabold text-white" numberOfLines={1}>
+                {displayName}
               </Text>
             </View>
             <View className="mt-1 flex-row items-center self-start">
-              <View className="mr-3 h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
-                <Text allowFontScaling className="text-lg">
-                  🔔
-                </Text>
-              </View>
-              <View className="h-16 w-16 items-center justify-center rounded-full bg-orange-400">
-                <Text allowFontScaling className="text-lg font-bold text-white">
-                  SA
-                </Text>
-              </View>
+              <Pressable
+                onPress={() => router.push("/(student)/notifications" as any)}
+                className="relative mr-3 h-12 w-12 items-center justify-center rounded-2xl bg-white/10"
+              >
+                <Text className="text-lg">🔔</Text>
+                {notificationCount > 0 ? (
+                  <View className="absolute right-1 top-1 min-w-5 rounded-full bg-red-500 px-1">
+                    <Text className="text-center text-xs font-bold text-white">{notificationCount}</Text>
+                  </View>
+                ) : null}
+              </Pressable>
+              <Pressable
+                onPress={() => router.replace("/(student)/profile")}
+                className="h-16 w-16 items-center justify-center rounded-full bg-orange-400"
+              >
+                <Text className="text-lg font-bold text-white">{initials}</Text>
+              </Pressable>
             </View>
           </View>
 
           <View className="mt-6 flex-row">
             <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
-              <Text
-                allowFontScaling
-                className="text-2xl font-extrabold text-orange-300"
-              >
-                5
-              </Text>
-              <Text
-                allowFontScaling
-                className="mt-1 text-sm font-medium text-white/80"
-              >
-                Courses
-              </Text>
+              <Text className="text-2xl font-extrabold text-orange-300">0</Text>
+              <Text className="mt-1 text-sm font-medium text-white/80">Courses</Text>
             </View>
             <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
-              <Text
-                allowFontScaling
-                className="text-2xl font-extrabold text-orange-300"
-              >
-                {unreadCount}
-              </Text>
-              <Text
-                allowFontScaling
-                className="mt-1 text-sm font-medium text-white/80"
-              >
-                Unread
-              </Text>
+              <Text className="text-2xl font-extrabold text-orange-300">{unreadCount}</Text>
+              <Text className="mt-1 text-sm font-medium text-white/80">Unread</Text>
             </View>
             <View className="flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
-              <Text
-                allowFontScaling
-                className="text-2xl font-extrabold text-orange-300"
-              >
-                3
-              </Text>
-              <Text
-                allowFontScaling
-                className="mt-1 text-sm font-medium text-white/80"
-              >
-                Alerts
-              </Text>
+              <Text className="text-2xl font-extrabold text-orange-300">{groupCount}</Text>
+              <Text className="mt-1 text-sm font-medium text-white/80">Groups</Text>
             </View>
           </View>
         </View>
 
-        <ScrollView
-          className="flex-1 bg-white px-6 pt-6"
-          contentContainerStyle={{ paddingBottom: 18 }}
-        >
-          <View className="rounded-3xl border-l-[6px] border-amber-500 bg-amber-100 px-4 py-4">
-            <View className="flex-row items-start">
-              <Text allowFontScaling className="mr-3 pt-1 text-lg">
-                🔈
-              </Text>
-              <View className="flex-1">
-                <Text
-                  allowFontScaling
-                  className="text-lg font-bold text-amber-900"
-                >
-                  Exam Timetable Released!
-                </Text>
-                <Text
-                  allowFontScaling
-                  className="mt-1 text-sm text-amber-900/85"
-                >
-                  End of semester exams begin Jan 20. Check notice board.
-                </Text>
-              </View>
-            </View>
+        <ScrollView className="flex-1 bg-white px-6 pt-6" contentContainerStyle={{ paddingBottom: 18 }}>
+          <View className="rounded-3xl border-l-[6px] border-blue-500 bg-blue-50 px-4 py-4">
+            <Text className="text-lg font-bold text-blue-900">
+              {user?.programme ?? user?.department ?? "Student Portal"}
+            </Text>
+            <Text className="mt-1 text-sm text-blue-900/80">
+              {user?.faculty ?? "Your registered academic profile will appear here."}
+            </Text>
           </View>
 
           <View className="mb-2 mt-7 flex-row items-center justify-between">
-            <Text
-              allowFontScaling
-              className="text-sm font-extrabold text-slate-900"
-            >
-              Recent Chats
-            </Text>
+            <Text className="text-sm font-extrabold text-slate-900">Recent Chats</Text>
             <Pressable onPress={() => setShowRecentChats((prev) => !prev)}>
-              <Text
-                allowFontScaling
-                className="text-sm font-bold text-blue-600"
-              >
-                {showRecentChats ? "Hide" : "See All"}
+              <Text className="text-sm font-bold text-blue-600">
+                {showRecentChats ? "Hide" : "Show"}
               </Text>
             </Pressable>
           </View>
 
           {showRecentChats ? (
             <View className="mt-1">
-              {chatItems.map((item) => (
+              {recentThreads.map((item) => (
                 <Pressable
                   key={item.id}
-                  onPress={() =>
-                    item.id === "2"
-                      ? router.push("/(student)/chats/d1")
-                      : router.push(`/(student)/chats/group/g${item.id}`)
-                  }
+                  onPress={() => openThread(item)}
                   className="flex-row items-center border-b border-slate-200 px-1 py-5"
                 >
-                  <View className="relative">
-                    <View
-                      className={`h-14 w-14 items-center justify-center rounded-full ${item.tone}`}
-                    >
-                      <Text allowFontScaling className="text-lg">
-                        {item.avatar}
-                      </Text>
-                    </View>
-                    {item.id === "2" ? (
-                      <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500" />
-                    ) : null}
+                  <View className="h-14 w-14 items-center justify-center rounded-full bg-sky-100">
+                    <Text className="text-lg">{item.type === "group" ? "👥" : "💬"}</Text>
                   </View>
                   <View className="ml-3 flex-1">
-                    <Text
-                      allowFontScaling
-                      className="text-lg font-bold text-slate-900"
-                    >
+                    <Text className="text-lg font-bold text-slate-900" numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text
-                      allowFontScaling
-                      className="text-sm text-slate-400"
-                      numberOfLines={1}
-                    >
-                      {item.preview}
+                    <Text className="text-sm text-slate-400" numberOfLines={1}>
+                      {item.lastMessage?.text || "No messages yet"}
                     </Text>
                   </View>
                   <View className="items-end self-start pt-0.5">
-                    <Text allowFontScaling className="text-sm text-slate-400">
-                      {item.time}
+                    <Text className="text-sm text-slate-400">
+                      {item.lastMessage?.createdAt ? formatTime(item.lastMessage.createdAt) : ""}
                     </Text>
-                    {item.unread > 0 ? (
+                    {item.unreadCount > 0 ? (
                       <View className="mt-1 min-w-5 rounded-full bg-blue-600 px-1.5 py-0.5">
-                        <Text
-                          allowFontScaling
-                          className="text-center text-sm font-bold text-white"
-                        >
-                          {item.unread}
+                        <Text className="text-center text-sm font-bold text-white">
+                          {item.unreadCount}
                         </Text>
                       </View>
                     ) : null}
                   </View>
                 </Pressable>
               ))}
+              {recentThreads.length === 0 ? (
+                <View className="items-center py-10">
+                  <Text className="text-3xl">💬</Text>
+                  <Text className="mt-2 text-sm font-semibold text-slate-500">
+                    No conversations yet
+                  </Text>
+                </View>
+              ) : null}
             </View>
           ) : null}
         </ScrollView>
 
         <BottomNav
           items={[
-            {
-              label: "Home",
-              icon: "🏠",
-              active: true,
-              onPress: () => router.replace("/(student)/home"),
-            },
-            {
-              label: "Chats",
-              icon: "💬",
-              badge: unreadCount,
-              onPress: () => router.replace("/(student)/chats"),
-            },
-            {
-              label: "Notices",
-              icon: "📢",
-              onPress: () => router.replace("/(student)/announcements"),
-            },
-            {
-              label: "Profile",
-              icon: "👤",
-              onPress: () => router.replace("/(student)/profile"),
-            },
+            { label: "Home", icon: "🏠", active: true, onPress: () => router.replace("/(student)/home") },
+            { label: "Chats", icon: "💬", badge: unreadCount, onPress: () => router.replace("/(student)/chats") },
+            { label: "Notices", icon: "📢", onPress: () => router.replace("/(student)/announcements") },
+            { label: "Profile", icon: "👤", onPress: () => router.replace("/(student)/profile") },
           ]}
         />
       </View>
