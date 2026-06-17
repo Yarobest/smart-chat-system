@@ -6,6 +6,7 @@ import { StatusBar } from '@/src/components/common/StatusBar';
 import { BottomNav } from '@/src/components/common/BottomNav';
 import { formatTime } from '@/src/utils/formatTime';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
+import { Thread } from '@/src/types/chat.types';
 
 type FilterTab = 'All' | 'Course Groups' | 'Direct' | 'Unread';
 

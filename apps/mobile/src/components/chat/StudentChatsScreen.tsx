@@ -7,6 +7,7 @@ import { ChatListItem } from "@/src/components/chat/ChatListItem";
 import { BottomNav } from "@/src/components/common/BottomNav";
 import { formatTime } from "@/src/utils/formatTime";
 import { useLiveThreads } from "@/src/hooks/useLiveThreads";
+import { Thread } from "@/src/types/chat.types";
 
 export default function StudentChatsScreen() {
   const [activeFilter, setActiveFilter] = useState("All");

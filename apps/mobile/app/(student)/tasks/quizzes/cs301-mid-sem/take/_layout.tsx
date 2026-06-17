@@ -8,7 +8,7 @@ export default function TakeQuizLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="final" options={{ animationEnabled: true }} />
+      <Stack.Screen name="final" options={{ animation: 'default' }} />
     </Stack>
   );
 }

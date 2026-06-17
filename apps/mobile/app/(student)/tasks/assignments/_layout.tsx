@@ -8,7 +8,7 @@ export default function AssignmentsLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="cs205-network" options={{ animationEnabled: true }} />
+      <Stack.Screen name="cs205-network" options={{ animation: 'default' }} />
     </Stack>
   );
 }
