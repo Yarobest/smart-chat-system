@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 const filters = ['All', 'Security', 'Broadcasts', 'Users', 'System'] as const;
 
@@ -84,12 +85,15 @@ export default function AuditLogScreen() {
       >
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-xl font-extrabold text-white">‹ Audit Log</Text>
+            <Pressable onPress={() => router.back()} className="flex-row items-center">
+              <Text className="mr-2 text-2xl text-white">‹</Text>
+              <View>
+                <Text className="text-xl font-extrabold text-white">Audit Log</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 Complete action history
               </Text>
-            </View>
+              </View>
+            </Pressable>
 
             <View className="h-8 w-8 items-center justify-center rounded-md bg-blue-600">
               <Text className="text-sm font-extrabold text-white">↓</Text>

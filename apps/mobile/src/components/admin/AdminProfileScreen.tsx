@@ -14,8 +14,8 @@ const adminControls = [
   { label: 'User Management', icon: '👥', onPress: () => router.replace('/(admin)/users') },
   { label: 'Courses & Assignments', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
   { label: 'Security Center', icon: '🔐', onPress: () => router.replace('/(admin)/notifications?filter=Security') },
-  { label: 'Reports & Analytics', icon: '📈', onPress: () => router.replace('/(admin)/audit') },
-  { label: 'System Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
+  { label: 'Reports & Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
+  { label: 'System Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
 ] as const;
 
 export default function AdminProfileScreen() {

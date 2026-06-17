@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 const departments = [
   {
@@ -69,12 +70,15 @@ export default function DepartmentManagement() {
       >
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-xl font-extrabold text-white">Departments</Text>
+            <Pressable onPress={() => router.back()} className="flex-row items-center">
+              <Text className="mr-2 text-2xl text-white">‹</Text>
+              <View>
+                <Text className="text-xl font-extrabold text-white">Departments</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 5 departments · HTU
               </Text>
-            </View>
+              </View>
+            </Pressable>
 
             <Pressable className="h-9 w-9 items-center justify-center rounded-md bg-blue-600">
               <Text className="text-xl font-bold text-white">+</Text>

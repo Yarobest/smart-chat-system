@@ -13,12 +13,15 @@ export default function BroadcastScreen() {
       <ScrollView className="flex-1 bg-[#EEF3FB]" contentContainerStyle={{ paddingBottom: 30 }}>
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-xl font-extrabold text-white">‹ Campus Broadcast</Text>
+            <Pressable onPress={() => router.back()} className="flex-row items-center">
+              <Text className="mr-2 text-2xl text-white">‹</Text>
+              <View>
+                <Text className="text-xl font-extrabold text-white">Campus Broadcast</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 Reach the entire campus
               </Text>
-            </View>
+              </View>
+            </Pressable>
 
             <Pressable
                 onPress={() => router.push('/(admin)/broadcast/broad-cast-history' as any)}
