@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { randomBytes, pbkdf2Sync, timingSafeEqual, createHash } from 'crypto';
@@ -10,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private readonly passwordIterations = 120000;
   private readonly sessionDays = 30;
 
@@ -44,7 +46,7 @@ export class AuthService {
         awardType: input.awardType,
       },
     });
-    await this.addStudentToMatchingCourseGroups(user);
+    await this.syncStudentCourseGroups(user);
     const token = await this.createSession(user.id);
 
     return {
@@ -63,7 +65,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    await this.addStudentToMatchingCourseGroups(user);
+    await this.syncStudentCourseGroups(user);
     const token = await this.createSession(user.id);
 
     return {
@@ -209,6 +211,18 @@ export class AuthService {
       })),
       skipDuplicates: true,
     });
+  }
+
+  private async syncStudentCourseGroups(user: User) {
+    try {
+      await this.addStudentToMatchingCourseGroups(user);
+    } catch (error) {
+      this.logger.warn(
+        `Could not sync course groups for user ${user.id}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
   }
 
   private parseRegisterBody(body: unknown) {
