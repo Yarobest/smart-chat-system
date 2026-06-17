@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
 import { LogoutModal } from '@/src/components/auth/Logout';
 import { authService } from '@/src/services/auth.service';
 import { useAuth } from '@/src/hooks/useAuth';
@@ -133,7 +133,7 @@ export default function LecturerProfileScreen() {
               { label: 'My Courses', icon: '📚', onPress: () => router.push('./courses') },
               { label: 'Post Announcement', icon: '📣', onPress: () => router.push('./announcements/compose') },
               { label: 'My Students', icon: '👥', onPress: () => router.push('./groups') },
-              { label: 'Notifications', icon: '🔔', onPress: () => router.push('./announcements') },
+              { label: 'Notifications', icon: '🔔', onPress: () => router.push('./notifications') },
               { label: 'Settings', icon: '⚙️', onPress: () => router.push('./settings') },
             ].map((item) => (
               <Pressable
@@ -167,14 +167,7 @@ export default function LecturerProfileScreen() {
           </View>
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', onPress: () => router.replace('/(lecturer)/home') },
-            { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(lecturer)/chats') },
-            { label: 'Notices', icon: '📢', onPress: () => router.replace('/(lecturer)/announcements') },
-            { label: 'Profile', icon: '👤', active: true, onPress: () => router.replace('/(lecturer)/profile') },
-          ]}
-        />
+        <LecturerBottomNav unreadCount={unreadCount} />
 
         <LogoutModal
           visible={logoutVisible}

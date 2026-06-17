@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.smartchatsystem.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -50,6 +51,11 @@
         }
       ]
     ],
+    "extra": {
+      "eas": {
+        "projectId": "b8c07997-4401-4a9c-a269-2baaf975c73e"
+      }
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

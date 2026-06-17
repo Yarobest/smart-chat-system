@@ -8,7 +8,7 @@ export default function AnnouncementsLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="[id]" options={{ animationEnabled: true }} />
+      <Stack.Screen name="[id]" options={{ animation: 'default' }} />
     </Stack>
   );
 }

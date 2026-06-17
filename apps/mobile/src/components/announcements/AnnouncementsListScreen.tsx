@@ -1,9 +1,8 @@
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
-import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { StudentBottomNav } from '@/src/components/common/StudentBottomNav';
 import { FilterRow } from '@/src/components/common/FilterRow';
 import { Tag } from '@/src/components/common/Tag';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
@@ -106,14 +105,7 @@ export default function AnnouncementsListScreen() {
         </View>
       </ScrollView>
 
-      <BottomNav
-        items={[
-          { label: 'Home', icon: '🏠', onPress: () => router.replace('/(student)/home') },
-          { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(student)/chats') },
-          { label: 'Notices', icon: '📢', active: true, onPress: () => router.replace('/(student)/announcements') },
-          { label: 'Profile', icon: '👤', onPress: () => router.replace('/(student)/profile') },
-        ]}
-      />
+      <StudentBottomNav unreadCount={unreadCount} />
     </SafeAreaView>
   );
 }

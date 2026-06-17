@@ -1,37 +1,47 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { AdminBottomNav } from '@/src/components/common/AdminBottomNav';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { AdminDashboard, adminService } from '@/src/services/admin.service';
 
-const stats = [
+type DashboardStat = {
+  icon: string;
+  value: string;
+  label: string;
+  trend: string;
+  trendColor: string;
+};
+
+const getStats = (dashboard: AdminDashboard | null): DashboardStat[] => [
   {
     icon: '👥',
-    value: '1,248',
+    value: (dashboard?.stats.totalUsers ?? 0).toLocaleString(),
     label: 'Total Users',
-    trend: '↑ 48 this month',
+    trend: `${dashboard?.stats.students ?? 0} students · ${dashboard?.stats.lecturers ?? 0} lecturers`,
     trendColor: 'text-emerald-500',
   },
   {
     icon: '🟢',
-    value: '342',
+    value: (dashboard?.stats.onlineUsers ?? 0).toLocaleString(),
     label: 'Online Now',
-    trend: '↑ 27% vs yesterday',
+    trend: 'Live from database',
     trendColor: 'text-emerald-500',
   },
   {
-    icon: '💬',
-    value: '8,421',
-    label: 'Msgs Today',
-    trend: '↑ 12%',
+    icon: '🏫',
+    value: (dashboard?.stats.conversations ?? 0).toLocaleString(),
+    label: 'Chat Spaces',
+    trend: 'Direct and course group rooms',
     trendColor: 'text-emerald-500',
   },
   {
-    icon: '🚨',
-    value: '3',
-    label: 'Active Alerts',
-    trend: 'Needs attention',
-    trendColor: 'text-rose-500',
+    icon: '🛡️',
+    value: (dashboard?.stats.admins ?? 0).toLocaleString(),
+    label: 'Admins',
+    trend: 'Admin accounts',
+    trendColor: 'text-blue-500',
   },
 ] as const;
 
@@ -47,32 +57,32 @@ const chartData = [
 
 const quickActions = [
   {
-    icon: '👥',
-    title: 'User Mgmt',
-    subtitle: 'Add, suspend',
-    accent: 'border-blue-500',
-    onPress: () => router.push('/(admin)/users'),
-  },
-  {
-    icon: '📡',
-    title: 'Broadcast',
-    subtitle: 'Send to all',
-    accent: 'border-rose-400',
-    onPress: () => router.push('/(admin)/broadcast'),
-  },
-  {
-    icon: '📊',
-    title: 'Analytics',
-    subtitle: 'Usage reports',
-    accent: 'border-amber-400',
-    onPress: () => router.push('/(admin)/dashboard'),
-  },
-  {
     icon: '🔐',
     title: 'Security',
     subtitle: 'Alerts',
     accent: 'border-emerald-400',
-    onPress: () => router.push('/(admin)/dashboard'),
+    onPress: () => router.push('/(admin)/dashboard/security-center'),
+  },
+    {
+    icon: '📍',
+    title: 'Live Activity',
+    subtitle: 'View activity',
+    accent: 'border-purple-400',
+    onPress: () => router.push('/(admin)/dashboard/live-activity'),
+  },
+  {
+    icon: '💚',
+    title: 'System Health',
+    subtitle: 'Check status',
+    accent: 'border-emerald-500',
+    onPress: () => router.push('/(admin)/dashboard/system-health'),
+  },
+  {
+    icon: '🟢',
+    title: 'User Presence',
+    subtitle: 'Online users',
+    accent: 'border-cyan-400',
+    onPress: () => router.push('/(admin)/dashboard/user-presence'),
   },
 ] as const;
 
@@ -104,22 +114,51 @@ function StatCard({
   trend,
   trendColor,
   onPress,
-}: (typeof stats)[number] & { onPress?: () => void }) {
+}: DashboardStat & { onPress?: () => void }) {
   return (
     <Pressable
       onPress={onPress}
       className="mb-3 w-[48.5%] rounded-[22px] bg-white p-4 shadow-sm shadow-slate-200"
     >
       <Text className="text-lg">{icon}</Text>
-      <Text className="mt-3 text-xl font-extrabold text-slate-900">{value}</Text>
-      <Text className="mt-1 text-sm text-slate-500">{label}</Text>
-      <Text className={`mt-2 text-xs font-semibold ${trendColor}`}>{trend}</Text>
+      <Text className="mt-3 text-xl font-extrabold text-slate-900" numberOfLines={1} adjustsFontSizeToFit>{value}</Text>
+      <Text className="mt-1 text-sm text-slate-500" numberOfLines={1}>{label}</Text>
+      <Text className={`mt-2 text-xs font-semibold ${trendColor}`} numberOfLines={2}>{trend}</Text>
     </Pressable>
   );
 }
 
 export default function AdminDashboardScreen() {
   const insets = useSafeAreaInsets();
+  const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const stats = useMemo(() => getStats(dashboard), [dashboard]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    adminService
+      .dashboard()
+      .then((data) => {
+        if (mounted) {
+          setDashboard(data);
+          setError('');
+        }
+      })
+      .catch((caught) => {
+        if (mounted) {
+          setError(caught instanceof Error ? caught.message : 'Unable to load dashboard');
+        }
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-[#1A2E57]" edges={['top']}>
@@ -131,8 +170,10 @@ export default function AdminDashboardScreen() {
         >
           <View className="flex-row items-start justify-between">
             <View className="flex-1">
-              <Text className="-mt-5 text-base font-semibold text-white/80">Good Morning 👋</Text>
-              <Text className="mt-1 text-3xl font-extrabold text-white">System Admin</Text>
+              <Text className="-mt-5 text-sm font-semibold text-white/80">
+                {loading ? 'Loading live data...' : 'Live Admin Overview'}
+              </Text>
+              <Text className="mt-1 text-2xl font-extrabold text-white">System Admin</Text>
             </View>
 
             <View className="mb-3 ml-4 flex-row items-center gap-2 self-end">
@@ -142,7 +183,7 @@ export default function AdminDashboardScreen() {
               >
                 <View className="absolute right-2 top-2 z-10 min-w-5 rounded-full bg-[#F26157] px-1 py-[1px]">
                   <Text className="text-center text-xs font-bold text-white">
-                    {notifications.length}
+                    {dashboard?.recentUsers.length ?? 0}
                   </Text>
                 </View>
                 <Text className="text-lg text-white">🔔</Text>
@@ -159,10 +200,12 @@ export default function AdminDashboardScreen() {
           <View className="mt-5 rounded-[20px] border border-white/10 bg-white/10 px-4 py-4">
             <View className="flex-row items-center justify-between">
               <Text className="text-sm font-semibold text-white/70">System Health</Text>
-              <Text className="text-sm font-bold text-emerald-300">98.2% Uptime</Text>
+              <Text className="text-sm font-bold text-emerald-300">
+                {error ? 'API unavailable' : 'Database connected'}
+              </Text>
             </View>
             <View className="mt-3 h-3 overflow-hidden rounded-full bg-white/15">
-              <View className="h-full w-[98%] rounded-full bg-[#56D4D8]" />
+              <View className={`h-full rounded-full ${error ? 'w-[20%] bg-rose-400' : 'w-full bg-[#56D4D8]'}`} />
             </View>
           </View>
         </View>
@@ -173,90 +216,85 @@ export default function AdminDashboardScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-5 pb-6 pt-4">
+            <Pressable
+              onPress={() => router.push('/(admin)/notifications')}
+              className={`mb-4 rounded-[22px] border px-4 py-4 ${
+                error ? 'border-rose-200 bg-rose-50' : 'border-blue-200 bg-blue-50'
+              }`}
+            >
+              <View className="flex-row items-start">
+                <Text className="mr-3 mt-0.5 text-2xl">{error ? '🚨' : '📡'}</Text>
+                <View className="flex-1">
+                  <Text className={`text-sm font-extrabold ${error ? 'text-rose-500' : 'text-blue-600'}`}>
+                    {error ? 'Backend connection issue' : 'Live database feed'}
+                  </Text>
+                  <Text className="mt-1 text-sm leading-5 text-slate-600">
+                    {error || `${dashboard?.recentUsers.length ?? 0} recent users · ${dashboard?.stats.conversations ?? 0} chat spaces tracked`}
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+
             <View className="flex-row flex-wrap justify-between">
               {stats.map((stat) => (
                 <StatCard
                   key={stat.label}
                   {...stat}
                   onPress={
-                    stat.label === 'Active Alerts'
-                      ? () => router.push('/(admin)/notifications')
+                    stat.label === 'Admins'
+                      ? () => router.push('/(admin)/users')
                       : undefined
                   }
                 />
               ))}
             </View>
 
-            <Pressable
-              onPress={() => router.push('/(admin)/notifications')}
-              className="mb-4 rounded-[22px] border border-rose-200 bg-rose-50 px-4 py-4"
-            >
-              <View className="flex-row items-start">
-                <Text className="mr-3 mt-0.5 text-2xl">🚨</Text>
-                <View className="flex-1">
-                  <Text className="text-sm font-extrabold text-rose-500">3 Active Alerts</Text>
-                  <Text className="mt-1 text-sm leading-5 text-slate-600">
-                    Suspicious login · Storage 78% · Flagged message
-                  </Text>
-                </View>
-              </View>
-            </Pressable>
+            <Text className="mb-3 text-base font-extrabold text-slate-900">Quick Links</Text>
 
-            <View className="mb-5 rounded-[24px] bg-white p-4 shadow-sm shadow-slate-200">
+            <View className="mb-2 flex-row flex-wrap justify-between">
+              {quickActions.map((action) => (
+                <Pressable
+                  key={action.title}
+                  onPress={action.onPress}
+                  className={`mb-3 w-[48.5%] rounded-[20px] border bg-white px-4 py-4 shadow-sm shadow-slate-200 ${action.accent}`}
+                >
+                  <Text className="text-xl">{action.icon}</Text>
+                  <Text className="mt-4 text-sm font-extrabold text-slate-900" numberOfLines={1} adjustsFontSizeToFit>{action.title}</Text>
+                  <Text className="mt-1 text-xs font-semibold text-slate-400" numberOfLines={1}>{action.subtitle}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <View className="mb-5 rounded-[22px] bg-white p-4 shadow-sm shadow-slate-200">
               <View className="flex-row items-center justify-between">
-                <Text className="text-base font-extrabold text-slate-900">Messages this week</Text>
+                <Text className="text-base font-extrabold text-slate-900">Recent Activity</Text>
                 <View className="rounded-full bg-blue-50 px-3 py-1">
                   <Text className="text-xs font-extrabold text-blue-500">DAILY</Text>
                 </View>
               </View>
 
-              <View className="mt-6 flex-row items-end justify-between">
-                {chartData.map((item) => (
-                  <View key={item.day} className="items-center">
-                    <View
-                      style={{ height: item.height }}
-                      className={`w-11 rounded-t-xl ${
-                        item.active ? 'bg-[#4E79E6]' : 'bg-[#8BA6EE]'
-                      }`}
-                    />
-                    <Text
-                      className={`mt-2 text-sm font-semibold ${
-                        item.active ? 'text-blue-600' : 'text-slate-400'
-                      }`}
-                    >
-                      {item.day}
+              <View className="mt-5">
+                {(dashboard?.recentUsers ?? []).slice(0, 4).map((user) => (
+                  <View key={user.id} className="border-t border-slate-100 py-3">
+                    <Text className="text-sm font-extrabold text-slate-900" numberOfLines={1}>
+                      {user.name}
+                    </Text>
+                    <Text className="mt-1 text-sm text-slate-500" numberOfLines={2}>
+                      {user.role} · {user.department ?? user.faculty ?? 'No department'} · Joined {new Date(user.createdAt).toLocaleDateString()}
                     </Text>
                   </View>
                 ))}
+                {!dashboard?.recentUsers.length ? (
+                  <Text className="py-4 text-sm font-semibold text-slate-400">
+                    {loading ? 'Loading user activity...' : 'No recent user activity yet.'}
+                  </Text>
+                ) : null}
               </View>
-            </View>
-
-            <Text className="mb-3 text-base font-extrabold text-slate-900">Quick Actions</Text>
-
-            <View className="flex-row flex-wrap justify-between">
-              {quickActions.map((action) => (
-                <Pressable
-                  key={action.title}
-                  onPress={action.onPress}
-                  className={`mb-3 w-[48.5%] rounded-[22px] border-2 bg-white px-4 py-5 shadow-sm shadow-slate-200 ${action.accent}`}
-                >
-                  <Text className="text-2xl">{action.icon}</Text>
-                  <Text className="mt-5 text-base font-extrabold text-slate-900">{action.title}</Text>
-                  <Text className="mt-1 text-sm text-slate-400">{action.subtitle}</Text>
-                </Pressable>
-              ))}
             </View>
           </View>
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', active: true, onPress: () => router.replace('/(admin)/dashboard') },
-            { label: 'Users', icon: '👥', onPress: () => router.replace('/(admin)/users') },
-            { label: 'Reports', icon: '📊', badge: 3, onPress: () => router.replace('/(admin)/audit') },
-            { label: 'Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
-          ]}
-        />
+        <AdminBottomNav active="home" />
       </View>
     </SafeAreaView>
   );

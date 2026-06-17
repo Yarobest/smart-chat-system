@@ -1,148 +1,82 @@
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { useState } from 'react';
 import { StatusBar } from '@/src/components/common/StatusBar';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { StudentBottomNav } from '@/src/components/common/StudentBottomNav';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
+import { Thread } from '@/src/types/chat.types';
 
-type CourseStatus = 'ACTIVE' | 'EXAM SOON' | 'COMPLETED';
-type FilterTab = 'All' | 'In Progress' | 'Completed';
+type FilterTab = 'All' | 'Active' | 'Unread';
 
-interface Course {
-  id: string;
-  name: string;
-  code: string;
-  lecturer: string;
-  progress: number;
-  status: CourseStatus;
-  assignments: number;
-  messages: number;
-  borderColor: string;
+const colors = ['#2563EB', '#16A34A', '#D97706', '#7C3AED', '#DC2626'];
+
+function isCourseThread(thread: Thread) {
+  return thread.type === 'group' && Boolean(thread.courseCode || thread.courseName);
 }
 
-const COURSES: Course[] = [
-  {
-    id: '1',
-    name: 'Data Structures & Algorithms',
-    code: 'CS301',
-    lecturer: 'Mr. G. Agordzo',
-    progress: 72,
-    status: 'ACTIVE',
-    assignments: 4,
-    messages: 48,
-    borderColor: '#3B82F6', // blue
-  },
-  {
-    id: '2',
-    name: 'Computer Networks',
-    code: 'CS205',
-    lecturer: 'Mr. G. Agordzo',
-    progress: 58,
-    status: 'ACTIVE',
-    assignments: 3,
-    messages: 21,
-    borderColor: '#22C55E', // green
-  },
-  {
-    id: '3',
-    name: 'Software Engineering',
-    code: 'CS410',
-    lecturer: 'Dr. A. Mensah',
-    progress: 45,
-    status: 'ACTIVE',
-    assignments: 2,
-    messages: 15,
-    borderColor: '#F59E0B', // amber
-  },
-  {
-    id: '4',
-    name: 'Mathematics for CS',
-    code: 'CS102',
-    lecturer: 'Mr. B. Tetteh',
-    progress: 88,
-    status: 'EXAM SOON',
-    assignments: 5,
-    messages: 33,
-    borderColor: '#EF4444', // red
-  },
-  {
-    id: '5',
-    name: 'Web Development',
-    code: 'CS308',
-    lecturer: 'Mrs. A. Boateng',
-    progress: 100,
-    status: 'COMPLETED',
-    assignments: 6,
-    messages: 52,
-    borderColor: '#8B5CF6', // purple
-  },
-];
+function courseTitle(thread: Thread) {
+  return thread.courseName ?? thread.title;
+}
 
-function getStatusStyle(status: CourseStatus): { bg: string; text: string } {
-  switch (status) {
-    case 'ACTIVE':
-      return { bg: '#EFF6FF', text: '#3B82F6' };
-    case 'EXAM SOON':
-      return { bg: '#FFF1F2', text: '#EF4444' };
-    case 'COMPLETED':
-      return { bg: '#F0FDF4', text: '#22C55E' };
-  }
+function courseCode(thread: Thread) {
+  return thread.courseCode ?? 'Course';
+}
+
+function lecturerName(thread: Thread) {
+  return (
+    thread.members?.find((member) => member.user.role === 'lecturer')?.user.name ??
+    'Lecturer not assigned'
+  );
+}
+
+function academicLine(thread: Thread) {
+  return [thread.awardType, thread.programme, thread.yearGroup]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 export default function MyCoursesScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
-  const { unreadCount } = useLiveThreads();
+  const { threads, loading, unreadCount } = useLiveThreads();
 
-  const filteredCourses = COURSES.filter((course) => {
-    if (activeFilter === 'All') return true;
-    if (activeFilter === 'In Progress') return course.status === 'ACTIVE' || course.status === 'EXAM SOON';
-    if (activeFilter === 'Completed') return course.status === 'COMPLETED';
-    return true;
-  });
+  const courses = useMemo(
+    () => threads.filter(isCourseThread),
+    [threads],
+  );
 
-  const filters: FilterTab[] = ['All', 'In Progress', 'Completed'];
+  const filteredCourses = useMemo(() => {
+    if (activeFilter === 'Unread') {
+      return courses.filter((course) => course.unreadCount > 0);
+    }
+
+    return courses;
+  }, [activeFilter, courses]);
+
+  const filters: FilterTab[] = ['All', 'Active', 'Unread'];
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
       <View className="flex-1 bg-white">
+        <View className="bg-[#051839] px-4 pb-5 pt-6">
+          <Text className="text-2xl font-extrabold text-white">My Courses</Text>
+          <Text className="mt-1 text-sm text-slate-300">
+            {loading ? 'Loading assigned courses...' : `${courses.length} active course groups`}
+          </Text>
 
-        {/* Header */}
-        <View className="bg-white px-4 pb-3 pt-4 shadow-sm">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <Pressable
-                onPress={() => router.back()}
-                className="mr-1 h-8 w-8 items-center justify-center rounded-full"
-              >
-                <Text className="text-xl text-slate-700">‹</Text>
-              </Pressable>
-              <View>
-                <Text className="text-xl font-extrabold text-slate-900">My Courses</Text>
-                <Text className="text-xs text-slate-400">HND Year 2 · 2024/2025</Text>
-              </View>
-            </View>
-            <Pressable className="h-9 w-9 items-center justify-center rounded-full bg-slate-100">
-              <Text className="text-base">🔍</Text>
-            </Pressable>
-          </View>
-
-          {/* Filter Tabs */}
           <View className="mt-4 flex-row gap-2">
             {filters.map((filter) => (
               <Pressable
                 key={filter}
                 onPress={() => setActiveFilter(filter)}
                 className={`rounded-full px-4 py-1.5 ${
-                  activeFilter === filter
-                    ? 'bg-blue-600'
-                    : 'bg-slate-100'
+                  activeFilter === filter ? 'bg-blue-600' : 'bg-white/10'
                 }`}
               >
                 <Text
                   className={`text-sm font-semibold ${
-                    activeFilter === filter ? 'text-white' : 'text-slate-500'
+                    activeFilter === filter ? 'text-white' : 'text-slate-300'
                   }`}
                 >
                   {filter}
@@ -152,97 +86,85 @@ export default function MyCoursesScreen() {
           </View>
         </View>
 
-        {/* Course List */}
         <ScrollView
           className="flex-1 bg-[#F5F7FA]"
-          contentContainerStyle={{ padding: 16, paddingBottom: 12, gap: 12 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 24, gap: 12 }}
           showsVerticalScrollIndicator={false}
         >
-          {filteredCourses.length === 0 ? (
-            <View className="mt-20 items-center justify-center">
-              <Text className="text-4xl">📭</Text>
-              <Text className="mt-3 text-base font-semibold text-slate-400">No courses found</Text>
+          {!loading && filteredCourses.length === 0 ? (
+            <View className="mt-20 items-center justify-center px-6">
+              <Text className="text-4xl">📚</Text>
+              <Text className="mt-3 text-center text-base font-bold text-slate-600">
+                No course groups found
+              </Text>
+              <Text className="mt-1 text-center text-sm leading-5 text-slate-500">
+                Your courses appear here after an admin assigns courses to your programme and level.
+              </Text>
             </View>
-          ) : (
-            filteredCourses.map((course) => {
-              const statusStyle = getStatusStyle(course.status);
-              return (
-                <View
-                  key={course.id}
-                  className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
-                  style={{ borderLeftWidth: 4, borderLeftColor: course.borderColor }}
-                >
-                  <View className="px-4 pt-4">
-                    {/* Top row: name + status badge */}
-                    <View className="flex-row items-start justify-between gap-2">
-                      <Text className="flex-1 text-base font-extrabold text-slate-900">
-                        {course.name}
+          ) : null}
+
+          {filteredCourses.map((course, index) => {
+            const accent = colors[index % colors.length];
+
+            return (
+              <View
+                key={course.id}
+                className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
+                style={{ borderLeftWidth: 4, borderLeftColor: accent }}
+              >
+                <View className="px-4 pt-4">
+                  <View className="flex-row items-start justify-between gap-2">
+                    <View className="flex-1">
+                      <Text className="text-base font-extrabold text-slate-900" numberOfLines={2}>
+                        {courseTitle(course)}
                       </Text>
-                      <View
-                        className="rounded-md px-2.5 py-1"
-                        style={{ backgroundColor: statusStyle.bg }}
-                      >
-                        <Text
-                          className="text-xs font-bold"
-                          style={{ color: statusStyle.text }}
-                        >
-                          {course.status}
-                        </Text>
-                      </View>
+                      <Text className="mt-1 text-xs font-semibold text-slate-400">
+                        {courseCode(course)} · {lecturerName(course)}
+                      </Text>
                     </View>
 
-                    {/* Code + Lecturer */}
-                    <Text className="mt-0.5 text-xs text-slate-400">
-                      {course.code} · {course.lecturer}
-                    </Text>
-
-                    {/* Progress bar */}
-                    <View className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                      <View
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${course.progress}%`,
-                          backgroundColor: course.borderColor,
-                        }}
-                      />
-                    </View>
-
-                    {/* Progress % + Open Chat */}
-                    <View className="mt-1.5 flex-row items-center justify-between">
-                      <Text className="text-xs text-slate-400">{course.progress}% complete</Text>
-                      <Pressable>
-                        <Text className="text-xs font-semibold" style={{ color: course.borderColor }}>
-                          Open Chat →
-                        </Text>
-                      </Pressable>
+                    <View className="rounded-md bg-blue-50 px-2.5 py-1">
+                      <Text className="text-xs font-bold text-blue-600">ACTIVE</Text>
                     </View>
                   </View>
 
-                  {/* Footer: assignments + messages */}
-                  <View className="mt-3 flex-row items-center gap-4 border-t border-slate-100 px-4 py-3">
-                    <View className="flex-row items-center gap-1">
-                      <Text className="text-xs">📋</Text>
-                      <Text className="text-xs text-slate-500">Assign. {course.assignments}</Text>
+                  <Text className="mt-3 text-sm leading-5 text-slate-500" numberOfLines={2}>
+                    {academicLine(course) || course.department || 'Assigned course group'}
+                  </Text>
+
+                  <View className="mt-4 flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-4">
+                      <Text className="text-xs font-semibold text-slate-500">
+                        👥 {course.memberCount ?? 0} members
+                      </Text>
+                      <Text className="text-xs font-semibold text-slate-500">
+                        💬 {course.unreadCount} unread
+                      </Text>
                     </View>
-                    <View className="flex-row items-center gap-1">
-                      <Text className="text-xs">💬</Text>
-                      <Text className="text-xs text-slate-500">{course.messages} msgs</Text>
-                    </View>
+                    <Pressable
+                      onPress={() => router.push(`/(student)/chats/group/${course.id}` as any)}
+                    >
+                      <Text className="text-xs font-bold" style={{ color: accent }}>
+                        Open Chat →
+                      </Text>
+                    </Pressable>
                   </View>
                 </View>
-              );
-            })
-          )}
+
+                {course.lastMessage ? (
+                  <View className="mt-4 border-t border-slate-100 px-4 py-3">
+                    <Text className="text-xs font-bold text-slate-400">LATEST ACTIVITY</Text>
+                    <Text className="mt-1 text-sm text-slate-600" numberOfLines={1}>
+                      {course.lastMessage.sender?.name ?? 'Someone'}: {course.lastMessage.text}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            );
+          })}
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', onPress: () => router.replace('/(student)/home') },
-            { label: 'Chats', icon: '💬', badge: unreadCount, onPress: () => router.replace('/(student)/chats') },
-            { label: 'Notices', icon: '📢', onPress: () => router.replace('/(student)/announcements') },
-            { label: 'Profile', icon: '👤', active: true, onPress: () => router.replace('/(student)/profile') },
-          ]}
-        />
+        <StudentBottomNav active="courses" unreadCount={unreadCount} />
       </View>
     </SafeAreaView>
   );

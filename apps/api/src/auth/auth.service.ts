@@ -44,6 +44,7 @@ export class AuthService {
         awardType: input.awardType,
       },
     });
+    await this.addStudentToMatchingCourseGroups(user);
     const token = await this.createSession(user.id);
 
     return {
@@ -62,6 +63,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    await this.addStudentToMatchingCourseGroups(user);
     const token = await this.createSession(user.id);
 
     return {
@@ -146,6 +148,69 @@ export class AuthService {
     return token;
   }
 
+  private async addStudentToMatchingCourseGroups(user: User) {
+    if (
+      user.role !== UserRole.STUDENT ||
+      !user.faculty ||
+      !user.department ||
+      !user.programme ||
+      !user.awardType ||
+      !user.yearGroup
+    ) {
+      return;
+    }
+
+    const offerings = await this.db().courseOffering.findMany({
+      where: {
+        status: 'ACTIVE',
+        conversationId: { not: null },
+        OR: [
+          {
+            faculty: user.faculty,
+            department: user.department,
+            programme: user.programme,
+            awardType: user.awardType,
+            yearGroup: user.yearGroup,
+          },
+          {
+            conversation: {
+              faculty: user.faculty,
+              department: user.department,
+              programme: user.programme,
+              awardType: user.awardType,
+              yearGroup: user.yearGroup,
+            },
+          },
+          {
+            course: {
+              faculty: user.faculty,
+              department: user.department,
+              programme: user.programme,
+              awardType: user.awardType,
+              yearGroup: user.yearGroup,
+            },
+          },
+        ],
+      },
+      select: { conversationId: true },
+    });
+
+    const conversationIds = offerings
+      .map((offering: { conversationId: string | null }) => offering.conversationId)
+      .filter((conversationId: string | null): conversationId is string => Boolean(conversationId));
+
+    if (!conversationIds.length) return;
+
+    await this.db().conversationMember.createMany({
+      data: conversationIds.map((conversationId: string) => ({
+        conversationId,
+        userId: user.id,
+        role: 'MEMBER',
+      })),
+      skipDuplicates: true,
+    });
+  }
+
   private parseRegisterBody(body: unknown) {
     const data = this.asRecord(body);
     const name = this.requiredString(data.name, 'name');
@@ -202,6 +267,10 @@ export class AuthService {
       yearGroup,
       awardType,
     };
+  }
+
+  private db() {
+    return this.prisma as any;
   }
 
   private parseLoginBody(body: unknown) {

@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
+    "dev": "node ./scripts/start.js --skip-api",
     "start": "node ./scripts/start.js",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",

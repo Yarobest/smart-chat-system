@@ -7,25 +7,22 @@ import { StatusBar } from '@/src/components/common/StatusBar';
 import { authService } from '@/src/services/auth.service';
 import { useAuth } from '@/src/hooks/useAuth';
 import { getInitials } from '@/src/utils/getInitials';
-
-const profileStats = [
-  { label: 'Users', value: '1,248' },
-  { label: 'Courses', value: '48' },
-  { label: 'Broadcasts', value: '27' },
-  { label: 'Uptime', value: '98%' },
-] as const;
+import { AdminDashboard, adminService } from '@/src/services/admin.service';
+import { BackButton } from '@/src/components/common/BackButton';
 
 const adminControls = [
   { label: 'Live Dashboard', icon: '📊', onPress: () => router.replace('/(admin)/dashboard') },
   { label: 'User Management', icon: '👥', onPress: () => router.replace('/(admin)/users') },
+  { label: 'Courses & Assignments', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
   { label: 'Security Center', icon: '🔐', onPress: () => router.replace('/(admin)/notifications?filter=Security') },
-  { label: 'Reports & Analytics', icon: '📈', onPress: () => router.replace('/(admin)/audit') },
-  { label: 'System Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast') },
+  { label: 'Reports & Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
+  { label: 'System Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
 ] as const;
 
 export default function AdminProfileScreen() {
   const insets = useSafeAreaInsets();
   const [logoutVisible, setLogoutVisible] = useState(false);
+  const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
   const { user, token } = useAuth();
 
   useEffect(() => {
@@ -33,6 +30,10 @@ export default function AdminProfileScreen() {
       authService.me().catch(() => null);
     }
   }, [token]);
+
+  useEffect(() => {
+    adminService.dashboard().then(setDashboard).catch(() => null);
+  }, []);
 
   const handleLogout = async () => {
     setLogoutVisible(false);
@@ -43,6 +44,12 @@ export default function AdminProfileScreen() {
   const displayName = user?.name ?? 'System Admin';
   const displayRole = (user?.role ?? 'admin').toUpperCase();
   const initials = getInitials(displayName) || 'AD';
+  const profileStats = [
+    { label: 'Users', value: String(dashboard?.stats.totalUsers ?? 0) },
+    { label: 'Spaces', value: String(dashboard?.stats.conversations ?? 0) },
+    { label: 'Admins', value: String(dashboard?.stats.admins ?? 0) },
+    { label: 'Online', value: String(dashboard?.stats.onlineUsers ?? 0) },
+  ] as const;
   const adminInfo = [
     {
       label: 'Email',
@@ -75,39 +82,35 @@ export default function AdminProfileScreen() {
       <StatusBar style="light" backgroundColor="#1A2E57" />
       <View className="flex-1 bg-[#F4F7FD]">
         <View
-          className="bg-[#1A2E57] px-5 pb-6"
+          className="bg-[#1A2E57] px-5 pb-5"
           style={{ paddingTop: Math.max(insets.top, 4) }}
         >
-          <Pressable
-            onPress={() => router.back()}
-            className="absolute left-5 z-10 h-10 w-10 items-center justify-center rounded-xl bg-white/10 active:bg-white/20"
-            style={{ top: Math.max(insets.top, 4) }}
-          >
-            <Text className="text-xl text-white">‹</Text>
-          </Pressable>
+          <View className="absolute left-5 z-10" style={{ top: Math.max(insets.top, 4) }}>
+            <BackButton fallbackRoute="/(admin)/dashboard" className="h-9 w-9 items-center justify-center rounded-xl bg-white/10 active:bg-white/20" />
+          </View>
 
-          <View className="-mt-20 items-center">
-            <View className="relative h-24 w-24 items-center justify-center rounded-full border-2 border-white/20 bg-[#F26157]">
-              <Text className="text-5xl font-extrabold text-white">{initials}</Text>
-              <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full border-2 border-[#1A2E57] bg-[#3D6EE8]">
-                <Text className="text-sm text-white">✏️</Text>
+          <View className="items-center pt-4">
+            <View className="relative h-20 w-20 items-center justify-center rounded-full border-2 border-white/20 bg-[#F26157]">
+              <Text className="text-3xl font-extrabold text-white">{initials}</Text>
+              <View className="absolute bottom-0 right-0 h-7 w-7 items-center justify-center rounded-full border-2 border-[#1A2E57] bg-[#3D6EE8]">
+                <Text className="text-xs text-white">✏️</Text>
               </View>
             </View>
 
-            <Text className="mt-4 text-3xl font-extrabold text-white">{displayName}</Text>
-            <Text className="mt-1 text-base font-medium text-white/65">Admin ID: {user?.id ?? 'Not available'}</Text>
+            <Text className="mt-3 text-2xl font-extrabold text-white" numberOfLines={1} adjustsFontSizeToFit>{displayName}</Text>
+            <Text className="mt-1 text-xs font-medium text-white/65" numberOfLines={1}>Admin ID: {user?.id ?? 'Not available'}</Text>
 
-            <View className="mt-4 rounded-full bg-[#F26157] px-5 py-2">
-              <Text className="text-sm font-extrabold tracking-wide text-white">
+            <View className="mt-3 rounded-full bg-[#F26157] px-4 py-2">
+              <Text className="text-xs font-extrabold tracking-wide text-white">
                 ⚙ ADMINISTRATOR
               </Text>
             </View>
 
-            <View className="mt-5 flex-row overflow-hidden rounded-[22px] border border-white/10 bg-white/10">
+            <View className="mt-4 flex-row overflow-hidden rounded-[20px] border border-white/10 bg-white/10">
               {profileStats.map((stat, index) => (
-                <View key={stat.label} className="flex-1 items-center px-4 py-4">
-                  <Text className="text-2xl font-extrabold text-white">{stat.value}</Text>
-                  <Text className="mt-1 text-center text-sm font-medium text-white/60">
+                <View key={stat.label} className="flex-1 items-center px-2 py-3">
+                  <Text className="text-xl font-extrabold text-white" numberOfLines={1} adjustsFontSizeToFit>{stat.value}</Text>
+                  <Text className="mt-1 text-center text-xs font-medium text-white/60" numberOfLines={1} adjustsFontSizeToFit>
                     {stat.label}
                   </Text>
                   {index < profileStats.length - 1 ? (
@@ -140,7 +143,7 @@ export default function AdminProfileScreen() {
                   </View>
                   <View>
                     <Text className="text-sm font-medium text-slate-400">{item.label}</Text>
-                    <Text className={`mt-1 text-lg font-semibold ${item.valueColor}`}>
+                    <Text className={`mt-1 text-sm font-semibold ${item.valueColor}`} numberOfLines={2}>
                       {item.value}
                     </Text>
                   </View>
@@ -163,7 +166,9 @@ export default function AdminProfileScreen() {
                   <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
                     <Text className="text-lg">{item.icon}</Text>
                   </View>
-                  <Text className="text-lg font-semibold text-slate-900">{item.label}</Text>
+                  <Text className="text-base font-semibold text-slate-900" numberOfLines={2}>
+                    {item.label}
+                  </Text>
                 </View>
                 <Text className="text-sm font-semibold text-slate-400">›</Text>
               </Pressable>
@@ -177,7 +182,7 @@ export default function AdminProfileScreen() {
                 <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-red-100">
                   <Text className="text-lg">🚪</Text>
                 </View>
-                <Text className="text-lg font-semibold text-red-500">Logout</Text>
+                <Text className="text-base font-semibold text-red-500">Logout</Text>
               </View>
               <Text className="text-sm font-semibold text-red-400">›</Text>
             </Pressable>

@@ -17,7 +17,7 @@ export const adminUsers = [
     lastLogin: 'Today · Android',
     twoFactor: 'Not set',
     stats: [
-      { label: 'Messages', value: '248' },
+      { label: 'Chats', value: '5' },
       { label: 'Courses', value: '5' },
       { label: 'Activity', value: '94%' },
     ],
@@ -40,7 +40,7 @@ export const adminUsers = [
     lastLogin: 'Today · Web',
     twoFactor: 'Enabled',
     stats: [
-      { label: 'Messages', value: '193' },
+      { label: 'Chats', value: '5' },
       { label: 'Courses', value: '5' },
       { label: 'Activity', value: '88%' },
     ],
@@ -63,7 +63,7 @@ export const adminUsers = [
     lastLogin: 'Today · iPhone',
     twoFactor: 'Enabled',
     stats: [
-      { label: 'Messages', value: '82' },
+      { label: 'Groups', value: '3' },
       { label: 'Courses', value: '3' },
       { label: 'Activity', value: '91%' },
     ],
@@ -86,7 +86,7 @@ export const adminUsers = [
     lastLogin: 'Yesterday · Android',
     twoFactor: 'Not set',
     stats: [
-      { label: 'Messages', value: '34' },
+      { label: 'Chats', value: '5' },
       { label: 'Courses', value: '5' },
       { label: 'Activity', value: '52%' },
     ],
@@ -109,7 +109,7 @@ export const adminUsers = [
     lastLogin: '3 days ago · Web',
     twoFactor: 'Not set',
     stats: [
-      { label: 'Messages', value: '11' },
+      { label: 'Chats', value: '5' },
       { label: 'Courses', value: '5' },
       { label: 'Activity', value: '18%' },
     ],

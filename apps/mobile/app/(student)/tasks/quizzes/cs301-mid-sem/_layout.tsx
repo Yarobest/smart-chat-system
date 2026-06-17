@@ -8,8 +8,8 @@ export default function CS301MidSemLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="take" options={{ animationEnabled: true }} />
-      <Stack.Screen name="results" options={{ animationEnabled: true }} />
+      <Stack.Screen name="take" options={{ animation: 'default' }} />
+      <Stack.Screen name="results" options={{ animation: 'default' }} />
     </Stack>
   );
 }

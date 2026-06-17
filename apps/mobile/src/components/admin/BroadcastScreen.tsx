@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LogoutModal } from '@/src/components/auth/Logout';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { AdminBottomNav } from '@/src/components/common/AdminBottomNav';
 import { StatusBar } from '@/src/components/common/StatusBar';
 
 const securityRows = [
@@ -36,7 +36,7 @@ function ToggleRow({
         <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
           <Text className="text-lg">{icon}</Text>
         </View>
-        <Text className="text-lg font-semibold text-slate-900">{label}</Text>
+        <Text className="text-base font-semibold text-slate-900" numberOfLines={2}>{label}</Text>
       </View>
 
       <Switch
@@ -65,7 +65,7 @@ function ValueRow({
         <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
           <Text className="text-lg">{icon}</Text>
         </View>
-        <Text className="text-lg font-semibold text-slate-900">{label}</Text>
+        <Text className="text-base font-semibold text-slate-900" numberOfLines={2}>{label}</Text>
       </View>
 
       <Text className="text-sm font-semibold text-slate-400">{value}</Text>
@@ -100,7 +100,7 @@ export default function BroadcastScreen() {
         >
           <View>
             <View>
-              <Text className="-mt-3 text-3xl font-extrabold text-white">
+              <Text className="-mt-3 text-2xl font-extrabold text-white">
                 System Settings
               </Text>
               <Text className="mt-0.5 text-sm font-medium text-white/65">
@@ -112,6 +112,7 @@ export default function BroadcastScreen() {
 
         <ScrollView
           className="flex-1"
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 16 }}
           showsVerticalScrollIndicator={false}
         >
@@ -182,7 +183,7 @@ export default function BroadcastScreen() {
                 <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-red-100">
                   <Text className="text-lg">🚪</Text>
                 </View>
-                <Text className="text-lg font-semibold text-red-500">Logout</Text>
+                <Text className="text-base font-semibold text-red-500">Logout</Text>
               </View>
 
               <Text className="text-sm font-semibold text-red-400">›</Text>
@@ -190,14 +191,7 @@ export default function BroadcastScreen() {
           </View>
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', onPress: () => router.replace('/(admin)/dashboard') },
-            { label: 'Users', icon: '👥', onPress: () => router.replace('/(admin)/users') },
-            { label: 'Reports', icon: '📊', badge: 3, onPress: () => router.replace('/(admin)/audit') },
-            { label: 'Settings', icon: '⚙️', active: true, onPress: () => router.replace('/(admin)/broadcast') },
-          ]}
-        />
+        <AdminBottomNav active="broadcast" />
         <LogoutModal
           visible={logoutVisible}
           onCancel={() => setLogoutVisible(false)}

@@ -3,6 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { BackButton } from '@/src/components/common/BackButton';
 
 const filters = ['All', 'Security', 'System', 'Users', 'Alerts'] as const;
 
@@ -136,7 +137,7 @@ function SecurityAlertCard({
   return (
     <View className={`mb-3 rounded-[22px] border bg-white px-4 py-4 ${border}`}>
       <View className="flex-row items-start justify-between">
-        <Text className={`text-lg font-extrabold ${color}`}>
+        <Text className={`text-base font-extrabold ${color}`}>
           {icon} {title}
         </Text>
         <View className="rounded-full bg-slate-100 px-3 py-1">
@@ -225,12 +226,7 @@ export default function SystemNotificationsScreen() {
         >
           <View className="flex-row items-start justify-between">
             <View className="flex-row items-center">
-              <Pressable
-                onPress={() => router.back()}
-                className="mr-3 h-10 w-10 items-center justify-center rounded-2xl bg-white/10 active:bg-white/20"
-              >
-                <Text className="text-xl text-white">‹</Text>
-              </Pressable>
+              <BackButton fallbackRoute="/(admin)/dashboard" />
 
               <View>
                 <Text className="-mt-3 text-2xl font-extrabold text-white">
@@ -283,7 +279,7 @@ export default function SystemNotificationsScreen() {
               <View className="rounded-[24px] bg-white px-4 py-4 shadow-sm shadow-slate-200">
                 <View className="mb-4 flex-row items-start justify-between">
                   <View>
-                    <Text className="text-3xl font-extrabold text-slate-900">Security Center</Text>
+                    <Text className="text-2xl font-extrabold text-slate-900">Security Center</Text>
                     <Text className="mt-1 text-sm text-slate-400">Threats, flags & access</Text>
                   </View>
                   <View className="rounded-full bg-red-50 px-3 py-1.5">
@@ -301,7 +297,7 @@ export default function SystemNotificationsScreen() {
                         3 unresolved · Score 18/100
                       </Text>
                     </View>
-                    <Text className="text-3xl font-extrabold text-amber-500">LOW</Text>
+                    <Text className="text-2xl font-extrabold text-amber-500">LOW</Text>
                   </View>
                 </View>
 
