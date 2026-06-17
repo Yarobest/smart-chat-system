@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdminBottomNav } from '@/src/components/common/AdminBottomNav';
 
 export default function BroadcastScreen() {
   const [audience, setAudience] = useState('All Campus');
@@ -10,18 +11,25 @@ export default function BroadcastScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F2341]">
-      <ScrollView className="flex-1 bg-[#EEF3FB]" contentContainerStyle={{ paddingBottom: 30 }}>
+      <View className="flex-1 bg-[#EEF3FB]">
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={16}
+      >
+      <ScrollView
+        className="flex-1 bg-[#EEF3FB]"
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: 30 }}
+      >
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <Pressable onPress={() => router.back()} className="flex-row items-center">
-              <Text className="mr-2 text-2xl text-white">‹</Text>
-              <View>
-                <Text className="text-xl font-extrabold text-white">Campus Broadcast</Text>
+            <View>
+                <Text className="text-2xl font-extrabold text-white">Campus Broadcast</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 Reach the entire campus
               </Text>
-              </View>
-            </Pressable>
+            </View>
 
             <Pressable
                 onPress={() => router.push('/(admin)/broadcast/broad-cast-history' as any)}
@@ -133,6 +141,9 @@ export default function BroadcastScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
+      <AdminBottomNav active="broadcast" />
+      </View>
     </SafeAreaView>
   );
 }

@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { BackButton } from '@/src/components/common/BackButton';
 
 const stats = [
   { value: '1,248', label: 'Total Users', trend: '+48 this month' },
@@ -48,15 +48,15 @@ export default function UserGrowthReport() {
       >
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <Pressable onPress={() => router.back()} className="flex-row items-center">
-              <Text className="mr-2 text-2xl text-white">‹</Text>
+            <View className="flex-row items-center">
+              <BackButton fallbackRoute="/(admin)/analytics/reports-and-analytics" />
               <View>
                 <Text className="text-xl font-extrabold text-white">User Growth</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 Registrations & retention
               </Text>
               </View>
-            </Pressable>
+            </View>
 
             <View className="h-8 w-8 items-center justify-center rounded-md bg-blue-600">
               <Text className="text-sm font-extrabold text-white">↓</Text>
@@ -71,7 +71,7 @@ export default function UserGrowthReport() {
                 key={item.label}
                 className="mb-3 w-[48.5%] rounded-[18px] bg-white p-4 shadow-sm shadow-slate-200"
               >
-                <Text className="text-3xl font-extrabold text-slate-900">{item.value}</Text>
+                <Text className="text-2xl font-extrabold text-slate-900">{item.value}</Text>
                 <Text className="mt-1 text-xs font-semibold text-slate-500">{item.label}</Text>
                 <Text className="mt-2 text-xs font-extrabold text-emerald-500">{item.trend}</Text>
               </View>

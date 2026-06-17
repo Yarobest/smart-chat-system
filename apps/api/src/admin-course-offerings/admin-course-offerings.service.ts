@@ -31,25 +31,37 @@ export class AdminCourseOfferingsService {
   async create(body: unknown) {
     const data = this.asRecord(body);
     const courseId = this.requiredString(data.courseId, 'courseId');
-    const lecturerId = this.requiredString(data.lecturerId, 'lecturerId');
     const academicYear = this.requiredString(data.academicYear, 'academicYear');
     const semester = this.parseSemester(data.semester);
+    const faculty = this.requiredString(data.faculty, 'faculty');
+    const department = this.requiredString(data.department, 'department');
+    const programme = this.requiredString(data.programme, 'programme');
+    const awardType = this.requiredString(data.awardType, 'awardType');
+    const yearGroup = this.requiredString(data.yearGroup, 'yearGroup');
 
-    const [course, lecturer] = await Promise.all([
-      this.db().course.findUnique({ where: { id: courseId } }),
-      this.db().user.findUnique({ where: { id: lecturerId } }),
-    ]);
+    const course = await this.db().course.findUnique({ where: { id: courseId } });
 
     if (!course) throw new NotFoundException('Course not found');
+    const lecturerId = course.lecturerId;
+    if (!lecturerId) {
+      throw new BadRequestException('Course must have a lecturer before it can be assigned');
+    }
+
+    const lecturer = await this.db().user.findUnique({ where: { id: lecturerId } });
     if (!lecturer) throw new NotFoundException('Lecturer not found');
     if (lecturer.role !== 'LECTURER' && lecturer.role !== 'ADMIN') {
-      throw new BadRequestException('lecturerId must belong to a lecturer');
+      throw new BadRequestException('Course lecturer must belong to a lecturer');
     }
 
     const existing = await this.db().courseOffering.findFirst({
       where: {
         courseId,
         academicSession: { academicYear, semester },
+        faculty,
+        department,
+        programme,
+        awardType,
+        yearGroup,
       },
     });
 
@@ -62,11 +74,11 @@ export class AdminCourseOfferingsService {
     const students = await this.db().user.findMany({
       where: {
         role: 'STUDENT',
-        faculty: course.faculty,
-        department: course.department,
-        programme: course.programme,
-        awardType: course.awardType,
-        yearGroup: course.yearGroup,
+        faculty,
+        department,
+        programme,
+        awardType,
+        yearGroup,
       },
       select: { id: true },
     });
@@ -85,11 +97,11 @@ export class AdminCourseOfferingsService {
           courseKey: `${academicYear}:${semester}:${course.id}`,
           courseCode: course.code,
           courseName: course.name,
-          faculty: course.faculty,
-          department: course.department,
-          programme: course.programme,
-          yearGroup: course.yearGroup,
-          awardType: course.awardType,
+          faculty,
+          department,
+          programme,
+          yearGroup,
+          awardType,
           ownerId: lecturerId,
           members: {
             create: [
@@ -109,6 +121,11 @@ export class AdminCourseOfferingsService {
           academicSessionId: academicSession.id,
           lecturerId,
           conversationId: conversation.id,
+          faculty,
+          department,
+          programme,
+          awardType,
+          yearGroup,
         },
         include: {
           course: true,
@@ -132,11 +149,11 @@ export class AdminCourseOfferingsService {
         id: offering.course.id,
         code: offering.course.code,
         name: offering.course.name,
-        faculty: offering.course.faculty,
-        department: offering.course.department,
-        programme: offering.course.programme,
-        awardType: offering.course.awardType,
-        yearGroup: offering.course.yearGroup,
+        faculty: offering.faculty ?? offering.course.faculty,
+        department: offering.department ?? offering.course.department,
+        programme: offering.programme ?? offering.course.programme,
+        awardType: offering.awardType ?? offering.course.awardType,
+        yearGroup: offering.yearGroup ?? offering.course.yearGroup,
       },
       lecturer: {
         id: offering.lecturer.id,

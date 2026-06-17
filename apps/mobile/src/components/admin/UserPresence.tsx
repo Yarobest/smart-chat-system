@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { BackButton } from '@/src/components/common/BackButton';
 
 const departments = [
   { name: 'Computer Science', value: '145/312', rate: '46%', width: 'w-[46%]', color: 'bg-blue-500' },
@@ -21,15 +21,15 @@ export default function UserPresence() {
       >
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <Pressable onPress={() => router.back()} className="flex-row items-center">
-              <Text className="mr-2 text-2xl text-white">‹</Text>
+            <View className="flex-row items-center">
+              <BackButton fallbackRoute="/(admin)/dashboard" />
               <View>
                 <Text className="text-xl font-extrabold text-white">User Presence</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 Students & Lecturers · Live
               </Text>
               </View>
-            </Pressable>
+            </View>
 
             <View className="rounded-full bg-emerald-100 px-3 py-1">
               <Text className="text-xs font-extrabold text-emerald-600">● LIVE</Text>

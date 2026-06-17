@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { BackButton } from '@/src/components/common/BackButton';
 
 const filters = ['All', 'CS Dept', 'ET Dept', 'Low Activity'] as const;
 
@@ -40,15 +41,15 @@ export default function CourseOverview() {
       >
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <Pressable onPress={() => router.back()} className="flex-row items-center">
-              <Text className="mr-2 text-2xl text-white">‹</Text>
+            <View className="flex-row items-center">
+              <BackButton fallbackRoute="/(admin)/analytics/reports-and-analytics" />
               <View>
                 <Text className="text-xl font-extrabold text-white">Course Overview</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 48 active courses · HTU
               </Text>
               </View>
-            </Pressable>
+            </View>
 
             <Pressable className="h-9 w-9 items-center justify-center rounded-md bg-blue-600">
               <Text className="text-xl font-bold text-white">+</Text>

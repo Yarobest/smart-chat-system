@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdminBottomNav } from '@/src/components/common/AdminBottomNav';
 
 const filters = ['This Month', 'Last Month', 'Semester', 'Custom'] as const;
 
@@ -39,7 +40,7 @@ const reportButtons = [
 const stats = [
   { value: '1,248', label: 'Total Users', border: 'border-blue-300' },
   { value: '342', label: 'Online', border: 'border-emerald-300' },
-  { value: '8.4K', label: 'Msgs', border: 'border-orange-300' },
+  { value: '48', label: 'Groups', border: 'border-orange-300' },
 ];
 
 const departments = [
@@ -56,6 +57,7 @@ export default function Analytics() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F2341]">
+      <View className="flex-1 bg-[#EEF3FB]">
       <ScrollView
         className="flex-1 bg-[#EEF3FB]"
         showsVerticalScrollIndicator={false}
@@ -63,15 +65,12 @@ export default function Analytics() {
       >
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <Pressable onPress={() => router.back()} className="flex-row items-center">
-              <Text className="mr-2 text-2xl text-white">‹</Text>
-              <View>
-                <Text className="text-xl font-extrabold text-white">Reports & Analytics</Text>
+            <View>
+                <Text className="text-2xl font-extrabold text-white">Reports & Analytics</Text>
               <Text className="mt-1 text-xs font-semibold text-blue-200">
                 January 2025 · HTU
               </Text>
-              </View>
-            </Pressable>
+            </View>
 
             <View className="h-8 w-8 items-center justify-center rounded-md bg-blue-600">
               <Text className="text-sm font-extrabold text-white">↓</Text>
@@ -216,6 +215,8 @@ export default function Analytics() {
           </View>
         </View>
       </ScrollView>
+      <AdminBottomNav active="analytics" />
+      </View>
     </SafeAreaView>
   );
 }

@@ -1,6 +1,6 @@
 import { ScrollView, Text, View, Pressable, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { BackButton } from '@/src/components/common/BackButton';
 
 export default function SecurityCenter() {
   return (
@@ -8,13 +8,13 @@ export default function SecurityCenter() {
       <ScrollView className="flex-1 bg-[#EEF3FB]" contentContainerStyle={{ paddingBottom: 30 }}>
         <View className="bg-[#0F2341] px-5 pb-5 pt-4">
           <View className="flex-row items-center justify-between">
-            <Pressable onPress={() => router.back()} className="flex-row items-center">
-              <Text className="mr-2 text-2xl text-white">‹</Text>
+            <View className="flex-row items-center">
+              <BackButton fallbackRoute="/(admin)/dashboard" />
               <View>
                 <Text className="text-xl font-extrabold text-white">Security Center</Text>
                 <Text className="mt-1 text-xs font-semibold text-blue-200">Threats, flags & access</Text>
               </View>
-            </Pressable>
+            </View>
 
             <View className="rounded-full bg-rose-900/50 px-3 py-1">
               <Text className="text-xs font-extrabold text-rose-300">3 ALERTS</Text>
@@ -30,7 +30,7 @@ export default function SecurityCenter() {
                 <Text className="text-sm font-extrabold text-orange-600">Threat Level: LOW</Text>
                 <Text className="text-xs text-slate-500">3 unresolved · Score 18/100</Text>
               </View>
-              <Text className="text-3xl font-extrabold text-orange-500">LOW</Text>
+              <Text className="text-2xl font-extrabold text-orange-500">LOW</Text>
             </View>
           </View>
 

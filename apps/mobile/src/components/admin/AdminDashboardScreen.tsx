@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { AdminBottomNav } from '@/src/components/common/AdminBottomNav';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { AdminDashboard, adminService } from '@/src/services/admin.service';
 
@@ -30,10 +30,10 @@ const getStats = (dashboard: AdminDashboard | null): DashboardStat[] => [
     trendColor: 'text-emerald-500',
   },
   {
-    icon: '💬',
-    value: (dashboard?.stats.messages ?? 0).toLocaleString(),
-    label: 'Messages',
-    trend: `${dashboard?.stats.conversations ?? 0} conversations`,
+    icon: '🏫',
+    value: (dashboard?.stats.conversations ?? 0).toLocaleString(),
+    label: 'Chat Spaces',
+    trend: 'Direct and course group rooms',
     trendColor: 'text-emerald-500',
   },
   {
@@ -56,27 +56,6 @@ const chartData = [
 ] as const;
 
 const quickActions = [
-  {
-    icon: '👥',
-    title: 'User Mgmt',
-    subtitle: 'Add, suspend',
-    accent: 'border-blue-500',
-    onPress: () => router.push('/(admin)/users'),
-  },
-  {
-    icon: '📡',
-    title: 'Broadcast',
-    subtitle: 'Send to all',
-    accent: 'border-rose-400',
-    onPress: () => router.push('/(admin)/broadcast'),
-  },
-  {
-    icon: '📚',
-    title: 'Courses',
-    subtitle: 'Assign groups',
-    accent: 'border-amber-400',
-    onPress: () => router.push('/(admin)/courses' as never),
-  },
   {
     icon: '🔐',
     title: 'Security',
@@ -142,9 +121,9 @@ function StatCard({
       className="mb-3 w-[48.5%] rounded-[22px] bg-white p-4 shadow-sm shadow-slate-200"
     >
       <Text className="text-lg">{icon}</Text>
-      <Text className="mt-3 text-xl font-extrabold text-slate-900">{value}</Text>
-      <Text className="mt-1 text-sm text-slate-500">{label}</Text>
-      <Text className={`mt-2 text-xs font-semibold ${trendColor}`}>{trend}</Text>
+      <Text className="mt-3 text-xl font-extrabold text-slate-900" numberOfLines={1} adjustsFontSizeToFit>{value}</Text>
+      <Text className="mt-1 text-sm text-slate-500" numberOfLines={1}>{label}</Text>
+      <Text className={`mt-2 text-xs font-semibold ${trendColor}`} numberOfLines={2}>{trend}</Text>
     </Pressable>
   );
 }
@@ -191,10 +170,10 @@ export default function AdminDashboardScreen() {
         >
           <View className="flex-row items-start justify-between">
             <View className="flex-1">
-              <Text className="-mt-5 text-base font-semibold text-white/80">
+              <Text className="-mt-5 text-sm font-semibold text-white/80">
                 {loading ? 'Loading live data...' : 'Live Admin Overview'}
               </Text>
-              <Text className="mt-1 text-3xl font-extrabold text-white">System Admin</Text>
+              <Text className="mt-1 text-2xl font-extrabold text-white">System Admin</Text>
             </View>
 
             <View className="mb-3 ml-4 flex-row items-center gap-2 self-end">
@@ -204,7 +183,7 @@ export default function AdminDashboardScreen() {
               >
                 <View className="absolute right-2 top-2 z-10 min-w-5 rounded-full bg-[#F26157] px-1 py-[1px]">
                   <Text className="text-center text-xs font-bold text-white">
-                    {dashboard?.recentMessages.length ?? 0}
+                    {dashboard?.recentUsers.length ?? 0}
                   </Text>
                 </View>
                 <Text className="text-lg text-white">🔔</Text>
@@ -237,6 +216,25 @@ export default function AdminDashboardScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-5 pb-6 pt-4">
+            <Pressable
+              onPress={() => router.push('/(admin)/notifications')}
+              className={`mb-4 rounded-[22px] border px-4 py-4 ${
+                error ? 'border-rose-200 bg-rose-50' : 'border-blue-200 bg-blue-50'
+              }`}
+            >
+              <View className="flex-row items-start">
+                <Text className="mr-3 mt-0.5 text-2xl">{error ? '🚨' : '📡'}</Text>
+                <View className="flex-1">
+                  <Text className={`text-sm font-extrabold ${error ? 'text-rose-500' : 'text-blue-600'}`}>
+                    {error ? 'Backend connection issue' : 'Live database feed'}
+                  </Text>
+                  <Text className="mt-1 text-sm leading-5 text-slate-600">
+                    {error || `${dashboard?.recentUsers.length ?? 0} recent users · ${dashboard?.stats.conversations ?? 0} chat spaces tracked`}
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+
             <View className="flex-row flex-wrap justify-between">
               {stats.map((stat) => (
                 <StatCard
@@ -251,26 +249,23 @@ export default function AdminDashboardScreen() {
               ))}
             </View>
 
-            <Pressable
-              onPress={() => router.push('/(admin)/notifications')}
-              className={`mb-4 rounded-[22px] border px-4 py-4 ${
-                error ? 'border-rose-200 bg-rose-50' : 'border-blue-200 bg-blue-50'
-              }`}
-            >
-              <View className="flex-row items-start">
-                <Text className="mr-3 mt-0.5 text-2xl">{error ? '🚨' : '📡'}</Text>
-                <View className="flex-1">
-                  <Text className={`text-sm font-extrabold ${error ? 'text-rose-500' : 'text-blue-600'}`}>
-                    {error ? 'Backend connection issue' : 'Live database feed'}
-                  </Text>
-                  <Text className="mt-1 text-sm leading-5 text-slate-600">
-                    {error || `${dashboard?.recentUsers.length ?? 0} recent users · ${dashboard?.recentMessages.length ?? 0} recent messages`}
-                  </Text>
-                </View>
-              </View>
-            </Pressable>
+            <Text className="mb-3 text-base font-extrabold text-slate-900">Quick Links</Text>
 
-            <View className="mb-5 rounded-[24px] bg-white p-4 shadow-sm shadow-slate-200">
+            <View className="mb-2 flex-row flex-wrap justify-between">
+              {quickActions.map((action) => (
+                <Pressable
+                  key={action.title}
+                  onPress={action.onPress}
+                  className={`mb-3 w-[48.5%] rounded-[20px] border bg-white px-4 py-4 shadow-sm shadow-slate-200 ${action.accent}`}
+                >
+                  <Text className="text-xl">{action.icon}</Text>
+                  <Text className="mt-4 text-sm font-extrabold text-slate-900" numberOfLines={1} adjustsFontSizeToFit>{action.title}</Text>
+                  <Text className="mt-1 text-xs font-semibold text-slate-400" numberOfLines={1}>{action.subtitle}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <View className="mb-5 rounded-[22px] bg-white p-4 shadow-sm shadow-slate-200">
               <View className="flex-row items-center justify-between">
                 <Text className="text-base font-extrabold text-slate-900">Recent Activity</Text>
                 <View className="rounded-full bg-blue-50 px-3 py-1">
@@ -279,49 +274,27 @@ export default function AdminDashboardScreen() {
               </View>
 
               <View className="mt-5">
-                {(dashboard?.recentMessages ?? []).slice(0, 4).map((message) => (
-                  <View key={message.id} className="border-t border-slate-100 py-3">
-                    <Text className="text-sm font-extrabold text-slate-900">{message.senderName}</Text>
+                {(dashboard?.recentUsers ?? []).slice(0, 4).map((user) => (
+                  <View key={user.id} className="border-t border-slate-100 py-3">
+                    <Text className="text-sm font-extrabold text-slate-900" numberOfLines={1}>
+                      {user.name}
+                    </Text>
                     <Text className="mt-1 text-sm text-slate-500" numberOfLines={2}>
-                      {message.text || 'Attachment message'}
+                      {user.role} · {user.department ?? user.faculty ?? 'No department'} · Joined {new Date(user.createdAt).toLocaleDateString()}
                     </Text>
                   </View>
                 ))}
-                {!dashboard?.recentMessages.length ? (
+                {!dashboard?.recentUsers.length ? (
                   <Text className="py-4 text-sm font-semibold text-slate-400">
-                    {loading ? 'Loading messages...' : 'No messages in the database yet.'}
+                    {loading ? 'Loading user activity...' : 'No recent user activity yet.'}
                   </Text>
                 ) : null}
               </View>
             </View>
-
-            <Text className="mb-3 text-base font-extrabold text-slate-900">Quick Actions</Text>
-
-            <View className="flex-row flex-wrap justify-between">
-              {quickActions.map((action) => (
-                <Pressable
-                  key={action.title}
-                  onPress={action.onPress}
-                  className={`mb-3 w-[48.5%] rounded-[22px] border-2 bg-white px-4 py-5 shadow-sm shadow-slate-200 ${action.accent}`}
-                >
-                  <Text className="text-2xl">{action.icon}</Text>
-                  <Text className="mt-5 text-base font-extrabold text-slate-900">{action.title}</Text>
-                  <Text className="mt-1 text-sm text-slate-400">{action.subtitle}</Text>
-                </Pressable>
-              ))}
-            </View>
           </View>
         </ScrollView>
 
-        <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', active: true, onPress: () => router.replace('/(admin)/dashboard') },
-            { label: 'Users', icon: '👥', onPress: () => router.replace('/(admin)/users') },
-            { label: 'Courses', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
-            { label: 'Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
-            { label: 'Broadcast', icon: '📣', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
-          ]}
-        />
+        <AdminBottomNav active="home" />
       </View>
     </SafeAreaView>
   );

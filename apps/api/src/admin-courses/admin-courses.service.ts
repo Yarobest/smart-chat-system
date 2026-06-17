@@ -30,17 +30,26 @@ export class AdminCoursesService {
 
   async create(body: unknown) {
     const data = this.asRecord(body);
+    const lecturerId = this.requiredString(data.lecturerId, 'lecturerId');
+    const lecturer = await this.db().user.findUnique({
+      where: { id: lecturerId },
+    });
+
+    if (!lecturer) {
+      throw new BadRequestException('lecturerId must belong to an existing lecturer');
+    }
+
+    if (lecturer.role !== 'LECTURER' && lecturer.role !== 'ADMIN') {
+      throw new BadRequestException('lecturerId must belong to a lecturer');
+    }
+
     const course = await this.db().course.create({
       data: {
         code: this.requiredString(data.code, 'code').toUpperCase(),
         name: this.requiredString(data.name, 'name'),
         description: this.optionalString(data.description),
         creditHours: this.optionalNumber(data.creditHours),
-        faculty: this.requiredString(data.faculty, 'faculty'),
-        department: this.requiredString(data.department, 'department'),
-        programme: this.requiredString(data.programme, 'programme'),
-        awardType: this.requiredString(data.awardType, 'awardType'),
-        yearGroup: this.requiredString(data.yearGroup, 'yearGroup'),
+        lecturerId,
       },
     });
 

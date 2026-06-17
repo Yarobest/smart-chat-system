@@ -121,11 +121,12 @@ model Course {
   name        String
   description String?
   creditHours Int?
-  faculty     String
-  department  String
-  programme   String
-  awardType   String
-  yearGroup   String
+  lecturerId  String?
+  faculty     String?
+  department  String?
+  programme   String?
+  awardType   String?
+  yearGroup   String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -162,6 +163,11 @@ model CourseOffering {
   academicSessionId String
   lecturerId        String
   conversationId    String?              @unique
+  faculty           String?
+  department        String?
+  programme         String?
+  awardType         String?
+  yearGroup         String?
   status            CourseOfferingStatus @default(ACTIVE)
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
@@ -173,6 +179,11 @@ model CourseOffering {
 
   @@unique([courseId, academicSessionId])
   @@index([lecturerId])
+  @@index([faculty])
+  @@index([department])
+  @@index([programme])
+  @@index([awardType])
+  @@index([yearGroup])
   @@index([status])
 }
 

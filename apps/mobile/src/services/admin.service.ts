@@ -68,11 +68,12 @@ export type AdminCourse = {
   id: string;
   code: string;
   name: string;
-  faculty: string;
-  department: string;
-  programme: string;
-  awardType: string;
-  yearGroup: string;
+  faculty?: string | null;
+  department?: string | null;
+  programme?: string | null;
+  awardType?: string | null;
+  yearGroup?: string | null;
+  lecturerId?: string | null;
   isActive: boolean;
 };
 
@@ -97,20 +98,20 @@ export type AdminCourseOffering = {
 export type CreateAdminCourseInput = {
   code: string;
   name: string;
-  faculty: string;
-  department: string;
-  programme: string;
-  awardType: string;
-  yearGroup: string;
+  lecturerId: string;
   creditHours?: string;
   description?: string;
 };
 
 export type CreateCourseOfferingInput = {
   courseId: string;
-  lecturerId: string;
   academicYear: string;
   semester: string;
+  faculty: string;
+  department: string;
+  programme: string;
+  awardType: string;
+  yearGroup: string;
 };
 
 export const adminService = {

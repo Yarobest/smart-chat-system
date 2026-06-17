@@ -15,7 +15,7 @@ export function BottomNav({ items }: Props) {
       {items.map((item) => (
         <Pressable
           key={item.label}
-          className="min-w-[64px] flex-1 items-center"
+          className="flex-1 items-center px-0.5"
           onPress={item.onPress}
         >
           <View className="relative">
@@ -30,7 +30,9 @@ export function BottomNav({ items }: Props) {
           </View>
           <Text
             numberOfLines={1}
-            className={`text-sm ${item.active ? "font-bold text-blue-600" : "text-slate-400"}`}
+            adjustsFontSizeToFit
+            minimumFontScale={0.75}
+            className={`text-[11px] ${item.active ? "font-bold text-blue-600" : "font-semibold text-slate-400"}`}
           >
             {item.label}
           </Text>

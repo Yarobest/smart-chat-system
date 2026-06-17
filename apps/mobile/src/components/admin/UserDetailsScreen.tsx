@@ -5,6 +5,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { AdminUserDetails, adminService } from '@/src/services/admin.service';
 import { getInitials } from '@/src/utils/getInitials';
+import { goBackOrReplace } from '@/src/utils/navigation';
+import { BackButton } from '@/src/components/common/BackButton';
 
 const adminActions = [
   { label: 'Send Direct Message', icon: '✉️', accent: 'text-blue-600', tone: 'bg-white' },
@@ -30,7 +32,7 @@ function DetailRow({
         <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
           <Text className="text-lg">{icon}</Text>
         </View>
-        <Text className="text-lg font-semibold text-slate-900">{label}</Text>
+        <Text className="text-base font-semibold text-slate-900" numberOfLines={1}>{label}</Text>
       </View>
 
       <Text className={`text-sm font-semibold ${valueAccent ?? 'text-slate-500'}`}>{value}</Text>
@@ -88,7 +90,7 @@ export default function UserDetailsScreen() {
             {loading ? 'Loading user...' : error || 'User not found'}
           </Text>
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => goBackOrReplace('/(admin)/users')}
             className="mt-4 rounded-2xl bg-[#3D6EE8] px-5 py-3"
           >
             <Text className="text-sm font-bold text-white">Go Back</Text>
@@ -108,15 +110,10 @@ export default function UserDetailsScreen() {
         >
           <View className="flex-row items-start justify-between">
             <View className="flex-row items-center">
-              <Pressable
-                onPress={() => router.back()}
-                className="mr-3 h-10 w-10 items-center justify-center rounded-2xl bg-white/10 active:bg-white/20"
-              >
-                <Text className="text-xl text-white">‹</Text>
-              </Pressable>
+              <BackButton fallbackRoute="/(admin)/users" />
 
               <View>
-                <Text className="-mt-3 text-3xl font-extrabold text-white">User Details</Text>
+                <Text className="-mt-3 text-2xl font-extrabold text-white">User Details</Text>
                 <Text className="mt-1 text-sm font-medium text-white/65">Full profile & activity</Text>
               </View>
             </View>
@@ -165,9 +162,9 @@ export default function UserDetailsScreen() {
 
             <View className="mt-4 flex-row justify-between">
               {[
-                { label: 'Messages', value: String(details?.stats.messages ?? 0) },
                 { label: 'Chats', value: String(details?.stats.conversations ?? 0) },
                 { label: 'Role', value: user.role.toUpperCase() },
+                { label: 'Status', value: user.isOnline ? 'ONLINE' : 'OFFLINE' },
               ].map((stat) => (
                 <View
                   key={stat.label}
@@ -195,7 +192,7 @@ export default function UserDetailsScreen() {
                   <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
                     <Text className="text-lg">{action.icon}</Text>
                   </View>
-                  <Text className={`text-lg font-semibold ${action.accent}`}>{action.label}</Text>
+                  <Text className={`text-base font-semibold ${action.accent}`} numberOfLines={1}>{action.label}</Text>
                 </View>
 
                 <Text className="text-sm font-semibold text-slate-400">›</Text>

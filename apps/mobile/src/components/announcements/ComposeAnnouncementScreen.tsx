@@ -1,7 +1,7 @@
 import { Pressable, SafeAreaView, ScrollView, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
-import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { BackButton } from '@/src/components/common/BackButton';
 
 type PriorityType = 'normal' | 'important' | 'urgent';
 
@@ -31,9 +31,7 @@ export default function ComposeAnnouncementScreen() {
 
       {/* Header */}
       <View className="flex-row items-center justify-between bg-[#051839] px-4 pb-5 pt-6">
-        <Pressable onPress={() => router.back()}>
-          <Text className="text-2xl text-white">‹</Text>
-        </Pressable>
+        <BackButton fallbackRoute="/(lecturer)/announcements" />
         <Text className="text-lg font-extrabold text-white">Post Announcement</Text>
         <Pressable onPress={() => {}} className="rounded-full px-4 py-2">
           <Text className="text-sm font-semibold text-orange-500">Send</Text>

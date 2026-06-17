@@ -5,7 +5,7 @@ import { AnnouncementDetail } from '@/src/components/announcements/AnnouncementD
 export default function AnnouncementDetailScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScreenHeader title="Announcement" />
+      <ScreenHeader title="Announcement" fallbackRoute="/(student)/announcements" />
       <AnnouncementDetail title="Exam Timetable Released" body="Exams begin on Jan 20. Follow your department schedule." />
     </SafeAreaView>
   );

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { AdminBottomNav } from '@/src/components/common/AdminBottomNav';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { AdminUser, adminService } from '@/src/services/admin.service';
 import { getInitials } from '@/src/utils/getInitials';
@@ -117,7 +117,7 @@ export default function UserManagementScreen() {
         >
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="-mt-3 text-3xl font-extrabold text-white">User Management</Text>
+              <Text className="-mt-3 text-2xl font-extrabold text-white">User Management</Text>
               <Text className="mt-1 text-sm font-medium text-white/65">
                 {loading ? 'Loading live users...' : `${total} users · ${onlineCount} online`}
               </Text>
@@ -229,15 +229,7 @@ export default function UserManagementScreen() {
           </View>
         </ScrollView>
 
-         <BottomNav
-          items={[
-            { label: 'Home', icon: '🏠', onPress: () => router.replace('/(admin)/dashboard') },
-            { label: 'Users', icon: '👥', active: true, onPress: () => router.replace('/(admin)/users') },
-            { label: 'Courses', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
-            { label: 'Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
-            { label: 'Broadcast', icon: '📣', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
-          ]}
-        />
+        <AdminBottomNav active="users" />
       </View>
     </SafeAreaView>
   );
