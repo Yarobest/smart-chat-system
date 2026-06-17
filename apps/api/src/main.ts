@@ -28,11 +28,11 @@ async function bootstrap() {
     },
   });
 
-  const port = 4001;
+  const port = Number(process.env.PORT ?? 4001);
 
   await app.listen(port, '0.0.0.0');
 
-  console.log(`Backend running on http://localhost:${port}`);
-  console.log(`Swagger docs running on http://localhost:${port}/docs`);
+  console.log(`Backend running on port ${port}`);
+  console.log(`Swagger docs running at /docs`);
 }
 bootstrap();
