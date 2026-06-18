@@ -51,14 +51,15 @@
         }
       ]
     ],
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "b8c07997-4401-4a9c-a269-2baaf975c73e"
+        "projectId": "0b0b065e-6291-435c-b642-1f418be55438"
       }
     },
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    }
+    "owner": "best1"
   }
 }
