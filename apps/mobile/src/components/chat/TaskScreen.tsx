@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { StudentBottomNav } from '@/src/components/common/StudentBottomNav';
+import { FilterRow } from '@/src/components/common/FilterRow';
+import { PageHeader } from '@/src/components/common/PageHeader';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 import { Thread } from '@/src/types/chat.types';
 
@@ -60,37 +62,11 @@ export default function TaskScreen() {
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
 
-      <View className="bg-[#051839] px-4 pb-5 pt-6">
-        <Text className="text-2xl font-extrabold text-white">Tasks</Text>
-        <Text className="mt-1 text-sm text-slate-300">
-          Assignments, quizzes and notes from your course groups
-        </Text>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="mt-4"
-          contentContainerStyle={{ gap: 8, paddingRight: 8 }}
-        >
-          {filters.map((filter) => (
-            <Pressable
-              key={filter}
-              onPress={() => setActiveFilter(filter)}
-              className={`rounded-full px-4 py-1.5 ${
-                activeFilter === filter ? 'bg-blue-600' : 'bg-white/10'
-              }`}
-            >
-              <Text
-                className={`text-sm font-semibold ${
-                  activeFilter === filter ? 'text-white' : 'text-slate-300'
-                }`}
-              >
-                {filter}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
+      <PageHeader
+        title="Tasks"
+        subtitle="Assignments, quizzes and notes from your course groups"
+      />
+      <FilterRow filters={filters} active={activeFilter} onSelect={setActiveFilter} />
 
       <ScrollView
         className="flex-1 bg-[#F5F7FA]"
@@ -122,11 +98,11 @@ export default function TaskScreen() {
             <Pressable
               key={`${course.id}-${type}`}
               onPress={() => openTaskArea(type, course)}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-4"
+              className="rounded-2xl border border-slate-200 bg-white px-4 py-3"
             >
               <View className="flex-row items-start">
                 <View
-                  className="mr-3 h-11 w-11 items-center justify-center rounded-2xl"
+                  className="mr-3 h-10 w-10 items-center justify-center rounded-xl"
                   style={{ backgroundColor: tone.bg }}
                 >
                   <Text className="text-xl">{icon}</Text>
@@ -144,9 +120,6 @@ export default function TaskScreen() {
                   </View>
                   <Text className="mt-1 text-sm font-semibold text-slate-500" numberOfLines={2}>
                     {getCourseLabel(course)}
-                  </Text>
-                  <Text className="mt-2 text-sm leading-5 text-slate-500">
-                    Open this course area to view published {type.toLowerCase()} or continue in the course group chat.
                   </Text>
                 </View>
               </View>

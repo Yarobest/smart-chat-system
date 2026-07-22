@@ -69,7 +69,12 @@ export class ChatService {
           ...this.toConversationResponse(conversation, userId),
           unreadCount,
           lastMessage: conversation.messages[0]
-            ? this.toMessageResponse(conversation.messages[0])
+            ? this.toMessageResponse(
+                conversation.messages[0],
+                false,
+                userId,
+                conversation.type === ConversationType.GROUP,
+              )
             : null,
         };
       }),
@@ -213,6 +218,11 @@ export class ChatService {
   async listMessages(userId: string, conversationId: string) {
     await this.assertMember(userId, conversationId);
 
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { type: true },
+    });
+
     const messages = await this.prisma.message.findMany({
       where: {
         conversationId,
@@ -246,6 +256,8 @@ export class ChatService {
               member.lastReadAt &&
               member.lastReadAt.getTime() >= message.createdAt.getTime(),
           ),
+        userId,
+        conversation?.type === ConversationType.GROUP,
       ),
     );
   }
@@ -283,7 +295,17 @@ export class ChatService {
       return createdMessage;
     });
 
-    return this.toMessageResponse(message);
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { type: true },
+    });
+
+    return this.toMessageResponse(
+      message,
+      false,
+      userId,
+      conversation?.type === ConversationType.GROUP,
+    );
   }
 
   async setTyping(userId: string, conversationId: string) {
@@ -309,6 +331,11 @@ export class ChatService {
   async listTyping(userId: string, conversationId: string) {
     await this.assertMember(userId, conversationId);
 
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { type: true },
+    });
+
     const users = this.typingByConversation.get(conversationId);
     if (!users) {
       return { users: [] };
@@ -322,7 +349,11 @@ export class ChatService {
 
         return active && typingUserId !== userId;
       })
-      .map(([id, value]) => ({ id, name: value.name }));
+      .map(([id, value]) =>
+        conversation?.type === ConversationType.GROUP
+          ? { id: 'anonymous', name: 'Anonymous' }
+          : { id, name: value.name },
+      );
 
     return { users: activeUsers };
   }
@@ -387,13 +418,23 @@ export class ChatService {
     };
   }
 
-  private toMessageResponse(message: Message & { sender: User }, seen = false) {
+  private toMessageResponse(
+    message: Message & { sender: User },
+    seen = false,
+    currentUserId?: string,
+    anonymous = false,
+  ) {
+    const isMine = message.senderId === currentUserId;
+
     return {
       id: message.id,
       conversationId: message.conversationId,
       text: message.text,
-      sender: this.toPublicUser(message.sender),
-      senderId: message.senderId,
+      sender: anonymous
+        ? { name: 'Anonymous', role: 'anonymous' }
+        : this.toPublicUser(message.sender),
+      senderId: anonymous && !isMine ? null : message.senderId,
+      isMine,
       attachments: this.getAttachments(message.metadata),
       seen,
       editedAt: message.editedAt?.toISOString() ?? null,

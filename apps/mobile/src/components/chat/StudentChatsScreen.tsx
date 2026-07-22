@@ -8,11 +8,15 @@ import { StudentBottomNav } from "@/src/components/common/StudentBottomNav";
 import { formatTime } from "@/src/utils/formatTime";
 import { useLiveThreads } from "@/src/hooks/useLiveThreads";
 import { Thread } from "@/src/types/chat.types";
+import { FilterRow } from "@/src/components/common/FilterRow";
+
+type ChatFilter = "All" | "Direct" | "Groups" | "Unread";
+
+const filters: ChatFilter[] = ["All", "Direct", "Groups", "Unread"];
 
 export default function StudentChatsScreen() {
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeFilter, setActiveFilter] = useState<ChatFilter>("All");
   const [search, setSearch] = useState("");
-  const filters = ["All", "Direct", "Groups", "Unread"];
   const { threads, loading, unreadCount } = useLiveThreads();
 
   useEffect(() => {
@@ -57,7 +61,7 @@ export default function StudentChatsScreen() {
   const toChatListItem = (chat: Thread) => ({
     title: chat.title,
     preview: chat.lastMessage
-      ? `${chat.lastMessage.sender?.name ?? "Someone"}: ${chat.lastMessage.text}`
+      ? `${chat.type === "group" ? "Anonymous" : (chat.lastMessage.sender?.name ?? "Someone")}: ${chat.lastMessage.text || "Attachment"}`
       : "No messages yet",
     time: chat.lastMessage?.createdAt
       ? formatTime(chat.lastMessage.createdAt)
@@ -103,24 +107,8 @@ export default function StudentChatsScreen() {
           />
         </View>
 
-        <View className="mb-2 mt-4 flex-row flex-wrap px-4 -mr-3 -mb-3">
-          {filters.map((filter) => {
-            const active = filter === activeFilter;
-            return (
-              <View key={filter} className="mr-3 mb-3">
-                <Pressable
-                  onPress={() => setActiveFilter(filter)}
-                  className={`rounded-full border px-5 py-2 ${active ? "border-[#2E63DF] bg-[#2E63DF]" : "border-[#CFD6E5] bg-[#E5EAF2]"}`}
-                >
-                  <Text
-                    className={`text-sm font-semibold ${active ? "text-white" : "text-[#304567]"}`}
-                  >
-                    {filter}
-                  </Text>
-                </Pressable>
-              </View>
-            );
-          })}
+        <View className="mt-3">
+          <FilterRow filters={filters} active={activeFilter} onSelect={setActiveFilter} />
         </View>
 
         {!loading && threads.length === 0 ? (

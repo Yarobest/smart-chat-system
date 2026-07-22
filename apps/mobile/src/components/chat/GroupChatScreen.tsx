@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   BackHandler,
@@ -16,6 +16,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { ChatTopBar } from "@/src/components/common/ChatTopBar";
+import { FilterRow } from "@/src/components/common/FilterRow";
 import { chatService } from "@/src/services/chat.service";
 import { useAuth } from "@/src/hooks/useAuth";
 import { ChatAttachment, Message } from "@/src/types/chat.types";
@@ -24,11 +26,22 @@ import { setReturnPath } from "@/src/stores/navigationStore";
 
 type TypingUser = { id: string; name: string };
 
+const taskFilters = ["Take Home", "Quiz", "Assignment", "Mid Sem", "Notes"] as const;
+const taskRoutes: Record<(typeof taskFilters)[number], string> = {
+  "Take Home": "/(student)/tasks/takehome",
+  Quiz: "/(student)/tasks/quiz",
+  Assignment: "/(student)/tasks/assignment",
+  "Mid Sem": "/(student)/tasks/midsem",
+  Notes: "/(student)/tasks/notes",
+};
+
 export default function GroupChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
-  const [showTaskNotification, setShowTaskNotification] = useState(true);
+  const [title, setTitle] = useState("Course Group");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [text, setText] = useState("");
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [sending, setSending] = useState(false);
@@ -62,6 +75,18 @@ export default function GroupChatScreen() {
           error instanceof Error ? error.message : "Please try again.",
         );
       });
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    chatService
+      .listThreads()
+      .then((threads) => {
+        const conversation = threads.find((thread) => thread.id === id);
+        if (conversation) setTitle(conversation.title);
+      })
+      .catch(() => undefined);
   }, [id]);
 
   useEffect(() => {
@@ -171,76 +196,69 @@ export default function GroupChatScreen() {
     ]);
   };
 
+  const visibleMessages = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return messages;
+
+    return messages.filter(
+      (message) =>
+        message.text.toLowerCase().includes(query) ||
+        message.attachments?.some((attachment) =>
+          attachment.name.toLowerCase().includes(query),
+        ),
+    );
+  }, [messages, search]);
+
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
 
-      <View className="bg-[#051839] px-4 pb-4 pt-4">
-        <View className="flex-row items-center">
-          <Pressable
-            onPress={handleBack}
-            className="mr-3 h-9 w-9 items-center justify-center rounded-full"
-          >
-            <Ionicons name="chevron-back" size={20} color="white" />
-          </Pressable>
+      <ChatTopBar
+        title={title}
+        subtitle={typingUsers[0]?.name ? `${typingUsers[0].name} typing...` : "Live conversation"}
+        onBack={handleBack}
+        onSearch={() => setSearchOpen((current) => !current)}
+        avatar={(
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#DCE9F8]">
             <Text className="text-lg">📚</Text>
           </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-xl font-extrabold leading-6 text-white">
-              Group Chat
-            </Text>
-            <Text className="text-sm text-white/70">
-              {typingUsers[0]?.name
-                ? `${typingUsers[0].name} typing...`
-                : "Live conversation"}
-            </Text>
+        )}
+      />
+
+      {searchOpen ? (
+        <View className="flex-row items-center bg-[#051839] px-4 pb-3">
+          <View className="flex-1 flex-row items-center rounded-xl bg-white/10 px-3 py-2">
+            <Ionicons name="search" size={17} color="#CBD5E1" />
+            <TextInput
+              autoFocus
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Search messages..."
+              placeholderTextColor="#94A3B8"
+              className="ml-2 flex-1 text-sm text-white"
+            />
+            {search.length > 0 ? (
+              <Pressable onPress={() => setSearch("")}>
+                <Ionicons name="close-circle" size={18} color="#CBD5E1" />
+              </Pressable>
+            ) : null}
           </View>
-          <Pressable className="mr-2 h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">
-              <Ionicons name="search" size={20} color="white" />
-            </Text>
-          </Pressable>
-          <Pressable className="h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">
-              <Ionicons name="ellipsis-vertical" size={20} color="white" />
-            </Text>
-          </Pressable>
         </View>
-      </View>
+      ) : null}
 
       <KeyboardAvoidingView
         className="flex-1 bg-[#F2F4F8]"
         behavior="padding"
         keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 24}
       >
-       <View className="border-b border-slate-200 bg-[#F7FAFF] px-3 py-2">
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            
-            {[
-              { label: "Take Home", route: "/(student)/tasks/takehome" },
-              { label: "Quiz", route: "/(student)/tasks/quiz" },
-              { label: "Assignment", route: "/(student)/tasks/assignment" },
-              { label: "Mid Sem", route: "/(student)/tasks/midsem" },
-              { label: "Notes", route: "/(student)/tasks/notes" },
-            ].map((item, index) => (
-              <Pressable
-                key={index}
-                onPress={() => {
-                  // Set the return path so user can navigate back to group chat
-                  setReturnPath("/(student)/chats/group/cs301");
-                  router.push(item.route as any);
-                }}
-                className="mr-3 rounded-full bg-[#2E63DF] px-4 py-2"
-              >
-                <Text className="text-sm font-semibold text-white">
-                  {item.label}
-                </Text>
-              </Pressable>
-            ))}
-
-          </ScrollView>
-        </View>
+        <FilterRow
+          filters={taskFilters}
+          filled
+          onSelect={(filter) => {
+            setReturnPath(`/(student)/chats/group/${id}`);
+            router.push(taskRoutes[filter] as any);
+          }}
+        />
 
         <ScrollView
           className="flex-1"
@@ -252,28 +270,23 @@ export default function GroupChatScreen() {
           }}
           keyboardShouldPersistTaps="handled"
         >
-          {showTaskNotification && (
-            <View className="mb-3 rounded-xl bg-[#FEF3C7] px-4 py-3 border border-[#FBBF24] flex-row items-center">
-              <Ionicons name="alert-circle" size={20} color="#D97706" />
-              <View className="flex-1 ml-3">
-                <Text className="font-bold text-[#92400E]">New Tasks Assigned ✓</Text>
-                <Text className="text-sm text-[#B45309]">You have 5 pending tasks. Complete them to dismiss this notification.</Text>
-              </View>
-              <Pressable onPress={() => setShowTaskNotification(false)}>
-                <Ionicons name="close" size={20} color="#D97706" />
-              </Pressable>
+          {search.trim() && visibleMessages.length === 0 ? (
+            <View className="mb-4 items-center rounded-xl bg-white px-4 py-5">
+              <Text className="text-sm font-semibold text-slate-500">
+                No messages match “{search.trim()}”
+              </Text>
             </View>
-          )}
-          {messages.map((message) => {
-            const mine = message.senderId === user?.id;
+          ) : null}
+          {visibleMessages.map((message) => {
+            const mine = message.isMine ?? message.senderId === user?.id;
             return (
             <View
               key={message.id}
               className={`mb-3 ${mine ? "items-end" : "items-start"}`}
             >
-              {!mine && message.sender?.name ? (
+              {!mine ? (
                 <Text className="mb-1 text-sm font-semibold text-[#2E63DF]">
-                  {message.sender.name}
+                  Anonymous
                 </Text>
               ) : null}
               <View

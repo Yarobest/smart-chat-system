@@ -4,8 +4,9 @@ export type Message = {
   id: string;
   conversationId?: string;
   text: string;
-  senderId: string;
+  senderId: string | null;
   sender?: User;
+  isMine?: boolean;
   attachments?: ChatAttachment[];
   seen?: boolean;
   editedAt?: string | null;

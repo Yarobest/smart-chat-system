@@ -1,16 +1,35 @@
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { FilterChip } from './FilterChip';
 
-export function FilterRow({ filters, active, onSelect }: { filters: string[]; active: string; onSelect: (value: string) => void }) {
+type FilterRowProps<T extends string> = {
+  filters: readonly T[];
+  active?: T;
+  onSelect: (value: T) => void;
+  filled?: boolean;
+};
+
+export function FilterRow<T extends string>({
+  filters,
+  active,
+  onSelect,
+  filled = false,
+}: FilterRowProps<T>) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <View className="flex-row px-4 py-3">
-        {filters.map((filter) => (
-          <View key={filter} className="mr-2">
-            <FilterChip label={filter} active={filter === active} onPress={() => onSelect(filter)} />
-          </View>
-        ))}
-      </View>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      className="flex-grow-0 border-b border-slate-200 bg-[#F7FAFF]"
+      contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingVertical: 10 }}
+    >
+      {filters.map((filter) => (
+        <FilterChip
+          key={filter}
+          label={filter}
+          active={filter === active}
+          filled={filled}
+          onPress={() => onSelect(filter)}
+        />
+      ))}
     </ScrollView>
   );
 }
