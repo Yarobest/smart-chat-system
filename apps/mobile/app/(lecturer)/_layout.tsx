@@ -23,8 +23,11 @@ export default function LecturerLayout() {
       <Stack.Screen name="courses/set-quiz" options={{ title: 'Set Quiz' }} />
       <Stack.Screen name="courses/add-questions/index" options={{ title: 'Add Questions' }} />
       <Stack.Screen name="courses/submissions" options={{ title: 'Submissions' }} />
+      <Stack.Screen name="courses/submission-detail" options={{ title: 'Submission Details' }} />
       <Stack.Screen name="courses/push-note" options={{ title: 'Push Note' }} />
       <Stack.Screen name="courses/upload-notes" options={{ title: 'Upload Notes' }} />
+      <Stack.Screen name="courses/create-assignment" options={{ title: 'Create Assignment' }} />
+      <Stack.Screen name="courses/assignments/[id]" options={{ title: 'Assignment Details' }} />
       <Stack.Screen name="settings/index" options={{ title: 'Settings' }} />
       <Stack.Screen name="groups/index" />
       <Stack.Screen name="groups/[id]" />

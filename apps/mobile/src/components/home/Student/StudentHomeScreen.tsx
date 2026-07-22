@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -11,6 +11,8 @@ import { Thread } from "@/src/types/chat.types";
 import { formatTime } from "@/src/utils/formatTime";
 import { getInitials } from "@/src/utils/getInitials";
 import { useLiveThreads } from "@/src/hooks/useLiveThreads";
+import { useFocusEffect } from "@react-navigation/native";
+import { assignmentService } from "@/src/services/assignment.service";
 
 export default function StudentHomeScreen() {
   const { user, token } = useAuth();
@@ -18,6 +20,15 @@ export default function StudentHomeScreen() {
   const [showRecentChats, setShowRecentChats] = useState(true);
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
   const { threads, unreadCount, groupCount } = useLiveThreads();
+  const [pendingAssignments, setPendingAssignments] = useState(0);
+
+  useFocusEffect(useCallback(() => {
+    let mounted = true;
+    assignmentService.list().then((items) => {
+      if (mounted) setPendingAssignments(items.filter((item) => item.status === 'published' && !item.submission).length);
+    }).catch(() => undefined);
+    return () => { mounted = false; };
+  }, []));
 
   useEffect(() => {
     if (token) {
@@ -89,7 +100,7 @@ export default function StudentHomeScreen() {
 
           <View className="mt-6 flex-row">
             <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
-              <Text className="text-2xl font-extrabold text-orange-300">0</Text>
+              <Text className="text-2xl font-extrabold text-orange-300">{groupCount}</Text>
               <Text className="mt-1 text-sm font-medium text-white/80">Courses</Text>
             </View>
             <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
@@ -114,6 +125,29 @@ export default function StudentHomeScreen() {
           </View>
 
           <View className="mb-2 mt-7 flex-row items-center justify-between">
+            <Text className="text-sm font-extrabold text-slate-900">Quick Links</Text>
+            <Text className="text-xs font-semibold text-slate-400">Jump back in</Text>
+          </View>
+          <View className="flex-row flex-wrap justify-between">
+            {[
+              { title: 'Coursework', subtitle: pendingAssignments > 0 ? `${pendingAssignments} assignment${pendingAssignments === 1 ? '' : 's'} pending` : 'View learning activities', icon: '📝', tone: 'bg-blue-50', route: '/(student)/tasks' },
+              { title: 'Courses', subtitle: `${groupCount} active course group${groupCount === 1 ? '' : 's'}`, icon: '📚', tone: 'bg-emerald-50', route: '/(student)/courses' },
+              { title: 'Chats', subtitle: unreadCount > 0 ? `${unreadCount} unread message${unreadCount === 1 ? '' : 's'}` : 'Open conversations', icon: '💬', tone: 'bg-purple-50', route: '/(student)/chats' },
+              { title: 'Notifications', subtitle: notificationCount > 0 ? `${notificationCount} new update${notificationCount === 1 ? '' : 's'}` : 'View recent updates', icon: '🔔', tone: 'bg-amber-50', route: '/(student)/notifications' },
+            ].map((link) => (
+              <Pressable
+                key={link.title}
+                onPress={() => router.push(link.route as any)}
+                className={`mb-3 w-[48.5%] rounded-2xl p-4 ${link.tone}`}
+              >
+                <Text className="text-2xl">{link.icon}</Text>
+                <Text className="mt-3 text-sm font-extrabold text-slate-900">{link.title}</Text>
+                <Text className="mt-1 text-xs leading-4 text-slate-500">{link.subtitle}</Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <View className="mb-2 mt-5 flex-row items-center justify-between">
             <Text className="text-sm font-extrabold text-slate-900">Recent Chats</Text>
             <Pressable onPress={() => setShowRecentChats((prev) => !prev)}>
               <Text className="text-sm font-bold text-blue-600">

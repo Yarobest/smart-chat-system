@@ -1,1 +1,1 @@
-export { default } from '@/src/components/chat/TaskScreen';
+export { default } from '@/src/components/assignments/StudentAssignmentsScreen';

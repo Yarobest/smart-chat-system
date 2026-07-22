@@ -6,6 +6,7 @@ type FilterRowProps<T extends string> = {
   active?: T;
   onSelect: (value: T) => void;
   filled?: boolean;
+  counts?: Partial<Record<T, number>>;
 };
 
 export function FilterRow<T extends string>({
@@ -13,6 +14,7 @@ export function FilterRow<T extends string>({
   active,
   onSelect,
   filled = false,
+  counts,
 }: FilterRowProps<T>) {
   return (
     <ScrollView
@@ -24,7 +26,7 @@ export function FilterRow<T extends string>({
       {filters.map((filter) => (
         <FilterChip
           key={filter}
-          label={filter}
+          label={`${filter}${counts?.[filter] ? ` (${counts[filter]})` : ''}`}
           active={filter === active}
           filled={filled}
           onPress={() => onSelect(filter)}

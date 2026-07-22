@@ -23,18 +23,21 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { ChatAttachment, Message } from "@/src/types/chat.types";
 import { formatTime } from "@/src/utils/formatTime";
 import { setReturnPath } from "@/src/stores/navigationStore";
+import { assignmentService } from "@/src/services/assignment.service";
+import { Assignment } from "@/src/types/assignment.types";
 
 type TypingUser = { id: string; name: string };
 
 const studentActions = {
   "Take Home": "/(student)/tasks/takehome",
   Quiz: "/(student)/tasks/quiz",
-  Assignment: "/(student)/tasks/assignment",
+  Assignment: "/(student)/tasks/assignments",
   "Mid Sem": "/(student)/tasks/midsem",
   Notes: "/(student)/tasks/notes",
 } as const;
 
 const lecturerActions = {
+  "Create Assignment": "/(lecturer)/courses/create-assignment",
   "Create Quiz": "/(lecturer)/courses/set-quiz",
   "Post Note": "/(lecturer)/courses/push-note",
   "Upload Slides": "/(lecturer)/courses/upload-notes",
@@ -53,6 +56,7 @@ export default function GroupChatScreen() {
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [sending, setSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
+  const [pendingAssignments, setPendingAssignments] = useState<Assignment[]>([]);
   const lastTypingAt = useRef(0);
 
   const handleBack = useCallback(() => {
@@ -95,6 +99,34 @@ export default function GroupChatScreen() {
       })
       .catch(() => undefined);
   }, [id]);
+
+  const loadAssignments = useCallback(() => {
+    if (!id || isLecturer) {
+      setPendingAssignments([]);
+      return;
+    }
+    assignmentService
+      .list()
+      .then((items) => setPendingAssignments(
+        items.filter((item) => item.course.conversationId === id && !item.submission),
+      ))
+      .catch(() => setPendingAssignments([]));
+  }, [id, isLecturer]);
+
+  useFocusEffect(useCallback(() => {
+    loadAssignments();
+    const interval = setInterval(loadAssignments, 10000);
+    return () => clearInterval(interval);
+  }, [loadAssignments]));
+
+  const dismissAssignmentNotice = async () => {
+    const dismissed = pendingAssignments.filter((item) => !item.alertDismissed);
+    setPendingAssignments((current) => current.map((item) => ({ ...item, alertDismissed: true })));
+    await Promise.all(dismissed.map((item) => assignmentService.dismissAlert(item.id))).catch(() => {
+      loadAssignments();
+      Alert.alert('Could not dismiss alert', 'Please try again.');
+    });
+  };
 
   useEffect(() => {
     loadMessages();
@@ -261,6 +293,7 @@ export default function GroupChatScreen() {
         <FilterRow<string>
           filters={Object.keys(isLecturer ? lecturerActions : studentActions)}
           filled
+          counts={!isLecturer ? { Assignment: pendingAssignments.length } : undefined}
           onSelect={(filter) => {
             const returnPath = isLecturer
               ? `/(lecturer)/groups/${id}`
@@ -284,6 +317,21 @@ export default function GroupChatScreen() {
           }}
           keyboardShouldPersistTaps="handled"
         >
+          {pendingAssignments.some((item) => !item.alertDismissed) ? (
+            <View className="mb-3 flex-row items-center rounded-xl border border-amber-300 bg-amber-50 px-4 py-3">
+              <Ionicons name="alert-circle" size={20} color="#D97706" />
+              <Pressable
+                className="ml-3 flex-1"
+                onPress={() => router.push('/(student)/tasks/assignments' as any)}
+              >
+                <Text className="font-bold text-amber-900">New assignment{pendingAssignments.filter((item) => !item.alertDismissed).length > 1 ? 's' : ''}</Text>
+                <Text className="text-sm text-amber-700">You have {pendingAssignments.filter((item) => !item.alertDismissed).length} pending in this course.</Text>
+              </Pressable>
+              <Pressable onPress={() => void dismissAssignmentNotice()}>
+                <Ionicons name="close" size={20} color="#D97706" />
+              </Pressable>
+            </View>
+          ) : null}
           {search.trim() && visibleMessages.length === 0 ? (
             <View className="mb-4 items-center rounded-xl bg-white px-4 py-5">
               <Text className="text-sm font-semibold text-slate-500">
