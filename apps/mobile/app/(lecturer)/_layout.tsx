@@ -1,6 +1,14 @@
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
+import { useAuth } from '@/src/hooks/useAuth';
+import { roleGuard } from '@/src/utils/roleGuard';
 
 export default function LecturerLayout() {
+  const { role } = useAuth();
+
+  if (role && role !== 'lecturer') {
+    return <Redirect href={roleGuard(role) as any} />;
+  }
+
   return (
     <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
       <Stack.Screen name="home/index"  options={{ title: 'Home' }}/>
@@ -16,6 +24,7 @@ export default function LecturerLayout() {
       <Stack.Screen name="courses/add-questions/index" options={{ title: 'Add Questions' }} />
       <Stack.Screen name="courses/submissions" options={{ title: 'Submissions' }} />
       <Stack.Screen name="courses/push-note" options={{ title: 'Push Note' }} />
+      <Stack.Screen name="courses/upload-notes" options={{ title: 'Upload Notes' }} />
       <Stack.Screen name="settings/index" options={{ title: 'Settings' }} />
       <Stack.Screen name="groups/index" />
       <Stack.Screen name="groups/[id]" />

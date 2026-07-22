@@ -26,18 +26,25 @@ import { setReturnPath } from "@/src/stores/navigationStore";
 
 type TypingUser = { id: string; name: string };
 
-const taskFilters = ["Take Home", "Quiz", "Assignment", "Mid Sem", "Notes"] as const;
-const taskRoutes: Record<(typeof taskFilters)[number], string> = {
+const studentActions = {
   "Take Home": "/(student)/tasks/takehome",
   Quiz: "/(student)/tasks/quiz",
   Assignment: "/(student)/tasks/assignment",
   "Mid Sem": "/(student)/tasks/midsem",
   Notes: "/(student)/tasks/notes",
-};
+} as const;
+
+const lecturerActions = {
+  "Create Quiz": "/(lecturer)/courses/set-quiz",
+  "Post Note": "/(lecturer)/courses/push-note",
+  "Upload Slides": "/(lecturer)/courses/upload-notes",
+  Submissions: "/(lecturer)/courses/submissions",
+} as const;
 
 export default function GroupChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
+  const isLecturer = user?.role === "lecturer";
   const [title, setTitle] = useState("Course Group");
   const [messages, setMessages] = useState<Message[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -251,12 +258,19 @@ export default function GroupChatScreen() {
         behavior="padding"
         keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 24}
       >
-        <FilterRow
-          filters={taskFilters}
+        <FilterRow<string>
+          filters={Object.keys(isLecturer ? lecturerActions : studentActions)}
           filled
           onSelect={(filter) => {
-            setReturnPath(`/(student)/chats/group/${id}`);
-            router.push(taskRoutes[filter] as any);
+            const returnPath = isLecturer
+              ? `/(lecturer)/groups/${id}`
+              : `/(student)/chats/group/${id}`;
+            const routes = isLecturer
+              ? (lecturerActions as Record<string, string>)
+              : (studentActions as Record<string, string>);
+
+            setReturnPath(returnPath);
+            router.push(routes[filter] as any);
           }}
         />
 

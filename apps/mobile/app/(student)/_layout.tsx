@@ -1,6 +1,14 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
+import { useAuth } from '@/src/hooks/useAuth';
+import { roleGuard } from '@/src/utils/roleGuard';
 
 export default function StudentLayout() {
+  const { role } = useAuth();
+
+  if (role && role !== 'student') {
+    return <Redirect href={roleGuard(role) as any} />;
+  }
+
   return (
     <Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}>
       <Tabs.Screen name="home/index" options={{ title: 'Home' }} />
