@@ -1,1 +1,1 @@
-export { default } from '@/src/components/chat/TaskScreen';
+import { Redirect } from 'expo-router'; export default function LegacyTakeHome(){return <Redirect href="/(student)/tasks/assignments"/>}

@@ -4,6 +4,8 @@ export type AppNotification = {
   body: string;
   createdAt: string;
   read: boolean;
+  type?: string;
+  data?: { assignmentId?: string; quizId?: string; materialId?: string; announcementId?: string; broadcastId?: string; conversationId?: string } | null;
 };
 
 export const notificationStore = {
@@ -34,6 +36,12 @@ export function addNotification(title: string, body: string) {
     items: notificationStore.items,
     unreadCount: notificationStore.unreadCount,
   };
+  listeners.forEach((listener) => listener());
+}
+
+export function setNotifications(items: AppNotification[]) {
+  notificationStore.items = items;
+  snapshot = { items, unreadCount: items.filter((item) => !item.read).length };
   listeners.forEach((listener) => listener());
 }
 

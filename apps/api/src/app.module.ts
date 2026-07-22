@@ -11,6 +11,12 @@ import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 import { AdminReportsModule } from './admin-reports/admin-reports.module';
 import { AdminCoursesModule } from './admin-courses/admin-courses.module';
 import { AdminCourseOfferingsModule } from './admin-course-offerings/admin-course-offerings.module';
+import { AssignmentsModule } from './assignments/assignments.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { QuizzesModule } from './quizzes/quizzes.module';
+import { MaterialsModule } from './materials/materials.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
+import { BroadcastsModule } from './broadcasts/broadcasts.module';
 
 @Module({
   imports: [
@@ -24,6 +30,12 @@ import { AdminCourseOfferingsModule } from './admin-course-offerings/admin-cours
     AdminProfileModule,
     AdminCoursesModule,
     AdminCourseOfferingsModule,
+    AssignmentsModule,
+    NotificationsModule,
+    QuizzesModule,
+    MaterialsModule,
+    AnnouncementsModule,
+    BroadcastsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

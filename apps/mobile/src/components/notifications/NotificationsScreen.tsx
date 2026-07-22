@@ -5,7 +5,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { useNotifications } from '@/src/hooks/useNotifications';
-import { markNotificationsRead } from '@/src/stores/notificationStore';
+import { markNotificationsRead, setNotifications } from '@/src/stores/notificationStore';
+import { notificationService } from '@/src/services/notification.service';
 import { formatTime } from '@/src/utils/formatTime';
 import { useAuth } from '@/src/hooks/useAuth';
 
@@ -14,7 +15,10 @@ export default function NotificationsScreen() {
   const { user } = useAuth();
 
   useEffect(() => {
-    markNotificationsRead();
+    notificationService.list().then((items) => {
+      setNotifications(items);
+      return notificationService.markAllRead();
+    }).then(markNotificationsRead).catch(() => undefined);
   }, []);
 
   const backRoute = user?.role === 'lecturer' ? '/(lecturer)/home' : '/(student)/home';
@@ -37,8 +41,16 @@ export default function NotificationsScreen() {
 
       <ScrollView className="flex-1 bg-[#F3F5F8]" contentContainerStyle={{ padding: 16 }}>
         {items.map((item) => (
-          <View
+          <Pressable
             key={item.id}
+            onPress={() => {
+              const assignmentId = (item as typeof item & { data?: { assignmentId?: string } }).data?.assignmentId;
+              if (assignmentId) router.push(`/(student)/tasks/assignments/${assignmentId}` as any);
+              else if (item.data?.quizId) router.push({ pathname: '/(student)/tasks/quiz-detail', params: { quizId: item.data.quizId } } as any);
+              else if (item.data?.materialId) router.push({ pathname: '/(student)/tasks/material-detail', params: { materialId: item.data.materialId } } as any);
+              else if (item.data?.announcementId) router.push(`/(student)/announcements/${item.data.announcementId}` as any);
+              else if (item.data?.broadcastId) router.push(`${user?.role === 'lecturer' ? '/(lecturer)' : '/(student)'}/broadcasts/${item.data.broadcastId}` as any);
+            }}
             className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4"
           >
             <View className="flex-row items-start">
@@ -51,7 +63,7 @@ export default function NotificationsScreen() {
                 <Text className="mt-2 text-xs text-slate-400">{formatTime(item.createdAt)}</Text>
               </View>
             </View>
-          </View>
+          </Pressable>
         ))}
 
         {items.length === 0 ? (

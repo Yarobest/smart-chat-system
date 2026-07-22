@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { StudentBottomNav } from '@/src/components/common/StudentBottomNav';
+import { FilterRow } from '@/src/components/common/FilterRow';
+import { PageHeader } from '@/src/components/common/PageHeader';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 import { Thread } from '@/src/types/chat.types';
 
@@ -59,32 +61,11 @@ export default function MyCoursesScreen() {
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
       <View className="flex-1 bg-white">
-        <View className="bg-[#051839] px-4 pb-5 pt-6">
-          <Text className="text-2xl font-extrabold text-white">My Courses</Text>
-          <Text className="mt-1 text-sm text-slate-300">
-            {loading ? 'Loading assigned courses...' : `${courses.length} active course groups`}
-          </Text>
-
-          <View className="mt-4 flex-row gap-2">
-            {filters.map((filter) => (
-              <Pressable
-                key={filter}
-                onPress={() => setActiveFilter(filter)}
-                className={`rounded-full px-4 py-1.5 ${
-                  activeFilter === filter ? 'bg-blue-600' : 'bg-white/10'
-                }`}
-              >
-                <Text
-                  className={`text-sm font-semibold ${
-                    activeFilter === filter ? 'text-white' : 'text-slate-300'
-                  }`}
-                >
-                  {filter}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+        <PageHeader
+          title="My Courses"
+          subtitle={loading ? 'Loading assigned courses...' : `${courses.length} active course groups`}
+        />
+        <FilterRow filters={filters} active={activeFilter} onSelect={setActiveFilter} />
 
         <ScrollView
           className="flex-1 bg-[#F5F7FA]"
@@ -112,7 +93,7 @@ export default function MyCoursesScreen() {
                 className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
                 style={{ borderLeftWidth: 4, borderLeftColor: accent }}
               >
-                <View className="px-4 pt-4">
+                <View className={`px-4 pt-4 ${course.lastMessage ? '' : 'pb-4'}`}>
                   <View className="flex-row items-start justify-between gap-2">
                     <View className="flex-1">
                       <Text className="text-base font-extrabold text-slate-900" numberOfLines={2}>
@@ -155,7 +136,7 @@ export default function MyCoursesScreen() {
                   <View className="mt-4 border-t border-slate-100 px-4 py-3">
                     <Text className="text-xs font-bold text-slate-400">LATEST ACTIVITY</Text>
                     <Text className="mt-1 text-sm text-slate-600" numberOfLines={1}>
-                      {course.lastMessage.sender?.name ?? 'Someone'}: {course.lastMessage.text}
+                      Anonymous: {course.lastMessage.text || 'Attachment'}
                     </Text>
                   </View>
                 ) : null}

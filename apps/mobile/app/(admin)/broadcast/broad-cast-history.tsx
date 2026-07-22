@@ -1,7 +1,1 @@
-// app/(admin)/broad-cast-history.tsx
-
-import BroadCastHistory from '@/src/components/admin/BroadCastHistory';
-
-export default function BroadCastHistoryScreen() {
-  return <BroadCastHistory />;
-}
+import{Redirect}from'expo-router';export default function Page(){return <Redirect href={'/(admin)/broadcast/broad-cast' as any}/>}

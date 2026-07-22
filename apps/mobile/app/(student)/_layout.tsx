@@ -1,6 +1,14 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
+import { useAuth } from '@/src/hooks/useAuth';
+import { roleGuard } from '@/src/utils/roleGuard';
 
 export default function StudentLayout() {
+  const { role } = useAuth();
+
+  if (role && role !== 'student') {
+    return <Redirect href={roleGuard(role) as any} />;
+  }
+
   return (
     <Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' } }}>
       <Tabs.Screen name="home/index" options={{ title: 'Home' }} />
@@ -15,6 +23,8 @@ export default function StudentLayout() {
       <Tabs.Screen name="chats/new" options={{ href: null }} />
       <Tabs.Screen name="chats/group/[id]" options={{ href: null }} />
       <Tabs.Screen name="announcements/[id]" options={{ href: null }} />
+      <Tabs.Screen name="broadcasts/index" options={{ href: null }} />
+      <Tabs.Screen name="broadcasts/[id]" options={{ href: null }} />
     </Tabs>
   );
 }

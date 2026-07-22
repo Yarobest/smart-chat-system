@@ -34,6 +34,77 @@ enum CourseOfferingStatus {
   ARCHIVED
 }
 
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+enum AssignmentSubmissionStatus {
+  SUBMITTED
+  LATE
+  GRADED
+}
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+enum QuizQuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+enum QuizAttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+}
+
+enum CourseMaterialStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CourseMaterialType {
+  NOTES
+  SLIDES
+  READING
+  REFERENCE
+  REVISION
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum AnnouncementPriority {
+  NORMAL
+  IMPORTANT
+  URGENT
+}
+
+enum BroadcastStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BroadcastPriority {
+  NORMAL
+  IMPORTANT
+  URGENT
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -58,6 +129,19 @@ model User {
   memberships         ConversationMember[]
   messages            Message[]
   courseOfferings     CourseOffering[]     @relation("CourseLecturer")
+  assignmentsCreated Assignment[]          @relation("AssignmentCreator")
+  assignmentSubmissions AssignmentSubmission[] @relation("AssignmentStudent")
+  assignmentGrades    AssignmentSubmission[] @relation("AssignmentGrader")
+  notifications       Notification[]
+  assignmentAlertDismissals AssignmentAlertDismissal[]
+  quizzesCreated       Quiz[]        @relation("QuizCreator")
+  quizAttempts         QuizAttempt[]
+  materialsCreated     CourseMaterial[]       @relation("MaterialCreator")
+  materialAccesses     CourseMaterialAccess[]
+  announcementsCreated CourseAnnouncement[] @relation("AnnouncementCreator")
+  announcementAccesses AnnouncementAccess[]
+  broadcastsCreated    InstitutionalBroadcast[] @relation("BroadcastCreator")
+  broadcastRecipients  BroadcastRecipient[]
 
   @@index([role])
   @@index([email])
@@ -176,6 +260,10 @@ model CourseOffering {
   academicSession AcademicSession  @relation(fields: [academicSessionId], references: [id], onDelete: Cascade)
   lecturer        User             @relation("CourseLecturer", fields: [lecturerId], references: [id], onDelete: Restrict)
   conversation    Conversation?    @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  assignments     Assignment[]
+  quizzes         Quiz[]
+  materials       CourseMaterial[]
+  announcements   CourseAnnouncement[]
 
   @@unique([courseId, academicSessionId, faculty, department, programme, awardType, yearGroup])
   @@index([lecturerId])
@@ -185,6 +273,301 @@ model CourseOffering {
   @@index([awardType])
   @@index([yearGroup])
   @@index([status])
+}
+
+model Assignment {
+  id                String           @id @default(cuid())
+  courseOfferingId  String
+  lecturerId        String
+  title             String
+  instructions      String
+  dueAt              DateTime
+  totalMarks         Int
+  allowFile          Boolean          @default(true)
+  allowText          Boolean          @default(false)
+  allowLate          Boolean          @default(false)
+  allowResubmission  Boolean          @default(false)
+  allowedFileTypes   String[]
+  maxFileSizeMb      Int              @default(10)
+  attachments        Json?
+  status             AssignmentStatus @default(DRAFT)
+  publishedAt        DateTime?
+  scheduledFor       DateTime?
+  closedAt           DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  courseOffering CourseOffering       @relation(fields: [courseOfferingId], references: [id], onDelete: Cascade)
+  lecturer       User                 @relation("AssignmentCreator", fields: [lecturerId], references: [id], onDelete: Restrict)
+  submissions    AssignmentSubmission[]
+  alertDismissals AssignmentAlertDismissal[]
+
+  @@index([courseOfferingId, status])
+  @@index([lecturerId])
+  @@index([dueAt])
+}
+
+model AssignmentAlertDismissal {
+  assignmentId String
+  studentId    String
+  dismissedAt DateTime @default(now())
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student    User       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([assignmentId, studentId])
+  @@index([studentId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+}
+
+model AssignmentSubmission {
+  id            String                     @id @default(cuid())
+  assignmentId  String
+  studentId     String
+  textResponse  String?
+  attachments   Json?
+  status        AssignmentSubmissionStatus @default(SUBMITTED)
+  version       Int                        @default(1)
+  submittedAt   DateTime                   @default(now())
+  score         Int?
+  feedback      String?
+  graderId      String?
+  gradedAt      DateTime?
+  releasedAt    DateTime?
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student    User       @relation("AssignmentStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  grader     User?      @relation("AssignmentGrader", fields: [graderId], references: [id], onDelete: SetNull)
+
+  @@index([assignmentId, studentId, submittedAt])
+  @@index([studentId, status])
+  @@index([graderId])
+}
+
+model Quiz {
+  id                String     @id @default(cuid())
+  courseOfferingId  String
+  lecturerId        String
+  title             String
+  instructions      String
+  startAt           DateTime
+  endAt             DateTime
+  durationMinutes   Int
+  maxAttempts       Int        @default(1)
+  shuffleQuestions  Boolean    @default(false)
+  shuffleAnswers    Boolean    @default(false)
+  resultsReleased   Boolean    @default(false)
+  status            QuizStatus @default(DRAFT)
+  publishedAt       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id], onDelete: Cascade)
+  lecturer       User           @relation("QuizCreator", fields: [lecturerId], references: [id], onDelete: Restrict)
+  questions      QuizQuestion[]
+  attempts       QuizAttempt[]
+
+  @@index([courseOfferingId, status])
+  @@index([lecturerId])
+  @@index([startAt, endAt])
+}
+
+model QuizQuestion {
+  id            String           @id @default(cuid())
+  quizId        String
+  type          QuizQuestionType
+  text          String
+  options       Json?
+  correctAnswer Json?
+  marks         Int
+  position      Int
+  explanation   String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@unique([quizId, position])
+}
+
+model QuizAttempt {
+  id                String            @id @default(cuid())
+  quizId            String
+  studentId         String
+  attemptNumber     Int
+  status            QuizAttemptStatus @default(IN_PROGRESS)
+  startedAt         DateTime           @default(now())
+  expiresAt         DateTime
+  submittedAt       DateTime?
+  autoScore         Int                @default(0)
+  manualScore       Int                @default(0)
+  totalScore        Int?
+  resultsReleasedAt DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student User         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@unique([quizId, studentId, attemptNumber])
+  @@index([studentId, status])
+  @@index([quizId, status])
+}
+
+model QuizAnswer {
+  id           String   @id @default(cuid())
+  attemptId    String
+  questionId   String
+  answer       Json?
+  awardedMarks Int?
+  feedback     String?
+  gradedAt     DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  attempt  QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+}
+
+model CourseMaterial {
+  id               String               @id @default(cuid())
+  courseOfferingId String
+  lecturerId       String
+  title            String
+  description      String?
+  type             CourseMaterialType
+  topic            String?
+  files            Json
+  version          Int                  @default(1)
+  allowDownload    Boolean              @default(true)
+  pinned           Boolean              @default(false)
+  status           CourseMaterialStatus @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  courseOffering CourseOffering        @relation(fields: [courseOfferingId], references: [id], onDelete: Cascade)
+  lecturer       User                  @relation("MaterialCreator", fields: [lecturerId], references: [id], onDelete: Restrict)
+  accesses       CourseMaterialAccess[]
+
+  @@index([courseOfferingId, status])
+  @@index([lecturerId])
+  @@index([publishedAt])
+}
+
+model CourseMaterialAccess {
+  materialId      String
+  studentId       String
+  firstOpenedAt   DateTime?
+  lastOpenedAt    DateTime?
+  downloadedAt    DateTime?
+  alertDismissedAt DateTime?
+
+  material CourseMaterial @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  student  User           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([materialId, studentId])
+  @@index([studentId, lastOpenedAt])
+}
+
+model CourseAnnouncement {
+  id               String               @id @default(cuid())
+  courseOfferingId String
+  lecturerId       String
+  title            String
+  body             String
+  priority         AnnouncementPriority @default(NORMAL)
+  attachments      Json
+  pinned           Boolean              @default(false)
+  status           AnnouncementStatus   @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  courseOffering CourseOffering      @relation(fields: [courseOfferingId], references: [id], onDelete: Cascade)
+  lecturer       User                @relation("AnnouncementCreator", fields: [lecturerId], references: [id], onDelete: Restrict)
+  accesses       AnnouncementAccess[]
+
+  @@index([courseOfferingId, status])
+  @@index([lecturerId])
+  @@index([publishedAt])
+}
+
+model AnnouncementAccess {
+  announcementId  String
+  studentId       String
+  readAt           DateTime?
+  alertDismissedAt DateTime?
+
+  announcement CourseAnnouncement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  student      User               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([announcementId, studentId])
+  @@index([studentId, readAt])
+}
+
+model InstitutionalBroadcast {
+  id             String            @id @default(cuid())
+  creatorId      String
+  title          String
+  body           String
+  priority       BroadcastPriority @default(NORMAL)
+  attachments    Json
+  pinned         Boolean           @default(false)
+  audienceLabel  String
+  audienceRole   UserRole?
+  faculty        String?
+  department     String?
+  programme      String?
+  yearGroup      String?
+  status         BroadcastStatus   @default(DRAFT)
+  scheduledAt    DateTime?
+  publishedAt    DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  creator   User                 @relation("BroadcastCreator", fields: [creatorId], references: [id], onDelete: Restrict)
+  recipients BroadcastRecipient[]
+
+  @@index([status, scheduledAt])
+  @@index([creatorId])
+  @@index([publishedAt])
+}
+
+model BroadcastRecipient {
+  broadcastId     String
+  userId          String
+  deliveredAt     DateTime         @default(now())
+  readAt          DateTime?
+  alertDismissedAt DateTime?
+
+  broadcast InstitutionalBroadcast @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([broadcastId, userId])
+  @@index([userId, readAt])
 }
 
 model ConversationMember {

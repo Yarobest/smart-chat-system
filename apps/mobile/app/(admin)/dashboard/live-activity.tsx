@@ -1,7 +1,1 @@
-// app/(admin)/live-activity.tsx
-
-import LiveActivity from '@/src/components/admin/LiveActivity';
-
-export default function LiveActivityScreen() {
-  return <LiveActivity />;
-}
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Live Activity" fallbackRoute="/(admin)/dashboard" message="Use the live Recent Activity section on the dashboard until a dedicated activity endpoint is available."/>}

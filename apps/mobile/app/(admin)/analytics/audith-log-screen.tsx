@@ -1,4 +1,1 @@
-// app/(admin)/analytics/audith-log-screen.tsx
-import AudithLogScreen from '@/src/components/admin/AudithLogScreen';
-
-export default AudithLogScreen;
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Audit Log" fallbackRoute="/(admin)/dashboard" message="Audit events will appear here when audit logging is connected."/>}

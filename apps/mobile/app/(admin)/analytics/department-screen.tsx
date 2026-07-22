@@ -1,5 +1,1 @@
-// app/(admin)/department-screen.tsx
-
-import DepartmentScreen from '@/src/components/admin/DepartmentScreen';
-
-export default DepartmentScreen;
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Departments" fallbackRoute="/(admin)/dashboard" message="Department analytics will appear here when reporting endpoints are connected."/>}

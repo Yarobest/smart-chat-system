@@ -1,7 +1,1 @@
-// app/(admin)/system-health.tsx
-
-import SystemHealth from '@/src/components/admin/SystemHealth';
-
-export default function SystemHealthScreen() {
-  return <SystemHealth />;
-}
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="System Health" fallbackRoute="/(admin)/dashboard" message="The dashboard currently shows the real API connection state. Detailed service health requires a monitoring endpoint."/>}

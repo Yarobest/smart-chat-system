@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -28,9 +28,7 @@ export default function ResetPasswordScreen() {
     }
 
     setError("");
-    // TODO: Call backend API here
-
-    router.replace("/login"); // navigate after success
+    Alert.alert("Reset unavailable", "Password reset is not connected to the backend yet. Your password has not been changed.");
   };
 
   return (

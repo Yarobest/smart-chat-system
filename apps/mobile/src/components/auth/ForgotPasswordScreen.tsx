@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { goBackOrReplace } from '@/src/utils/navigation';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -43,14 +43,14 @@ export default function ForgotPasswordScreen() {
                 <TextInput value={email} onChangeText={setEmail} placeholder="Enter your email" placeholderTextColor="#94A3B8" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-lg text-slate-900" />
               </View>
               <Pressable
-                onPress={() => router.push('/(auth)/reset-password')}
+                onPress={() => Alert.alert('Reset unavailable', 'Email password reset is not connected to the backend yet. No reset email has been sent.')}
                 className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700"
               >
                 <Text className="text-lg font-bold text-white">
                   Go To Reset Page
                 </Text>
               </Pressable>
-              <Pressable onPress={() => router.back()} className="mt-6">
+              <Pressable onPress={() => goBackOrReplace('/(auth)/login')} className="mt-6">
                 <Text className="text-center text-lg text-slate-500">Remember your password? <Text className="font-semibold text-blue-600">Back to Login</Text></Text>
               </Pressable>
             </View>

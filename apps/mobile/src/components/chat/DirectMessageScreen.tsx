@@ -16,6 +16,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { ChatTopBar } from "@/src/components/common/ChatTopBar";
 import { chatService } from "@/src/services/chat.service";
 import { useAuth } from "@/src/hooks/useAuth";
 import { ChatAttachment, Message } from "@/src/types/chat.types";
@@ -181,39 +182,21 @@ export default function DirectMessageScreen() {
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
 
-      <View className="bg-[#051839] px-4 pb-4 pt-4">
-        <View className="flex-row items-center">
-          <Pressable
-            onPress={handleBack}
-            className="mr-3 h-8 w-8 items-center justify-center rounded-full"
-          >
-            <Text className="text-lg text-white">
-              <Ionicons name="chevron-back" size={20} color="white" />
-            </Text>
-          </Pressable>
+      <ChatTopBar
+        title={title}
+        subtitle={typingUsers[0]?.name ? `${typingUsers[0].name} typing...` : otherUser?.role ?? "direct"}
+        onBack={handleBack}
+        avatar={(
           <View className="h-12 w-12 items-center justify-center rounded-full bg-[#C6F2D1]">
             <Text className="text-lg font-bold text-[#14532D]">{initials}</Text>
           </View>
-          <View className="ml-3 flex-1">
-            <Text className="text-lg font-bold text-white">{title}</Text>
-            <Text className="text-sm text-[#9FD0C5]">
-              {typingUsers[0]?.name
-                ? `${typingUsers[0].name} typing...`
-                : otherUser?.role ?? "direct"}
-            </Text>
-          </View>
-          <Pressable className="mr-3 h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-pink-400">
-              <Ionicons name="call" size={20} color="white" />
-            </Text>
+        )}
+        secondaryAction={(
+          <Pressable className="ml-2 h-9 w-9 items-center justify-center rounded-full">
+            <Ionicons name="call" size={20} color="white" />
           </Pressable>
-          <Pressable className="h-8 w-8 items-center justify-center rounded-full">
-            <Text className="text-lg text-white">
-              <Ionicons name="ellipsis-vertical" size={20} color="white" />
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+        )}
+      />
 
       <KeyboardAvoidingView
         className="flex-1 bg-[#F2F4F8]"

@@ -12,6 +12,7 @@ import {
   getProgrammes,
 } from "@/src/constants/htuAcademics";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { ScreenHeader } from "@/src/components/common/ScreenHeader";
 import { chatService } from "@/src/services/chat.service";
 import { User } from "@/src/types/auth.types";
 import { getInitials } from "@/src/utils/getInitials";
@@ -30,6 +31,7 @@ export default function NewChatScreen() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<DropdownKey | null>(null);
+  const [startingId, setStartingId] = useState<string | null>(null);
 
   const departments = useMemo(() => getDepartments(faculty), [faculty]);
   const programmes = useMemo(
@@ -65,7 +67,9 @@ export default function NewChatScreen() {
   const backRoute = user?.role === "lecturer" ? "/(lecturer)/chats" : "/(student)/chats";
 
   const startChat = async (targetUser: User) => {
+    if (startingId) return;
     try {
+      setStartingId(targetUser.id);
       const conversation = await chatService.createDirect(targetUser.id);
       router.replace(
         user?.role === "lecturer"
@@ -77,7 +81,7 @@ export default function NewChatScreen() {
         "Could not start chat",
         error instanceof Error ? error.message : "Please try again.",
       );
-    }
+    } finally { setStartingId(null); }
   };
 
   const dropdown = (
@@ -88,7 +92,7 @@ export default function NewChatScreen() {
     onSelect: (value: string) => void,
     placeholder = "All",
   ) => (
-    <View className="mb-3">
+    <View className="w-[48.5%]">
       <Text className="mb-2 px-1 text-xs font-extrabold tracking-wider text-slate-400">
         {label.toUpperCase()}
       </Text>
@@ -99,7 +103,7 @@ export default function NewChatScreen() {
       >
         <Text
           className={`flex-1 text-sm ${value ? "font-bold text-slate-900" : "font-semibold text-slate-400"}`}
-          numberOfLines={2}
+          numberOfLines={1}
         >
           {value || placeholder}
         </Text>
@@ -155,20 +159,7 @@ export default function NewChatScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
-      <View className="bg-[#051839] px-4 pb-4 pt-4">
-        <View className="flex-row items-center">
-          <Pressable
-            onPress={() => router.replace(backRoute as any)}
-            className="mr-3 h-9 w-9 items-center justify-center rounded-full bg-white/10"
-          >
-            <Ionicons name="chevron-back" size={20} color="white" />
-          </Pressable>
-          <View>
-            <Text className="text-xl font-extrabold text-white">New Chat</Text>
-            <Text className="text-sm text-white/60">Search real users from the database</Text>
-          </View>
-        </View>
-      </View>
+      <ScreenHeader title="New Chat" fallbackRoute={backRoute}/>
 
       <ScrollView className="flex-1 bg-[#F3F5F8]" contentContainerStyle={{ padding: 16 }}>
         <View className="mb-4 flex-row items-center rounded-2xl border border-[#CFD6E5] bg-white px-4 py-2">
@@ -182,7 +173,7 @@ export default function NewChatScreen() {
           />
         </View>
 
-        {dropdown(
+        <View className="mb-4 rounded-2xl border border-slate-200 bg-white p-3"><View className="mb-3 flex-row items-center justify-between"><View><Text className="text-base font-extrabold text-slate-900">Filter people</Text><Text className="text-xs text-slate-500">Narrow results by academic profile</Text></View><Pressable onPress={()=>{setFaculty('');setDepartment('');setProgramme('');setAwardType('');setYearGroup('');setOpenDropdown(null)}}><Text className="text-sm font-bold text-blue-600">Clear</Text></Pressable></View><View className="flex-row flex-wrap justify-between gap-y-3">{dropdown(
           "faculty",
           "Faculty",
           faculty,
@@ -209,7 +200,7 @@ export default function NewChatScreen() {
           setProgramme("");
         })}
         {dropdown("programme", "Programme", programme, programmes, setProgramme, department ? "All programmes" : "Select department first")}
-        {dropdown("yearGroup", "Year Group", yearGroup, [...YEAR_GROUPS], setYearGroup)}
+        {dropdown("yearGroup", "Year Group", yearGroup, [...YEAR_GROUPS], setYearGroup)}</View></View>
 
         <View className="mt-3 rounded-2xl bg-white">
           <Text className="border-b border-slate-100 px-4 py-3 text-xs font-extrabold tracking-wider text-slate-400">
@@ -219,7 +210,8 @@ export default function NewChatScreen() {
             <Pressable
               key={item.id}
               onPress={() => startChat(item)}
-              className="flex-row items-center border-b border-slate-100 px-4 py-3"
+              disabled={Boolean(startingId)}
+              className={`flex-row items-center border-b border-slate-100 px-4 py-3 ${startingId?'opacity-60':''}`}
             >
               <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Text className="font-extrabold text-blue-700">{getInitials(item.name)}</Text>
@@ -230,7 +222,7 @@ export default function NewChatScreen() {
                   {item.department ?? item.role} {item.programme ? `· ${item.programme}` : ""}
                 </Text>
               </View>
-              <Ionicons name="chatbubble-ellipses-outline" size={20} color="#2563EB" />
+              {startingId===item.id?<Text className="text-xs font-bold text-blue-600">Opening...</Text>:<Ionicons name="chatbubble-ellipses-outline" size={20} color="#2563EB" />}
             </Pressable>
           ))}
           {!loading && users.length === 0 ? (

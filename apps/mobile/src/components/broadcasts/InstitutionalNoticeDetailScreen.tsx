@@ -1,0 +1,78 @@
+import { useCallback, useState } from "react";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import { StatusBar } from "../common/StatusBar";
+import { ScreenHeader } from "../common/ScreenHeader";
+import { AssignmentAttachments } from "../assignments/AssignmentAttachments";
+import { useAuth } from "@/src/hooks/useAuth";
+import { broadcastService } from "@/src/services/broadcast.service";
+import { InstitutionalBroadcast } from "@/src/types/broadcast.types";
+export default function InstitutionalNoticeDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { user } = useAuth();
+  const [item, setItem] = useState<InstitutionalBroadcast | null>(null);
+  useFocusEffect(
+    useCallback(() => {
+      if (!id) return;
+      let live = true;
+      Promise.all([broadcastService.detail(id), broadcastService.read(id)])
+        .then(([x]) => live && setItem({ ...x, isRead: true }))
+        .catch((e) => Alert.alert("Could not open notice", e.message));
+      return () => {
+        live = false;
+      };
+    }, [id]),
+  );
+  const prefix = user?.role === "lecturer" ? "/(lecturer)" : "/(student)";
+  if (!item)
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#F5F7FA]">
+        <ActivityIndicator color="#2563EB" />
+      </SafeAreaView>
+    );
+  return (
+    <SafeAreaView className="flex-1 bg-[#051839]">
+      <StatusBar style="light" backgroundColor="#051839" />
+      <ScreenHeader
+        title="Institutional Notice"
+        fallbackRoute={`${prefix}/broadcasts`}
+      />
+      <ScrollView
+        className="flex-1 bg-[#F5F7FA]"
+        contentContainerStyle={{ padding: 16, paddingBottom: 30 }}
+      >
+        <View
+          className={`rounded-2xl border bg-white p-5 ${item.priority === "urgent" ? "border-red-300" : item.priority === "important" ? "border-amber-300" : "border-slate-200"}`}
+        >
+          <Text className="text-xs font-extrabold uppercase text-blue-700">
+            Official · {item.priority}
+          </Text>
+          <Text className="mt-3 text-xl font-extrabold text-slate-900">
+            {item.pinned ? "📌 " : ""}
+            {item.title}
+          </Text>
+          <Text className="mt-5 text-base leading-7 text-slate-700">
+            {item.body}
+          </Text>
+          <View className="mt-5 border-t border-slate-100 pt-4">
+            <Text className="text-sm font-bold text-slate-600">
+              {item.creator.name}
+            </Text>
+            <Text className="mt-1 text-xs text-slate-400">
+              Published{" "}
+              {new Date(item.publishedAt ?? item.createdAt).toLocaleString()}
+            </Text>
+            {item.updatedAt !== item.createdAt ? (
+              <Text className="mt-1 text-xs text-slate-400">
+                Edited {new Date(item.updatedAt).toLocaleString()}
+              </Text>
+            ) : null}
+          </View>
+          <AssignmentAttachments files={item.attachments} />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

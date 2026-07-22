@@ -1,4 +1,1 @@
-// app/(admin)/analytics/user-growth-report.tsx
-import UserGrowthReport from '@/src/components/admin/UserGrowthReport';
-
-export default UserGrowthReport;
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="User Growth" fallbackRoute="/(admin)/dashboard" message="Live registration trends will appear here when reporting endpoints are connected."/>}

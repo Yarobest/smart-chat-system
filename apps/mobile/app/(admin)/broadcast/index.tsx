@@ -1,1 +1,1 @@
-export { default } from '@/src/components/admin/BroadcastScreen';
+export{default}from'@/src/components/admin/BroadcastManagementScreen';

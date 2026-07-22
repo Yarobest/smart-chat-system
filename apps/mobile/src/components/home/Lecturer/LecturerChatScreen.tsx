@@ -7,6 +7,7 @@ import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
 import { formatTime } from '@/src/utils/formatTime';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
 import { Thread } from '@/src/types/chat.types';
+import { FilterRow } from '@/src/components/common/FilterRow';
 
 type FilterTab = 'All' | 'Course Groups' | 'Direct' | 'Unread';
 
@@ -45,7 +46,7 @@ export default function LecturerChatsScreen() {
 
   const preview = (thread: Thread) =>
     thread.lastMessage
-      ? `${thread.lastMessage.sender?.name ?? 'Someone'}: ${thread.lastMessage.text}`
+      ? `${thread.type === 'group' ? 'Anonymous' : (thread.lastMessage.sender?.name ?? 'Someone')}: ${thread.lastMessage.text || 'Attachment'}`
       : 'No messages yet';
 
   const time = (thread: Thread) =>
@@ -87,32 +88,9 @@ export default function LecturerChatsScreen() {
             />
           </View>
 
-          {/* Filter Tabs */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mt-3"
-            contentContainerStyle={{ gap: 8 }}
-          >
-            {filters.map((filter) => (
-              <Pressable
-                key={filter}
-                onPress={() => setActiveFilter(filter)}
-                className={`rounded-full px-4 py-1.5 ${
-                  activeFilter === filter ? 'bg-blue-600' : 'bg-white/10'
-                }`}
-              >
-                <Text
-                  className={`text-sm font-semibold ${
-                    activeFilter === filter ? 'text-white' : 'text-slate-300'
-                  }`}
-                >
-                  {filter}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
         </View>
+
+        <FilterRow filters={filters} active={activeFilter} onSelect={setActiveFilter} />
 
         {/* Body */}
         <ScrollView

@@ -1,7 +1,1 @@
-// app/(admin)/security-center.tsx
-
-import SecurityCenter from '@/src/components/admin/SecurityCenter';
-
-export default function SecurityCenterScreen() {
-  return <SecurityCenter />;
-}
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Security Center" fallbackRoute="/(admin)/dashboard" message="Security alerts will appear here when the security-events backend is connected."/>}

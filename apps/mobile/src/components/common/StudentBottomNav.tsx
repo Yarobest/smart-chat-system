@@ -32,7 +32,7 @@ export function StudentBottomNav({ active, unreadCount = 0 }: Props) {
           onPress: () => router.replace('/(student)/courses'),
         },
         {
-          label: 'Tasks',
+          label: 'Coursework',
           icon: '📝',
           active: active === 'tasks',
           onPress: () => router.replace('/(student)/tasks'),

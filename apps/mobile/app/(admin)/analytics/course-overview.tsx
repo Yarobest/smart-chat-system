@@ -1,4 +1,1 @@
-// app/(admin)/course-overview.tsx
-import CourseOverview from '@/src/components/admin/CourseOverview';
-
-export default CourseOverview;
+import{Redirect}from'expo-router';export default function Page(){return <Redirect href="/(admin)/courses"/>}

@@ -9,8 +9,11 @@ export default function TasksLayout() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="notes" />
+      <Stack.Screen name="material-detail" />
       <Stack.Screen name="assignments" />
       <Stack.Screen name="quizzes" />
+      <Stack.Screen name="quiz-detail" />
+      <Stack.Screen name="quiz-attempt" />
       <Stack.Screen name="quiz" />
       <Stack.Screen name="assignment" />
       <Stack.Screen name="midsem" />
