@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { ScreenHeader } from '@/src/components/common/ScreenHeader';
+import { PageLoader } from '@/src/components/common/PageLoader';
 import { AssignmentAttachments } from '@/src/components/assignments/AssignmentAttachments';
 import { materialService } from '@/src/services/material.service';
 import { CourseMaterial } from '@/src/types/material.types';
@@ -15,7 +16,7 @@ export default function LecturerMaterialDetail() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
   const update = async (status: string) => { if (!id) return; setBusy(true); try { setItem(await materialService.update(id, { status })); } finally { setBusy(false); } };
   const remove = () => Alert.alert('Delete material?', 'This is permanent. Published material can only be deleted before students open it.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: async () => { if (!id) return; try { await materialService.remove(id); router.replace('/(lecturer)/courses/materials' as any); } catch (e) { Alert.alert('Cannot delete', e instanceof Error ? e.message : 'Archive this material instead.'); } } }]);
-  if (!item) return <SafeAreaView className="flex-1 items-center justify-center bg-white"><ActivityIndicator color="#2563EB"/></SafeAreaView>;
+  if (!item) return <SafeAreaView className="flex-1 bg-[#F5F7FA]"><PageLoader label="Loading material..."/></SafeAreaView>;
   const actions = [{ label: 'Edit', show: item.status !== 'archived', run: () => router.push({ pathname: '/(lecturer)/courses/push-note', params: { materialId: item.id } } as any) }, { label: 'Publish', show: item.status === 'draft', run: () => void update('published'), primary: true }, { label: 'Archive', show: item.status === 'published', run: () => void update('archived') }, { label: 'Restore', show: item.status === 'archived', run: () => void update('published'), primary: true }, { label: 'Delete', show: item.status === 'draft' || item.viewCount === 0, run: remove, danger: true }].filter((a) => a.show);
   return <SafeAreaView className="flex-1 bg-[#051839]"><StatusBar style="light" backgroundColor="#051839"/><ScreenHeader title={item.title} fallbackRoute="/(lecturer)/courses/materials"/><ScrollView className="flex-1 bg-[#F5F7FA]" contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 14 }}>
     <View className="rounded-2xl border border-slate-200 bg-white p-4"><View className="flex-row justify-between"><Text className="flex-1 text-lg font-extrabold text-slate-900">{item.course.code} · {item.course.name}</Text><Text className="text-xs font-bold uppercase text-blue-700">{item.status}</Text></View><Text className="mt-3 text-sm text-slate-600">{item.description || 'No description provided.'}</Text><View className="mt-4 rounded-xl bg-slate-50 p-3"><Text className="text-xs text-slate-500">{item.type.toUpperCase()} · {item.topic || 'General'} · Version {item.version}</Text><Text className="mt-1 text-xs text-slate-500">{item.viewCount} student open{item.viewCount === 1 ? '' : 's'} · {item.allowDownload ? 'Downloads allowed' : 'Preview only'}</Text></View><AssignmentAttachments files={item.files}/></View>

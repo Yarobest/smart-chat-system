@@ -1,4 +1,4 @@
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Modal, Pressable, Text, View } from "react-native";
 
 interface LogoutModalProps {
   visible: boolean;
@@ -32,15 +32,17 @@ export function LogoutModal({
         </Text>
 
         <Text className="mb-8 text-center text-sm leading-5 text-slate-400">
-          Are you sure you want to log out? You&apos;ll{'\n'}need to sign in again
-          to access your{'\n'}messages.
+          Are you sure you want to log out? You&apos;ll{"\n"}need to sign in
+          again to access your{"\n"}messages.
         </Text>
 
         <Pressable
           onPress={onConfirm}
           className="mb-3 items-center rounded-2xl bg-red-500 py-4"
         >
-          <Text className="text-base font-bold text-white">Yes, Log Out</Text>
+          <Text numberOfLines={1} className="text-base font-bold text-white">
+            Yes, Logout
+          </Text>
         </Pressable>
 
         <Pressable

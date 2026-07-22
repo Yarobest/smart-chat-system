@@ -86,7 +86,7 @@ export default function StudentProfileScreen() {
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Email</Text>
-                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>
+                  <Text className="text-base font-semibold text-slate-900" numberOfLines={1}>
                     {displayEmail}
                   </Text>
                 </View>
@@ -100,7 +100,7 @@ export default function StudentProfileScreen() {
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Department</Text>
-                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>
+                  <Text className="text-base font-semibold text-slate-900" numberOfLines={1}>
                     {user?.department ?? 'Not available'}
                   </Text>
                 </View>
@@ -114,7 +114,7 @@ export default function StudentProfileScreen() {
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Year</Text>
-                  <Text className="text-lg font-semibold text-slate-900" numberOfLines={1}>
+                  <Text className="text-base font-semibold text-slate-900" numberOfLines={1}>
                     {[user?.awardType, user?.programme, user?.yearGroup]
                       .filter(Boolean)
                       .join(' · ') || 'Not available'}
@@ -128,7 +128,8 @@ export default function StudentProfileScreen() {
             </Text>
 
             {[
-              { label: 'My Courses', icon: '📚' },
+              { label: 'My Courses', icon: '📚', onPress: () => router.push('/(student)/courses') },
+              { label: 'Announcements', icon: '📣', onPress: () => router.push('/(student)/announcements') },
               { label: 'Settings', icon: '⚙️', onPress: () => router.push('/(student)/settings') },
             ].map((item) => (
               <Pressable
@@ -136,11 +137,11 @@ export default function StudentProfileScreen() {
                 onPress={item.onPress}
                 className="mb-3 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4"
               >
-                <View className="flex-row items-center">
+                <View className="mr-3 flex-1 flex-row items-center">
                   <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
                     <Text className="text-base">{item.icon}</Text>
                   </View>
-                  <Text className="text-lg font-semibold text-slate-900">{item.label}</Text>
+                  <Text numberOfLines={1} className="flex-1 text-base font-semibold text-slate-900">{item.label}</Text>
                 </View>
                 <Text className="text-sm text-slate-400">›</Text>
               </Pressable>
@@ -154,7 +155,7 @@ export default function StudentProfileScreen() {
                 <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-red-100">
                   <Text className="text-base">🚪</Text>
                 </View>
-                <Text className="text-lg font-semibold text-red-500">Logout</Text>
+                <Text className="text-base font-semibold text-red-500">Logout</Text>
               </View>
               <Text className="text-sm text-red-400">›</Text>
             </Pressable>

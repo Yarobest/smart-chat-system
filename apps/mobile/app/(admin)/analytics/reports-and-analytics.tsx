@@ -1,7 +1,1 @@
-// app/(admin)/reports-and-analytics.tsx
-
-import ReportsAndAnalytics from '@/src/components/admin/ReportsAndAnalytics';
-
-export default function ReportsAndAnalyticsScreen() {
-  return <ReportsAndAnalytics />;
-}
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Reports & Analytics" fallbackRoute="/(admin)/dashboard" message="Analytics will appear here when reporting endpoints are connected."/>}

@@ -1,7 +1,1 @@
-// app/(admin)/broad-cast-history.tsx
-
-import BroadCastHistory from '@/src/components/admin/BroadCastHistory';
-
-export default function BroadCastHistoryScreen() {
-  return <BroadCastHistory />;
-}
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Broadcast History" fallbackRoute="/(admin)/broadcast" message="Broadcast history will appear after the broadcast backend is implemented."/>}

@@ -1,9 +1,5 @@
-import { Pressable, Text } from 'react-native';
+import { AsyncButton } from './AsyncButton';
 
-export function PrimaryButton({ label, onPress }: { label: string; onPress?: () => void }) {
-  return (
-    <Pressable onPress={onPress} className="items-center rounded-xl bg-blue-600 px-4 py-4 active:bg-blue-700">
-      <Text className="font-bold text-white">{label}</Text>
-    </Pressable>
-  );
+export function PrimaryButton({ label, onPress, loading=false, disabled=false }: { label: string; onPress?: () => void; loading?:boolean;disabled?:boolean }) {
+  return <AsyncButton label={label} onPress={onPress??(()=>undefined)} loading={loading} disabled={disabled}/>;
 }

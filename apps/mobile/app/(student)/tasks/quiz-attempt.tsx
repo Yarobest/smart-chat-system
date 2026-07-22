@@ -1,17 +1,216 @@
-import { useEffect,useMemo,useState } from 'react';
-import { Alert,BackHandler,Pressable,ScrollView,Text,TextInput,View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router,useLocalSearchParams } from 'expo-router';
-import { StatusBar } from '@/src/components/common/StatusBar';
-import { quizService } from '@/src/services/quiz.service';
-import { Quiz,QuizAttempt } from '@/src/types/quiz.types';
+import { useEffect, useMemo, useState } from "react";
+import {
+  Alert,
+  BackHandler,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "@/src/components/common/StatusBar";
+import { KeyboardAwareView } from "@/src/components/common/KeyboardAwareView";
+import { quizService } from "@/src/services/quiz.service";
+import { Quiz, QuizAttempt } from "@/src/types/quiz.types";
 
-export default function QuizAttemptScreen(){const{quizId}=useLocalSearchParams<{quizId:string}>();const[q,setQ]=useState<Quiz|null>(null);const[a,setA]=useState<QuizAttempt|null>(null);const[answers,setAnswers]=useState<Record<string,any>>({});const[index,setIndex]=useState(0);const[now,setNow]=useState(Date.now());const[submitting,setSubmitting]=useState(false);
-useEffect(()=>{if(!quizId)return;Promise.all([quizService.detail(quizId),quizService.start(quizId)]).then(([quiz,attempt])=>{setQ(quiz);setA(attempt);setAnswers(Object.fromEntries((attempt.answers??[]).map(x=>[x.questionId,x.answer])))}).catch(e=>Alert.alert('Could not open attempt',e.message));},[quizId]);
-useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(t)},[]);useEffect(()=>{const s=BackHandler.addEventListener('hardwareBackPress',()=>true);return()=>s.remove()},[]);
-const left=Math.max(0,Math.floor(((a?new Date(a.expiresAt).getTime():now)-now)/1000));useEffect(()=>{if(a&&left===0&&a.status==='in_progress')void finish(true)},[left,a?.id]);const question=q?.questions[index];const save=(value:any)=>{if(!a||!question)return;setAnswers(x=>({...x,[question.id]:value}));quizService.answer(a.id,question.id,value).catch(()=>Alert.alert('Autosave failed','Check your connection before submitting.'))};const finish=async(auto=false)=>{if(!a||submitting)return;try{setSubmitting(true);await quizService.submit(a.id);Alert.alert(auto?'Time expired':'Quiz submitted',auto?'Your saved answers were submitted automatically.':'Your attempt has been recorded.',[{text:'Done',onPress:()=>router.replace({pathname:'/(student)/tasks/quiz-detail',params:{quizId}} as any)}]);}catch(e){Alert.alert('Could not submit',e instanceof Error?e.message:'Please try again.');}finally{setSubmitting(false)}};
-const answered=useMemo(()=>Object.values(answers).filter(v=>v!==null&&v!==''&&v!==undefined).length,[answers]);if(!q||!a||!question)return <SafeAreaView className="flex-1 bg-[#051839]"/>;return <SafeAreaView className="flex-1 bg-[#051839]"><StatusBar style="light" backgroundColor="#051839"/><View className="flex-row items-center justify-between bg-[#051839] px-4 py-4"><View className="flex-1"><Text numberOfLines={1} className="font-extrabold text-white">{q.title}</Text><Text className="text-xs text-slate-300">Question {index+1} of {q.questions.length}</Text></View><Text className={`rounded-lg px-3 py-2 font-extrabold ${left<60?'bg-red-500 text-white':'bg-white/10 text-amber-300'}`}>{Math.floor(left/60)}:{String(left%60).padStart(2,'0')}</Text></View><ScrollView className="flex-1 bg-[#F5F7FA]" contentContainerStyle={{padding:16,gap:14}}>
-<View className="rounded-2xl bg-white p-4"><View className="flex-row justify-between"><Text className="text-xs font-bold text-blue-600">{question.type.replace('_',' ').toUpperCase()}</Text><Text className="text-xs font-bold text-slate-500">{question.marks} mark{question.marks===1?'':'s'}</Text></View><Text className="mt-4 text-base font-bold leading-7 text-slate-900">{question.text}</Text>
-{question.type==='multiple_choice'||question.type==='true_false'?<View className="mt-4 gap-2">{question.options.map(option=><Pressable key={option} onPress={()=>save(option)} className={`rounded-xl border p-3 ${answers[question.id]===option?'border-blue-600 bg-blue-50':'border-slate-200'}`}><Text className={`font-semibold ${answers[question.id]===option?'text-blue-700':'text-slate-700'}`}>{option}</Text></Pressable>)}</View>:<TextInput value={answers[question.id]??''} onChangeText={v=>setAnswers(x=>({...x,[question.id]:v}))} onBlur={()=>save(answers[question.id]??'')} multiline textAlignVertical="top" placeholder="Write your answer" className="mt-4 min-h-32 rounded-xl border border-slate-200 p-3"/>}
-</View><Text className="text-center text-xs font-semibold text-slate-400">{answered}/{q.questions.length} answered · Answers save automatically</Text><View className="flex-row gap-3"><Pressable disabled={index===0} onPress={()=>setIndex(i=>i-1)} className={`flex-1 items-center rounded-full border py-3 ${index===0?'border-slate-200':'border-blue-600'}`}><Text className="font-bold text-slate-600">Previous</Text></Pressable>{index<q.questions.length-1?<Pressable onPress={()=>setIndex(i=>i+1)} className="flex-1 items-center rounded-full bg-blue-600 py-3"><Text className="font-bold text-white">Next</Text></Pressable>:<Pressable disabled={submitting} onPress={()=>Alert.alert('Submit quiz?',`${q.questions.length-answered} unanswered question(s).`,[{text:'Cancel',style:'cancel'},{text:'Submit',onPress:()=>void finish()}])} className="flex-1 items-center rounded-full bg-emerald-600 py-3"><Text className="font-bold text-white">Submit</Text></Pressable>}</View>
-</ScrollView></SafeAreaView>}
+export default function QuizAttemptScreen() {
+  const { quizId } = useLocalSearchParams<{ quizId: string }>();
+  const [q, setQ] = useState<Quiz | null>(null);
+  const [a, setA] = useState<QuizAttempt | null>(null);
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [index, setIndex] = useState(0);
+  const [now, setNow] = useState(Date.now());
+  const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (!quizId) return;
+    Promise.all([quizService.detail(quizId), quizService.start(quizId)])
+      .then(([quiz, attempt]) => {
+        setQ(quiz);
+        setA(attempt);
+        setAnswers(
+          Object.fromEntries(
+            (attempt.answers ?? []).map((x) => [x.questionId, x.answer]),
+          ),
+        );
+      })
+      .catch((e) => Alert.alert("Could not open attempt", e.message));
+  }, [quizId]);
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  useEffect(() => {
+    const s = BackHandler.addEventListener("hardwareBackPress", () => true);
+    return () => s.remove();
+  }, []);
+  const left = Math.max(
+    0,
+    Math.floor(((a ? new Date(a.expiresAt).getTime() : now) - now) / 1000),
+  );
+  useEffect(() => {
+    if (a && left === 0 && a.status === "in_progress") void finish(true);
+  }, [left, a?.id]);
+  const question = q?.questions[index];
+  const save = (value: any) => {
+    if (!a || !question) return;
+    setAnswers((x) => ({ ...x, [question.id]: value }));
+    quizService
+      .answer(a.id, question.id, value)
+      .catch(() =>
+        Alert.alert(
+          "Autosave failed",
+          "Check your connection before submitting.",
+        ),
+      );
+  };
+  const finish = async (auto = false) => {
+    if (!a || submitting) return;
+    try {
+      setSubmitting(true);
+      await quizService.submit(a.id);
+      Alert.alert(
+        auto ? "Time expired" : "Quiz submitted",
+        auto
+          ? "Your saved answers were submitted automatically."
+          : "Your attempt has been recorded.",
+        [
+          {
+            text: "Done",
+            onPress: () =>
+              router.replace({
+                pathname: "/(student)/tasks/quiz-detail",
+                params: { quizId },
+              } as any),
+          },
+        ],
+      );
+    } catch (e) {
+      Alert.alert(
+        "Could not submit",
+        e instanceof Error ? e.message : "Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  const answered = useMemo(
+    () =>
+      Object.values(answers).filter(
+        (v) => v !== null && v !== "" && v !== undefined,
+      ).length,
+    [answers],
+  );
+  if (!q || !a || !question)
+    return <SafeAreaView className="flex-1 bg-[#051839]" />;
+  return (
+    <SafeAreaView className="flex-1 bg-[#051839]">
+      <StatusBar style="light" backgroundColor="#051839" />
+      <View className="flex-row items-center justify-between bg-[#051839] px-4 py-4">
+        <View className="flex-1">
+          <Text numberOfLines={1} className="font-extrabold text-white">
+            {q.title}
+          </Text>
+          <Text className="text-xs text-slate-300">
+            Question {index + 1} of {q.questions.length}
+          </Text>
+        </View>
+        <Text
+          className={`rounded-lg px-3 py-2 font-extrabold ${left < 60 ? "bg-red-500 text-white" : "bg-white/10 text-amber-300"}`}
+        >
+          {Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")}
+        </Text>
+      </View>
+      <KeyboardAwareView>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          className="flex-1 bg-[#F5F7FA]"
+          contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 120 }}
+        >
+          <View className="rounded-2xl bg-white p-4">
+            <View className="flex-row justify-between">
+              <Text className="text-xs font-bold text-blue-600">
+                {question.type.replace("_", " ").toUpperCase()}
+              </Text>
+              <Text className="text-xs font-bold text-slate-500">
+                {question.marks} mark{question.marks === 1 ? "" : "s"}
+              </Text>
+            </View>
+            <Text className="mt-4 text-base font-bold leading-7 text-slate-900">
+              {question.text}
+            </Text>
+            {question.type === "multiple_choice" ||
+            question.type === "true_false" ? (
+              <View className="mt-4 gap-2">
+                {question.options.map((option) => (
+                  <Pressable
+                    key={option}
+                    onPress={() => save(option)}
+                    className={`rounded-xl border p-3 ${answers[question.id] === option ? "border-blue-600 bg-blue-50" : "border-slate-200"}`}
+                  >
+                    <Text
+                      className={`font-semibold ${answers[question.id] === option ? "text-blue-700" : "text-slate-700"}`}
+                    >
+                      {option}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            ) : (
+              <TextInput
+                value={answers[question.id] ?? ""}
+                onChangeText={(v) =>
+                  setAnswers((x) => ({ ...x, [question.id]: v }))
+                }
+                onBlur={() => save(answers[question.id] ?? "")}
+                multiline
+                textAlignVertical="top"
+                placeholder="Write your answer"
+                className="mt-4 min-h-32 rounded-xl border border-slate-200 p-3"
+              />
+            )}
+          </View>
+          <Text className="text-center text-xs font-semibold text-slate-400">
+            {answered}/{q.questions.length} answered · Answers save
+            automatically
+          </Text>
+          <View className="flex-row gap-3">
+            <Pressable
+              disabled={index === 0}
+              onPress={() => setIndex((i) => i - 1)}
+              className={`flex-1 items-center rounded-full border py-3 ${index === 0 ? "border-slate-200" : "border-blue-600"}`}
+            >
+              <Text className="font-bold text-slate-600">Previous</Text>
+            </Pressable>
+            {index < q.questions.length - 1 ? (
+              <Pressable
+                onPress={() => setIndex((i) => i + 1)}
+                className="flex-1 items-center rounded-full bg-blue-600 py-3"
+              >
+                <Text className="font-bold text-white">Next</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                disabled={submitting}
+                onPress={() =>
+                  Alert.alert(
+                    "Submit quiz?",
+                    `${q.questions.length - answered} unanswered question(s).`,
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      { text: "Submit", onPress: () => void finish() },
+                    ],
+                  )
+                }
+                className="flex-1 items-center rounded-full bg-emerald-600 py-3"
+              >
+                <Text className="font-bold text-white">Submit</Text>
+              </Pressable>
+            )}
+          </View>
+        </ScrollView>
+      </KeyboardAwareView>
+    </SafeAreaView>
+  );
+}

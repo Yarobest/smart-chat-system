@@ -15,6 +15,7 @@ import { AssignmentsModule } from './assignments/assignments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { MaterialsModule } from './materials/materials.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MaterialsModule } from './materials/materials.module';
     NotificationsModule,
     QuizzesModule,
     MaterialsModule,
+    AnnouncementsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

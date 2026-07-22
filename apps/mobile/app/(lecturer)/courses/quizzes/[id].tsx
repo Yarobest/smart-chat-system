@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { ScreenHeader } from '@/src/components/common/ScreenHeader';
+import { PageLoader } from '@/src/components/common/PageLoader';
 import { quizService } from '@/src/services/quiz.service';
 import { Quiz } from '@/src/types/quiz.types';
 
@@ -19,7 +20,7 @@ export default function LecturerQuizDetail() {
   }, [id]);
   useEffect(() => { load(); }, [load]);
 
-  if (!quiz) return <SafeAreaView className="flex-1 bg-[#F5F7FA]" />;
+  if (!quiz) return <SafeAreaView className="flex-1 bg-[#F5F7FA]"><PageLoader label="Loading quiz..." /></SafeAreaView>;
 
   const changeStatus = async (status: Quiz['status']) => {
     try {

@@ -45,65 +45,34 @@ const getStats = (dashboard: AdminDashboard | null): DashboardStat[] => [
   },
 ] as const;
 
-const chartData = [
-  { day: 'Mon', height: 24, active: false },
-  { day: 'Tue', height: 42, active: false },
-  { day: 'Wed', height: 32, active: false },
-  { day: 'Thu', height: 50, active: true },
-  { day: 'Fri', height: 36, active: false },
-  { day: 'Sat', height: 18, active: false },
-  { day: 'Sun', height: 10, active: false },
-] as const;
-
 const quickActions = [
   {
-    icon: '🔐',
-    title: 'Security',
-    subtitle: 'Alerts',
+    icon: '👥',
+    title: 'Users',
+    subtitle: 'Live accounts',
     accent: 'border-emerald-400',
-    onPress: () => router.push('/(admin)/dashboard/security-center'),
+    onPress: () => router.push('/(admin)/users'),
   },
     {
-    icon: '📍',
-    title: 'Live Activity',
-    subtitle: 'View activity',
+    icon: '📚',
+    title: 'Courses',
+    subtitle: 'Manage courses',
     accent: 'border-purple-400',
-    onPress: () => router.push('/(admin)/dashboard/live-activity'),
+    onPress: () => router.push('/(admin)/courses'),
   },
   {
-    icon: '💚',
-    title: 'System Health',
-    subtitle: 'Check status',
+    icon: '🔗',
+    title: 'Offerings',
+    subtitle: 'Course groups',
     accent: 'border-emerald-500',
-    onPress: () => router.push('/(admin)/dashboard/system-health'),
+    onPress: () => router.push('/(admin)/courses/assign'),
   },
   {
-    icon: '🟢',
-    title: 'User Presence',
-    subtitle: 'Online users',
+    icon: '👤',
+    title: 'Profile',
+    subtitle: 'Admin account',
     accent: 'border-cyan-400',
-    onPress: () => router.push('/(admin)/dashboard/user-presence'),
-  },
-] as const;
-
-const notifications = [
-  {
-    title: 'Suspicious login detected',
-    message: 'A new admin login was detected from an unfamiliar device.',
-    time: '2m ago',
-    tone: 'bg-rose-50',
-  },
-  {
-    title: 'Storage usage at 78%',
-    message: 'Media uploads are approaching the configured warning limit.',
-    time: '18m ago',
-    tone: 'bg-amber-50',
-  },
-  {
-    title: '12 new user registrations',
-    message: 'Pending approvals are waiting for review in user management.',
-    time: '1h ago',
-    tone: 'bg-blue-50',
+    onPress: () => router.push('/(admin)/profile'),
   },
 ] as const;
 

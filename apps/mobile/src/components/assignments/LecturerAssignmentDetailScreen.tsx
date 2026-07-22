@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { ScreenHeader } from '@/src/components/common/ScreenHeader';
+import { PageLoader } from '@/src/components/common/PageLoader';
 import { AssignmentAttachments } from './AssignmentAttachments';
 import { assignmentService } from '@/src/services/assignment.service';
 import { Assignment } from '@/src/types/assignment.types';
@@ -59,7 +60,7 @@ export default function LecturerAssignmentDetailScreen() {
     ]);
   };
 
-  if (!assignment) return <SafeAreaView className="flex-1 bg-[#F5F7FA]" />;
+  if (!assignment) return <SafeAreaView className="flex-1 bg-[#F5F7FA]"><PageLoader label="Loading assignment..." /></SafeAreaView>;
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">

@@ -1,7 +1,1 @@
-// app/(admin)/broad-cast.tsx
-
-import BroadCast from '@/src/components/admin/BroadCast';
-
-export default function BroadCastScreen() {
-  return <BroadCast />;
-}
+import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Broadcast" fallbackRoute="/(admin)/dashboard" message="Broadcasting is hidden until a real delivery and recipient-tracking backend is implemented."/>}

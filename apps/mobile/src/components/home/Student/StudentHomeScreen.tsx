@@ -13,6 +13,8 @@ import { getInitials } from "@/src/utils/getInitials";
 import { useLiveThreads } from "@/src/hooks/useLiveThreads";
 import { useFocusEffect } from "@react-navigation/native";
 import { assignmentService } from "@/src/services/assignment.service";
+import { quizService } from "@/src/services/quiz.service";
+import { announcementService } from "@/src/services/announcement.service";
 
 export default function StudentHomeScreen() {
   const { user, token } = useAuth();
@@ -21,11 +23,17 @@ export default function StudentHomeScreen() {
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
   const { threads, unreadCount, groupCount } = useLiveThreads();
   const [pendingAssignments, setPendingAssignments] = useState(0);
+  const [availableQuizzes, setAvailableQuizzes] = useState(0);
+  const [unreadAnnouncements, setUnreadAnnouncements] = useState(0);
 
   useFocusEffect(useCallback(() => {
     let mounted = true;
-    assignmentService.list().then((items) => {
-      if (mounted) setPendingAssignments(items.filter((item) => item.status === 'published' && !item.submission).length);
+    Promise.all([assignmentService.list(), quizService.list(), announcementService.list()]).then(([assignments, quizzes, announcements]) => {
+      if (!mounted) return;
+      const now = Date.now();
+      setPendingAssignments(assignments.filter((item) => item.status === 'published' && !item.submission).length);
+      setAvailableQuizzes(quizzes.filter((item) => item.status === 'published' && now >= new Date(item.startAt).getTime() && now <= new Date(item.endAt).getTime() && !item.attempt?.submittedAt).length);
+      setUnreadAnnouncements(announcements.filter((item) => !item.isRead).length);
     }).catch(() => undefined);
     return () => { mounted = false; };
   }, []));
@@ -130,10 +138,10 @@ export default function StudentHomeScreen() {
           </View>
           <View className="flex-row flex-wrap justify-between">
             {[
-              { title: 'Coursework', subtitle: pendingAssignments > 0 ? `${pendingAssignments} assignment${pendingAssignments === 1 ? '' : 's'} pending` : 'View learning activities', icon: '📝', tone: 'bg-blue-50', route: '/(student)/tasks' },
+              { title: 'Assignments', subtitle: pendingAssignments > 0 ? `${pendingAssignments} assignment${pendingAssignments === 1 ? '' : 's'} pending` : 'View your assignments', icon: '📋', tone: 'bg-blue-50', route: '/(student)/tasks/assignments' },
               { title: 'Courses', subtitle: `${groupCount} active course group${groupCount === 1 ? '' : 's'}`, icon: '📚', tone: 'bg-emerald-50', route: '/(student)/courses' },
-              { title: 'Chats', subtitle: unreadCount > 0 ? `${unreadCount} unread message${unreadCount === 1 ? '' : 's'}` : 'Open conversations', icon: '💬', tone: 'bg-purple-50', route: '/(student)/chats' },
-              { title: 'Notifications', subtitle: notificationCount > 0 ? `${notificationCount} new update${notificationCount === 1 ? '' : 's'}` : 'View recent updates', icon: '🔔', tone: 'bg-amber-50', route: '/(student)/notifications' },
+              { title: 'Quizzes', subtitle: availableQuizzes > 0 ? `${availableQuizzes} available now` : 'View course quizzes', icon: '🧪', tone: 'bg-amber-50', route: '/(student)/tasks/quizzes' },
+              { title: 'Announcements', subtitle: unreadAnnouncements > 0 ? `${unreadAnnouncements} unread update${unreadAnnouncements === 1 ? '' : 's'}` : 'View official updates', icon: '📣', tone: 'bg-purple-50', route: '/(student)/announcements' },
             ].map((link) => (
               <Pressable
                 key={link.title}

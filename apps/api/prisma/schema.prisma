@@ -80,6 +80,18 @@ enum CourseMaterialType {
   REVISION
 }
 
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum AnnouncementPriority {
+  NORMAL
+  IMPORTANT
+  URGENT
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -113,6 +125,8 @@ model User {
   quizAttempts         QuizAttempt[]
   materialsCreated     CourseMaterial[]       @relation("MaterialCreator")
   materialAccesses     CourseMaterialAccess[]
+  announcementsCreated CourseAnnouncement[] @relation("AnnouncementCreator")
+  announcementAccesses AnnouncementAccess[]
 
   @@index([role])
   @@index([email])
@@ -234,6 +248,7 @@ model CourseOffering {
   assignments     Assignment[]
   quizzes         Quiz[]
   materials       CourseMaterial[]
+  announcements   CourseAnnouncement[]
 
   @@unique([courseId, academicSessionId, faculty, department, programme, awardType, yearGroup])
   @@index([lecturerId])
@@ -459,6 +474,42 @@ model CourseMaterialAccess {
 
   @@id([materialId, studentId])
   @@index([studentId, lastOpenedAt])
+}
+
+model CourseAnnouncement {
+  id               String               @id @default(cuid())
+  courseOfferingId String
+  lecturerId       String
+  title            String
+  body             String
+  priority         AnnouncementPriority @default(NORMAL)
+  attachments      Json
+  pinned           Boolean              @default(false)
+  status           AnnouncementStatus   @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  courseOffering CourseOffering      @relation(fields: [courseOfferingId], references: [id], onDelete: Cascade)
+  lecturer       User                @relation("AnnouncementCreator", fields: [lecturerId], references: [id], onDelete: Restrict)
+  accesses       AnnouncementAccess[]
+
+  @@index([courseOfferingId, status])
+  @@index([lecturerId])
+  @@index([publishedAt])
+}
+
+model AnnouncementAccess {
+  announcementId  String
+  studentId       String
+  readAt           DateTime?
+  alertDismissedAt DateTime?
+
+  announcement CourseAnnouncement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  student      User               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([announcementId, studentId])
+  @@index([studentId, readAt])
 }
 
 model ConversationMember {

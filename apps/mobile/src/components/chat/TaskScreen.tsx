@@ -49,7 +49,6 @@ export default function TaskScreen() {
     },
     { title: 'Notes & Slides', description: 'Course notes and lecturer slides.', icon: '📚', tone: 'bg-emerald-50 border-emerald-100', available: true, badge: materials.some(x=>x.isNew) ? `${materials.filter(x=>x.isNew).length} new` : `${materials.length} available`, badgeTone: 'text-emerald-700 bg-emerald-100', detail: 'Live from your lecturers', onPress: () => router.push('/(student)/tasks/notes' as any) },
     { title: 'Quizzes', description: 'Available and completed course quizzes.', icon: '🧪', tone: 'bg-amber-50 border-amber-100', available: true, badge: availableQuizzes > 0 ? `${availableQuizzes} available` : `${quizzes.length} published`, badgeTone: 'text-amber-700 bg-amber-100', detail: 'Timed and autosaved', onPress: () => router.push('/(student)/tasks/quizzes' as any) },
-    { title: 'Assessments', description: 'Mid-semester and other assessments.', icon: '📝', tone: 'bg-purple-50 border-purple-100', available: false },
   ];
 
   return (

@@ -1,7 +1,1 @@
-// app/(admin)/user-presence.tsx
-
-import UserPresence from '@/src/components/admin/UserPresence';
-
-export default function UserPresenceScreen() {
-  return <UserPresence />;
-}
+import{Redirect}from'expo-router';export default function Page(){return <Redirect href="/(admin)/users"/>}
