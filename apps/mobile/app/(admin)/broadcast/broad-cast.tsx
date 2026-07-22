@@ -1,1 +1,1 @@
-import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Broadcast" fallbackRoute="/(admin)/dashboard" message="Broadcasting is hidden until a real delivery and recipient-tracking backend is implemented."/>}
+export{default}from'@/src/components/admin/BroadcastManagementScreen';

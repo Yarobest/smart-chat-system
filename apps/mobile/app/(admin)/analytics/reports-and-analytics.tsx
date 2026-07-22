@@ -1,1 +1,1 @@
-import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Reports & Analytics" fallbackRoute="/(admin)/dashboard" message="Analytics will appear here when reporting endpoints are connected."/>}
+export{default}from'@/src/components/admin/AdminAnalyticsScreen';

@@ -9,6 +9,7 @@ import { useNotifications } from '@/src/hooks/useNotifications';
 import { authService } from '@/src/services/auth.service';
 import { getInitials } from '@/src/utils/getInitials';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
+import { BroadcastHomeBanner } from '@/src/components/broadcasts/BroadcastHomeBanner';
 
 export default function LecturerHomeScreen() {
   const { user, token } = useAuth();
@@ -77,6 +78,7 @@ export default function LecturerHomeScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View className="flex-1 px-4 pt-5">
+              <BroadcastHomeBanner />
               <View className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4">
                 <Text className="mb-1 text-base font-extrabold text-amber-700">
                   Welcome, {displayName}

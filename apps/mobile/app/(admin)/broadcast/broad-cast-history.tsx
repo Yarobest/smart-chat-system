@@ -1,1 +1,1 @@
-import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Broadcast History" fallbackRoute="/(admin)/broadcast" message="Broadcast history will appear after the broadcast backend is implemented."/>}
+import{Redirect}from'expo-router';export default function Page(){return <Redirect href={'/(admin)/broadcast/broad-cast' as any}/>}

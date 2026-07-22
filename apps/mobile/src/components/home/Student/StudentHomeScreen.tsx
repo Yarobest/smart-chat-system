@@ -15,6 +15,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { assignmentService } from "@/src/services/assignment.service";
 import { quizService } from "@/src/services/quiz.service";
 import { announcementService } from "@/src/services/announcement.service";
+import { BroadcastHomeBanner } from "@/src/components/broadcasts/BroadcastHomeBanner";
 
 export default function StudentHomeScreen() {
   const { user, token } = useAuth();
@@ -123,6 +124,7 @@ export default function StudentHomeScreen() {
         </View>
 
         <ScrollView className="flex-1 bg-white px-6 pt-6" contentContainerStyle={{ paddingBottom: 18 }}>
+          <BroadcastHomeBanner />
           <View className="rounded-3xl border-l-[6px] border-blue-500 bg-blue-50 px-4 py-4">
             <Text className="text-lg font-bold text-blue-900">
               {user?.programme ?? user?.department ?? "Student Portal"}

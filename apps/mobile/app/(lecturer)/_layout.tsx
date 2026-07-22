@@ -39,6 +39,8 @@ export default function LecturerLayout() {
       <Stack.Screen name="groups/[id]" />
       <Stack.Screen name="announcements/compose" />
       <Stack.Screen name="announcements/[id]" />
+      <Stack.Screen name="broadcasts/index" />
+      <Stack.Screen name="broadcasts/[id]" />
     </Stack>
   );
 }

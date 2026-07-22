@@ -23,6 +23,8 @@ export default function StudentLayout() {
       <Tabs.Screen name="chats/new" options={{ href: null }} />
       <Tabs.Screen name="chats/group/[id]" options={{ href: null }} />
       <Tabs.Screen name="announcements/[id]" options={{ href: null }} />
+      <Tabs.Screen name="broadcasts/index" options={{ href: null }} />
+      <Tabs.Screen name="broadcasts/[id]" options={{ href: null }} />
     </Tabs>
   );
 }

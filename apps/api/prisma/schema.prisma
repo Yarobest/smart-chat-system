@@ -92,6 +92,19 @@ enum AnnouncementPriority {
   URGENT
 }
 
+enum BroadcastStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BroadcastPriority {
+  NORMAL
+  IMPORTANT
+  URGENT
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -127,6 +140,8 @@ model User {
   materialAccesses     CourseMaterialAccess[]
   announcementsCreated CourseAnnouncement[] @relation("AnnouncementCreator")
   announcementAccesses AnnouncementAccess[]
+  broadcastsCreated    InstitutionalBroadcast[] @relation("BroadcastCreator")
+  broadcastRecipients  BroadcastRecipient[]
 
   @@index([role])
   @@index([email])
@@ -510,6 +525,49 @@ model AnnouncementAccess {
 
   @@id([announcementId, studentId])
   @@index([studentId, readAt])
+}
+
+model InstitutionalBroadcast {
+  id             String            @id @default(cuid())
+  creatorId      String
+  title          String
+  body           String
+  priority       BroadcastPriority @default(NORMAL)
+  attachments    Json
+  pinned         Boolean           @default(false)
+  audienceLabel  String
+  audienceRole   UserRole?
+  faculty        String?
+  department     String?
+  programme      String?
+  yearGroup      String?
+  status         BroadcastStatus   @default(DRAFT)
+  scheduledAt    DateTime?
+  publishedAt    DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  creator   User                 @relation("BroadcastCreator", fields: [creatorId], references: [id], onDelete: Restrict)
+  recipients BroadcastRecipient[]
+
+  @@index([status, scheduledAt])
+  @@index([creatorId])
+  @@index([publishedAt])
+}
+
+model BroadcastRecipient {
+  broadcastId     String
+  userId          String
+  deliveredAt     DateTime         @default(now())
+  readAt          DateTime?
+  alertDismissedAt DateTime?
+
+  broadcast InstitutionalBroadcast @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([broadcastId, userId])
+  @@index([userId, readAt])
 }
 
 model ConversationMember {

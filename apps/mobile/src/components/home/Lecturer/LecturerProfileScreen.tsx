@@ -132,6 +132,7 @@ export default function LecturerProfileScreen() {
             {[
               { label: 'My Courses', icon: '📚', onPress: () => router.push('./courses') },
               { label: 'Post Announcement', icon: '📣', onPress: () => router.push('./announcements/compose') },
+              { label: 'Institutional Notices', icon: '📡', onPress: () => router.push('/(lecturer)/broadcasts' as any) },
               { label: 'My Students', icon: '👥', onPress: () => router.push('./groups') },
               { label: 'Notifications', icon: '🔔', onPress: () => router.push('./notifications') },
               { label: 'Settings', icon: '⚙️', onPress: () => router.push('./settings') },

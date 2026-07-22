@@ -14,6 +14,8 @@ export default function AdminLayout() {
       <Stack.Screen name="broadcast/index" />
       <Stack.Screen name="broadcast/broad-cast" />
       <Stack.Screen name="broadcast/broad-cast-history" />
+      <Stack.Screen name="broadcast/create" />
+      <Stack.Screen name="broadcast/[id]" />
       <Stack.Screen name="analytics/reports-and-analytics" />
       <Stack.Screen name="analytics/audith-log-screen" />
       <Stack.Screen name="analytics/course-overview" />

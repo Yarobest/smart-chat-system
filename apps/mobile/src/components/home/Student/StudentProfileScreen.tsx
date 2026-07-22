@@ -130,6 +130,7 @@ export default function StudentProfileScreen() {
             {[
               { label: 'My Courses', icon: '📚', onPress: () => router.push('/(student)/courses') },
               { label: 'Announcements', icon: '📣', onPress: () => router.push('/(student)/announcements') },
+              { label: 'Institutional Notices', icon: '📡', onPress: () => router.push('/(student)/broadcasts' as any) },
               { label: 'Settings', icon: '⚙️', onPress: () => router.push('/(student)/settings') },
             ].map((item) => (
               <Pressable

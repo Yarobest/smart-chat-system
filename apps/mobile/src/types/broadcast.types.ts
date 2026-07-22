@@ -1,0 +1,48 @@
+import { AssignmentFile } from "./assignment.types";
+export type BroadcastPriority = "normal" | "important" | "urgent";
+export type BroadcastStatus = "draft" | "scheduled" | "published" | "archived";
+export type InstitutionalBroadcast = {
+  id: string;
+  title: string;
+  body: string;
+  priority: BroadcastPriority;
+  attachments: AssignmentFile[];
+  pinned: boolean;
+  audienceLabel: string;
+  audienceRole?: "student" | "lecturer" | "admin" | null;
+  faculty?: string | null;
+  department?: string | null;
+  programme?: string | null;
+  yearGroup?: string | null;
+  status: BroadcastStatus;
+  scheduledAt?: string | null;
+  publishedAt?: string | null;
+  expiresAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  creator: { id: string; name: string };
+  recipientCount: number;
+  readCount: number;
+  isRead: boolean;
+  alertDismissed: boolean;
+};
+export type AdminAnalytics = {
+  stats: {
+    users: number;
+    students: number;
+    lecturers: number;
+    activeCourses: number;
+    messages: number;
+    submissions: number;
+    quizAttempts: number;
+    publishedMaterials: number;
+    materialReads: number;
+    publishedAnnouncements: number;
+    announcementReads: number;
+    publishedBroadcasts: number;
+    broadcastRecipients: number;
+    broadcastReads: number;
+    broadcastReadRate: number;
+  };
+  series: { date: string; registrations: number; messages: number }[];
+};

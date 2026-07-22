@@ -49,6 +49,7 @@ export default function NotificationsScreen() {
               else if (item.data?.quizId) router.push({ pathname: '/(student)/tasks/quiz-detail', params: { quizId: item.data.quizId } } as any);
               else if (item.data?.materialId) router.push({ pathname: '/(student)/tasks/material-detail', params: { materialId: item.data.materialId } } as any);
               else if (item.data?.announcementId) router.push(`/(student)/announcements/${item.data.announcementId}` as any);
+              else if (item.data?.broadcastId) router.push(`${user?.role === 'lecturer' ? '/(lecturer)' : '/(student)'}/broadcasts/${item.data.broadcastId}` as any);
             }}
             className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4"
           >
