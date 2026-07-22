@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -16,7 +16,6 @@ export default function StudentAssignmentsScreen() {
   const [items, setItems] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState<AssignmentFilter>('All');
-  const [activeCourse, setActiveCourse] = useState('All Courses');
 
   useFocusEffect(useCallback(() => {
     let mounted = true;
@@ -25,26 +24,23 @@ export default function StudentAssignmentsScreen() {
     return () => { mounted = false; };
   }, []));
 
-  const courseFilters = useMemo(() => ['All Courses', ...Array.from(new Set(items.map((item) => item.course.code)))], [items]);
-  const scopedItems = activeCourse === 'All Courses' ? items : items.filter((item) => item.course.code === activeCourse);
-  const visible = scopedItems.filter((assignment) => {
+  const visible = items.filter((assignment) => {
     if (active === 'Pending') return assignment.status === 'published' && !assignment.submission;
     if (active === 'Submitted') return assignment.submission && (assignment.recordedScore === null || assignment.recordedScore === undefined);
     if (active === 'Graded') return assignment.recordedScore !== null && assignment.recordedScore !== undefined;
     return true;
   }).sort((a, b) => a.course.code.localeCompare(b.course.code) || new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime());
   const counts: Record<AssignmentFilter, number> = {
-    All: scopedItems.length,
-    Pending: scopedItems.filter((item) => item.status === 'published' && !item.submission).length,
-    Submitted: scopedItems.filter((item) => item.submission && (item.recordedScore === null || item.recordedScore === undefined)).length,
-    Graded: scopedItems.filter((item) => item.recordedScore !== null && item.recordedScore !== undefined).length,
+    All: items.length,
+    Pending: items.filter((item) => item.status === 'published' && !item.submission).length,
+    Submitted: items.filter((item) => item.submission && (item.recordedScore === null || item.recordedScore === undefined)).length,
+    Graded: items.filter((item) => item.recordedScore !== null && item.recordedScore !== undefined).length,
   };
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
       <ScreenHeader title="Assignments" fallbackRoute="/(student)/tasks" />
-      <FilterRow filters={courseFilters} active={activeCourse} onSelect={setActiveCourse} />
       <FilterRow filters={filters} active={active} onSelect={setActive} counts={counts} />
       <ScrollView className="flex-1 bg-[#F5F7FA]" contentContainerStyle={{ padding: 16, gap: 12 }}>
         <View className="rounded-2xl bg-[#0B2A59] p-4">
@@ -74,7 +70,7 @@ export default function StudentAssignmentsScreen() {
           const status = assignment.recordedScore !== null && assignment.recordedScore !== undefined
             ? 'graded'
             : assignment.submission?.status ?? (assignment.status === 'closed' ? 'closed' : overdue ? 'missed' : 'pending');
-          const showCourseHeading = activeCourse === 'All Courses' && (index === 0 || visible[index - 1].course.code !== assignment.course.code);
+          const showCourseHeading = index === 0 || visible[index - 1].course.code !== assignment.course.code;
           return (
             <View key={assignment.id}>
             {showCourseHeading ? <View className="mb-2 mt-2"><Text className="text-sm font-extrabold text-slate-800">{assignment.course.code} · {assignment.course.name}</Text></View> : null}

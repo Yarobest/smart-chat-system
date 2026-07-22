@@ -1,121 +1,21 @@
-import React from 'react';
-import { SafeAreaView, Text, View, Pressable, ScrollView } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from '@/src/components/common/StatusBar';
+import { ScreenHeader } from '@/src/components/common/ScreenHeader';
+import { FilterRow } from '@/src/components/common/FilterRow';
+import { materialService } from '@/src/services/material.service';
+import { CourseMaterial } from '@/src/types/material.types';
 
 export default function NotesScreen() {
-  const handleBack = () => {
-    router.back();
-  };
-
-  const notes = [
-    {
-      id: 'cs410-design-patterns',
-      courseCode: 'CS410',
-      courseTitle: 'Software Engineering',
-      title: 'CS410 Design Patterns Notes',
-      chapter: 'Chapter 4 – Factory, Observer & Strategy patterns',
-      uploadedBy: 'Dr. Mensah',
-      uploadedDate: 'Jan 13',
-      pages: 12,
-      tags: ['LECTURE NOTE', 'CS410', 'CHAPTER 4'],
-      route: '/(student)/tasks/notes/cs410-design-patterns',
-    },
-    {
-      id: 'cs301-avl-trees',
-      courseCode: 'CS301',
-      courseTitle: 'Data Structures',
-      title: 'CS301 AVL Trees Notes',
-      chapter: 'Chapter 5 – Balanced Binary Search Trees',
-      uploadedBy: 'Prof. Kofi',
-      uploadedDate: 'Jan 10',
-      pages: 8,
-      tags: ['LECTURE NOTE', 'CS301', 'CHAPTER 5'],
-      route: '/(student)/tasks/notes/cs301-avl-trees',
-    },
-  ];
-
-  const handleNotePress = (route: string) => {
-    router.push(route as any);
-  };
-
-  return (
-    <SafeAreaView className="flex-1 bg-[#F4F5F8]">
-      <StatusBar style="light" backgroundColor="#051839" />
-
-      {/* Header */}
-      <View className="border-b border-slate-200 bg-white px-4 py-4 flex-row items-center gap-3">
-        <Pressable onPress={handleBack} className="p-2">
-          <Ionicons name="chevron-back" size={24} color="#051839" />
-        </Pressable>
-        <View className="flex-1">
-          <Text className="text-lg font-bold text-slate-900">Lecture Notes</Text>
-          <Text className="text-xs text-slate-500 mt-0.5">{notes.length} notes available</Text>
-        </View>
-      </View>
-
-      <ScrollView className="flex-1 bg-[#F4F5F8]" contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}>
-        {notes.map((note) => (
-          <Pressable
-            key={note.id}
-            onPress={() => handleNotePress(note.route)}
-            className="bg-white rounded-2xl p-4 mb-4 border border-slate-200 active:bg-slate-50"
-          >
-            <View className="flex-row gap-4">
-              {/* Icon */}
-              <View className="w-14 h-14 rounded-lg bg-purple-100 items-center justify-center">
-                <Ionicons name="document-text" size={28} color="#8B5CF6" />
-              </View>
-
-              {/* Content */}
-              <View className="flex-1">
-                <Text className="text-base font-bold text-slate-900 mb-1">{note.title}</Text>
-                <Text className="text-xs text-slate-600 mb-2">
-                  {note.courseCode} · {note.courseTitle}
-                </Text>
-                <Text className="text-xs text-slate-500 mb-2">{note.chapter}</Text>
-                <Text className="text-xs text-slate-500">
-                  Uploaded by {note.uploadedBy} • {note.uploadedDate} • {note.pages} pages
-                </Text>
-              </View>
-
-              {/* Arrow */}
-              <View className="justify-center">
-                <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
-              </View>
-            </View>
-
-            {/* Tags */}
-            <View className="flex-row gap-2 mt-3 flex-wrap">
-              {note.tags.map((tag, index) => (
-                <View
-                  key={index}
-                  className={`px-2 py-1 rounded text-xs font-semibold ${
-                    index === 0
-                      ? 'bg-purple-100'
-                      : index === 1
-                      ? 'bg-blue-100'
-                      : 'bg-orange-100'
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-semibold ${
-                      index === 0
-                        ? 'text-purple-700'
-                        : index === 1
-                        ? 'text-blue-700'
-                        : 'text-orange-700'
-                    }`}
-                  >
-                    {tag}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
-  );
+  const [items, setItems] = useState<CourseMaterial[]>([]); const [loading, setLoading] = useState(true); const [status, setStatus] = useState('All');
+  useFocusEffect(useCallback(() => { let active = true; materialService.list().then((data) => active && setItems(data)).finally(() => active && setLoading(false)); return () => { active = false; }; }, []));
+  const filtered = items.filter((item) => status === 'All' || (status === 'New' && item.isNew) || (status === 'Opened' && !item.isNew) || (status === 'Pinned' && item.pinned));
+  const groups = Object.values(filtered.reduce((map: Record<string, { code: string; name: string; items: CourseMaterial[] }>, item) => { map[item.course.offeringId] ??= { code: item.course.code, name: item.course.name, items: [] }; map[item.course.offeringId].items.push(item); return map; }, {}));
+  return <SafeAreaView className="flex-1 bg-[#051839]"><StatusBar style="light" backgroundColor="#051839"/><ScreenHeader title="Notes & Slides" fallbackRoute="/(student)/tasks"/><View className="bg-white pb-3"><FilterRow filters={['All', 'New', 'Opened', 'Pinned']} active={status} counts={{ New: items.filter((item) => item.isNew).length }} onSelect={setStatus}/></View><ScrollView className="flex-1 bg-[#F5F7FA]" contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 30 }}>
+    {loading ? <ActivityIndicator color="#2563EB"/> : null}{groups.map((group) => <View key={group.code}><Text className="mb-2 font-extrabold text-slate-700">{group.code} · {group.name}</Text>{group.items.map((item) => <Pressable key={item.id} onPress={() => router.push({ pathname: '/(student)/tasks/material-detail', params: { materialId: item.id } } as any)} className="mb-3 rounded-2xl border border-slate-200 bg-white p-4"><View className="flex-row"><View className="mr-3 h-12 w-12 items-center justify-center rounded-xl bg-emerald-100"><Text className="text-2xl">{item.type === 'slides' ? '📊' : '📄'}</Text></View><View className="flex-1"><View className="flex-row justify-between gap-2"><Text className="flex-1 font-extrabold text-slate-900">{item.title}</Text>{item.isNew ? <Text className="rounded-lg bg-red-100 px-2 py-1 text-xs font-bold text-red-700">NEW</Text> : null}</View><Text className="mt-1 text-xs text-slate-500">{item.type.toUpperCase()} · v{item.version} · {item.files.length} file{item.files.length === 1 ? '' : 's'}</Text>{item.topic ? <Text className="mt-2 text-sm text-slate-600">{item.topic}</Text> : null}</View><Text className="ml-2 self-center text-xl text-slate-400">›</Text></View></Pressable>)}</View>)}
+    {!loading && !groups.length ? <View className="items-center py-16"><Text className="text-4xl">📚</Text><Text className="mt-3 font-bold text-slate-600">No materials in this filter</Text></View> : null}
+  </ScrollView></SafeAreaView>;
 }

@@ -14,6 +14,7 @@ import { AdminCourseOfferingsModule } from './admin-course-offerings/admin-cours
 import { AssignmentsModule } from './assignments/assignments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
+import { MaterialsModule } from './materials/materials.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { QuizzesModule } from './quizzes/quizzes.module';
     AssignmentsModule,
     NotificationsModule,
     QuizzesModule,
+    MaterialsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

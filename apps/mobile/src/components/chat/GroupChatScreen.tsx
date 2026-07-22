@@ -25,6 +25,8 @@ import { formatTime } from "@/src/utils/formatTime";
 import { setReturnPath } from "@/src/stores/navigationStore";
 import { assignmentService } from "@/src/services/assignment.service";
 import { Assignment } from "@/src/types/assignment.types";
+import { materialService } from "@/src/services/material.service";
+import { CourseMaterial } from "@/src/types/material.types";
 
 type TypingUser = { id: string; name: string };
 
@@ -40,7 +42,7 @@ const lecturerActions = {
   "Create Assignment": "/(lecturer)/courses/create-assignment",
   "Create Quiz": "/(lecturer)/courses/set-quiz",
   "Post Note": "/(lecturer)/courses/push-note",
-  "Upload Slides": "/(lecturer)/courses/upload-notes",
+  "Upload Slides": "/(lecturer)/courses/push-note",
   Submissions: "/(lecturer)/courses/submissions",
 } as const;
 
@@ -57,6 +59,7 @@ export default function GroupChatScreen() {
   const [sending, setSending] = useState(false);
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
   const [pendingAssignments, setPendingAssignments] = useState<Assignment[]>([]);
+  const [newMaterials, setNewMaterials] = useState<CourseMaterial[]>([]);
   const lastTypingAt = useRef(0);
 
   const handleBack = useCallback(() => {
@@ -113,11 +116,18 @@ export default function GroupChatScreen() {
       .catch(() => setPendingAssignments([]));
   }, [id, isLecturer]);
 
+  const loadMaterials = useCallback(() => {
+    if (!id || isLecturer) { setNewMaterials([]); return; }
+    materialService.list().then((items) => setNewMaterials(items.filter((item) => item.course.conversationId === id && item.isNew))).catch(() => setNewMaterials([]));
+  }, [id, isLecturer]);
+
   useFocusEffect(useCallback(() => {
     loadAssignments();
+    loadMaterials();
     const interval = setInterval(loadAssignments, 10000);
-    return () => clearInterval(interval);
-  }, [loadAssignments]));
+    const materialInterval = setInterval(loadMaterials, 10000);
+    return () => { clearInterval(interval); clearInterval(materialInterval); };
+  }, [loadAssignments, loadMaterials]));
 
   const dismissAssignmentNotice = async () => {
     const dismissed = pendingAssignments.filter((item) => !item.alertDismissed);
@@ -126,6 +136,12 @@ export default function GroupChatScreen() {
       loadAssignments();
       Alert.alert('Could not dismiss alert', 'Please try again.');
     });
+  };
+
+  const dismissMaterialNotice = async () => {
+    const dismissed = newMaterials.filter((item) => !item.alertDismissed);
+    setNewMaterials((current) => current.map((item) => ({ ...item, alertDismissed: true })));
+    await Promise.all(dismissed.map((item) => materialService.dismiss(item.id))).catch(() => { loadMaterials(); Alert.alert('Could not dismiss alert', 'Please try again.'); });
   };
 
   useEffect(() => {
@@ -293,7 +309,7 @@ export default function GroupChatScreen() {
         <FilterRow<string>
           filters={Object.keys(isLecturer ? lecturerActions : studentActions)}
           filled
-          counts={!isLecturer ? { Assignment: pendingAssignments.length } : undefined}
+          counts={!isLecturer ? { Assignment: pendingAssignments.length, Notes: newMaterials.length } : undefined}
           onSelect={(filter) => {
             const returnPath = isLecturer
               ? `/(lecturer)/groups/${id}`
@@ -332,6 +348,7 @@ export default function GroupChatScreen() {
               </Pressable>
             </View>
           ) : null}
+          {newMaterials.some((item) => !item.alertDismissed) ? <View className="mb-3 flex-row items-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3"><Ionicons name="document-text" size={20} color="#047857"/><Pressable className="ml-3 flex-1" onPress={() => router.push('/(student)/tasks/notes' as any)}><Text className="font-bold text-emerald-900">New notes or slides</Text><Text className="text-sm text-emerald-700">{newMaterials.filter((item) => !item.alertDismissed).length} new material{newMaterials.filter((item) => !item.alertDismissed).length === 1 ? '' : 's'} in this course.</Text></Pressable><Pressable onPress={() => void dismissMaterialNotice()}><Ionicons name="close" size={20} color="#047857"/></Pressable></View> : null}
           {search.trim() && visibleMessages.length === 0 ? (
             <View className="mb-4 items-center rounded-xl bg-white px-4 py-5">
               <Text className="text-sm font-semibold text-slate-500">

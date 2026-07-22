@@ -47,6 +47,7 @@ export default function NotificationsScreen() {
               const assignmentId = (item as typeof item & { data?: { assignmentId?: string } }).data?.assignmentId;
               if (assignmentId) router.push(`/(student)/tasks/assignments/${assignmentId}` as any);
               else if (item.data?.quizId) router.push({ pathname: '/(student)/tasks/quiz-detail', params: { quizId: item.data.quizId } } as any);
+              else if (item.data?.materialId) router.push({ pathname: '/(student)/tasks/material-detail', params: { materialId: item.data.materialId } } as any);
             }}
             className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4"
           >

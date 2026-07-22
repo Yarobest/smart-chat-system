@@ -11,17 +11,20 @@ import { assignmentService } from '@/src/services/assignment.service';
 import { Assignment } from '@/src/types/assignment.types';
 import { quizService } from '@/src/services/quiz.service';
 import { Quiz } from '@/src/types/quiz.types';
+import { materialService } from '@/src/services/material.service';
+import { CourseMaterial } from '@/src/types/material.types';
 
 export default function TaskScreen() {
   const { unreadCount } = useLiveThreads();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [materials, setMaterials] = useState<CourseMaterial[]>([]);
 
   useFocusEffect(useCallback(() => {
     let mounted = true;
-    const load = () => Promise.all([assignmentService.list(), quizService.list()])
-      .then(([items, quizItems]) => { if (mounted) { setAssignments(items); setQuizzes(quizItems); } })
+    const load = () => Promise.all([assignmentService.list(), quizService.list(), materialService.list()])
+      .then(([items, quizItems, materialItems]) => { if (mounted) { setAssignments(items); setQuizzes(quizItems); setMaterials(materialItems); } })
       .catch(() => undefined)
       .finally(() => { if (mounted) setLoading(false); });
     void load();
@@ -44,7 +47,7 @@ export default function TaskScreen() {
       onPress: () => router.push('/(student)/tasks/assignments' as any),
       available: true,
     },
-    { title: 'Notes & Slides', description: 'Course notes and lecturer slides.', icon: '📚', tone: 'bg-emerald-50 border-emerald-100', available: false },
+    { title: 'Notes & Slides', description: 'Course notes and lecturer slides.', icon: '📚', tone: 'bg-emerald-50 border-emerald-100', available: true, badge: materials.some(x=>x.isNew) ? `${materials.filter(x=>x.isNew).length} new` : `${materials.length} available`, badgeTone: 'text-emerald-700 bg-emerald-100', detail: 'Live from your lecturers', onPress: () => router.push('/(student)/tasks/notes' as any) },
     { title: 'Quizzes', description: 'Available and completed course quizzes.', icon: '🧪', tone: 'bg-amber-50 border-amber-100', available: true, badge: availableQuizzes > 0 ? `${availableQuizzes} available` : `${quizzes.length} published`, badgeTone: 'text-amber-700 bg-amber-100', detail: 'Timed and autosaved', onPress: () => router.push('/(student)/tasks/quizzes' as any) },
     { title: 'Assessments', description: 'Mid-semester and other assessments.', icon: '📝', tone: 'bg-purple-50 border-purple-100', available: false },
   ];
