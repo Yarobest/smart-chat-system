@@ -47,6 +47,25 @@ enum AssignmentSubmissionStatus {
   GRADED
 }
 
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+enum QuizQuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+enum QuizAttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -76,6 +95,8 @@ model User {
   assignmentGrades    AssignmentSubmission[] @relation("AssignmentGrader")
   notifications       Notification[]
   assignmentAlertDismissals AssignmentAlertDismissal[]
+  quizzesCreated       Quiz[]        @relation("QuizCreator")
+  quizAttempts         QuizAttempt[]
 
   @@index([role])
   @@index([email])
@@ -195,6 +216,7 @@ model CourseOffering {
   lecturer        User             @relation("CourseLecturer", fields: [lecturerId], references: [id], onDelete: Restrict)
   conversation    Conversation?    @relation(fields: [conversationId], references: [id], onDelete: SetNull)
   assignments     Assignment[]
+  quizzes         Quiz[]
 
   @@unique([courseId, academicSessionId, faculty, department, programme, awardType, yearGroup])
   @@index([lecturerId])
@@ -289,6 +311,96 @@ model AssignmentSubmission {
   @@index([assignmentId, studentId, submittedAt])
   @@index([studentId, status])
   @@index([graderId])
+}
+
+model Quiz {
+  id                String     @id @default(cuid())
+  courseOfferingId  String
+  lecturerId        String
+  title             String
+  instructions      String
+  startAt           DateTime
+  endAt             DateTime
+  durationMinutes   Int
+  maxAttempts       Int        @default(1)
+  shuffleQuestions  Boolean    @default(false)
+  shuffleAnswers    Boolean    @default(false)
+  resultsReleased   Boolean    @default(false)
+  status            QuizStatus @default(DRAFT)
+  publishedAt       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id], onDelete: Cascade)
+  lecturer       User           @relation("QuizCreator", fields: [lecturerId], references: [id], onDelete: Restrict)
+  questions      QuizQuestion[]
+  attempts       QuizAttempt[]
+
+  @@index([courseOfferingId, status])
+  @@index([lecturerId])
+  @@index([startAt, endAt])
+}
+
+model QuizQuestion {
+  id            String           @id @default(cuid())
+  quizId        String
+  type          QuizQuestionType
+  text          String
+  options       Json?
+  correctAnswer Json?
+  marks         Int
+  position      Int
+  explanation   String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@unique([quizId, position])
+}
+
+model QuizAttempt {
+  id                String            @id @default(cuid())
+  quizId            String
+  studentId         String
+  attemptNumber     Int
+  status            QuizAttemptStatus @default(IN_PROGRESS)
+  startedAt         DateTime           @default(now())
+  expiresAt         DateTime
+  submittedAt       DateTime?
+  autoScore         Int                @default(0)
+  manualScore       Int                @default(0)
+  totalScore        Int?
+  resultsReleasedAt DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student User         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@unique([quizId, studentId, attemptNumber])
+  @@index([studentId, status])
+  @@index([quizId, status])
+}
+
+model QuizAnswer {
+  id           String   @id @default(cuid())
+  attemptId    String
+  questionId   String
+  answer       Json?
+  awardedMarks Int?
+  feedback     String?
+  gradedAt     DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  attempt  QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
 }
 
 model ConversationMember {

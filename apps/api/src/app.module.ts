@@ -13,6 +13,7 @@ import { AdminCoursesModule } from './admin-courses/admin-courses.module';
 import { AdminCourseOfferingsModule } from './admin-course-offerings/admin-course-offerings.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { QuizzesModule } from './quizzes/quizzes.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     AdminCourseOfferingsModule,
     AssignmentsModule,
     NotificationsModule,
+    QuizzesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

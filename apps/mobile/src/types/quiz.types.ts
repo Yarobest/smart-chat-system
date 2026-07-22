@@ -1,35 +1,6 @@
-export type QuestionStatus = 'correct' | 'incorrect' | 'skipped';
-
-export type Question = {
-  id: number;
-  text: string;
-  userAnswer?: string;
-  correctAnswer: string;
-  status: QuestionStatus;
-};
-
-export type QuizResult = {
-  id: string;
-  title: string;
-  courseCode: string;
-  score: number;
-  totalQuestions: number;
-  correctAnswers: number;
-  wrongAnswers: number;
-  skippedAnswers: number;
-  timeTaken: number; // in seconds
-  percentage: number;
-  questions: Question[];
-  submittedAt: string;
-  userRank: number;
-  totalParticipants: number;
-};
-
-export type LeaderboardEntry = {
-  rank: number;
-  studentName: string;
-  studentId: string;
-  score: number;
-  percentage: number;
-  avatar?: string;
-};
+export type QuizQuestionType = 'multiple_choice' | 'true_false' | 'short_answer';
+export type QuizQuestion = { id: string; type: QuizQuestionType; text: string; options: string[]; marks: number; position: number; correctAnswer?: unknown };
+export type QuizAttempt = { id: string; attemptNumber: number; status: 'in_progress' | 'submitted' | 'graded'; startedAt: string; expiresAt: string; submittedAt?: string | null; answers: { id: string; questionId: string; answer: unknown }[]; score?: number | null; resultsReleased: boolean };
+export type Quiz = { id: string; title: string; instructions: string; startAt: string; endAt: string; durationMinutes: number; maxAttempts: number; status: 'draft' | 'published' | 'closed' | 'archived'; resultsReleased: boolean; totalMarks: number; questionCount: number; attemptCount: number; attemptsUsed: number; course: { offeringId: string; conversationId?: string | null; code: string; name: string }; questions: QuizQuestion[]; attempt?: QuizAttempt | null };
+export type QuizCourse = { id: string; courseCode: string; courseName: string; academicYear: string; semester: string };
+export type QuizQuestionInput = { type: 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'SHORT_ANSWER'; text: string; options?: string[]; correctAnswer?: unknown; marks: number };

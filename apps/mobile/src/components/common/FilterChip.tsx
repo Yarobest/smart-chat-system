@@ -13,7 +13,7 @@ export function FilterChip({ label, active, onPress, filled }: FilterChipProps) 
   return (
     <Pressable
       onPress={onPress}
-      className={`h-9 items-center justify-center rounded-full border px-4 ${highlighted ? 'border-blue-600 bg-blue-600' : 'border-slate-200 bg-white'}`}
+      className={`h-9 items-center justify-center rounded-lg border px-4 ${highlighted ? 'border-blue-600 bg-blue-600' : 'border-slate-200 bg-white'}`}
     >
       <Text className={`text-sm font-semibold ${highlighted ? 'text-white' : 'text-slate-600'}`}>
         {label}

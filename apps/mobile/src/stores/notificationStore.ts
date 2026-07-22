@@ -5,7 +5,7 @@ export type AppNotification = {
   createdAt: string;
   read: boolean;
   type?: string;
-  data?: { assignmentId?: string; conversationId?: string } | null;
+  data?: { assignmentId?: string; quizId?: string; conversationId?: string } | null;
 };
 
 export const notificationStore = {

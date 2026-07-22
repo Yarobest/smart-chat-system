@@ -8,7 +8,6 @@ export default function QuizzesLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="cs301-mid-sem" options={{ animation: 'default' }} />
     </Stack>
   );
 }
