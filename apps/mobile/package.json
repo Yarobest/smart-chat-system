@@ -3,11 +3,11 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "dev": "node ./scripts/start.js --skip-api",
-    "start": "node ./scripts/start.js",
+    "dev": "node ./scripts/start.js --skip-api --port 8082",
+    "start": "node ./scripts/start.js --port 8082",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "node ./scripts/start.js --android --port 8082",
+    "ios": "node ./scripts/start.js --ios --port 8082",
     "web": "expo start --web",
     "lint": "expo lint app src"
   },
