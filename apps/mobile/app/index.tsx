@@ -56,7 +56,7 @@ export default function IndexPage() {
             adjustsFontSizeToFit
             minimumFontScale={0.85}
           >
-            Campus Chat
+            SMART CHAT
           </Text>
           <Text className="mt-2 text-center text-lg text-white/70">
             Ho Technical University

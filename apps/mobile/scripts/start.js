@@ -4,7 +4,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const expoCli = require.resolve("expo/bin/cli");
-const args = process.argv.slice(2);
+const args = process.argv.slice(2).filter((arg) => arg !== "--");
 const shouldStartApi = !args.includes("--skip-api");
 const expoArgs = args.filter((arg) => arg !== "--skip-api");
 

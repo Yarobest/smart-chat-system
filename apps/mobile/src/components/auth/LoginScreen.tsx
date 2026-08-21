@@ -68,19 +68,29 @@ export default function LoginScreen() {
         keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
       >
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+          className="w-full flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: 120,
+            width: "100%",
+          }}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           automaticallyAdjustKeyboardInsets
           showsVerticalScrollIndicator={false}
         >
-          <View className="flex-1">
+          <View className="w-full flex-1">
             <LinearGradient
               colors={["#0A1628", "#1A3A6B"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 2, y: 2 }}
-              className="items-center px-6 pb-8 pt-20"
+              style={{
+                alignItems: "center",
+                paddingBottom: 48,
+                paddingHorizontal: 24,
+                paddingTop: 80,
+                width: "100%",
+              }}
             >
               <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
                 <Ionicons name="school-outline" size={34} color="#2563EB" />
@@ -99,7 +109,7 @@ export default function LoginScreen() {
               </Text>
             </LinearGradient>
 
-            <View className="-mt-3 flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-7">
+            <View className="-mt-4 w-full flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-7">
               <View className="mb-4">
                 <Text
                   allowFontScaling
