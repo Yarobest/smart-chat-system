@@ -16,6 +16,8 @@ import { assignmentService } from "@/src/services/assignment.service";
 import { quizService } from "@/src/services/quiz.service";
 import { announcementService } from "@/src/services/announcement.service";
 import { BroadcastHomeBanner } from "@/src/components/broadcasts/BroadcastHomeBanner";
+import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 
 export default function StudentHomeScreen() {
   const { user, token } = useAuth();
@@ -27,17 +29,41 @@ export default function StudentHomeScreen() {
   const [availableQuizzes, setAvailableQuizzes] = useState(0);
   const [unreadAnnouncements, setUnreadAnnouncements] = useState(0);
 
-  useFocusEffect(useCallback(() => {
-    let mounted = true;
-    Promise.all([assignmentService.list(), quizService.list(), announcementService.list()]).then(([assignments, quizzes, announcements]) => {
-      if (!mounted) return;
-      const now = Date.now();
-      setPendingAssignments(assignments.filter((item) => item.status === 'published' && !item.submission).length);
-      setAvailableQuizzes(quizzes.filter((item) => item.status === 'published' && now >= new Date(item.startAt).getTime() && now <= new Date(item.endAt).getTime() && !item.attempt?.submittedAt).length);
-      setUnreadAnnouncements(announcements.filter((item) => !item.isRead).length);
-    }).catch(() => undefined);
-    return () => { mounted = false; };
-  }, []));
+  useFocusEffect(
+    useCallback(() => {
+      let mounted = true;
+      Promise.all([
+        assignmentService.list(),
+        quizService.list(),
+        announcementService.list(),
+      ])
+        .then(([assignments, quizzes, announcements]) => {
+          if (!mounted) return;
+          const now = Date.now();
+          setPendingAssignments(
+            assignments.filter(
+              (item) => item.status === "published" && !item.submission,
+            ).length,
+          );
+          setAvailableQuizzes(
+            quizzes.filter(
+              (item) =>
+                item.status === "published" &&
+                now >= new Date(item.startAt).getTime() &&
+                now <= new Date(item.endAt).getTime() &&
+                !item.attempt?.submittedAt,
+            ).length,
+          );
+          setUnreadAnnouncements(
+            announcements.filter((item) => !item.isRead).length,
+          );
+        })
+        .catch(() => undefined);
+      return () => {
+        mounted = false;
+      };
+    }, []),
+  );
 
   useEffect(() => {
     if (token) {
@@ -80,9 +106,12 @@ export default function StudentHomeScreen() {
           <View className="flex-row items-start justify-between">
             <View className="flex-1 pr-3">
               <Text className="text-lg font-semibold text-white/85">
-                {greetingText} 👋
+                {greetingText}
               </Text>
-              <Text className="text-3xl font-extrabold text-white" numberOfLines={1}>
+              <Text
+                className="text-3xl font-extrabold text-white"
+                numberOfLines={1}
+              >
                 {displayName}
               </Text>
             </View>
@@ -91,10 +120,16 @@ export default function StudentHomeScreen() {
                 onPress={() => router.push("/(student)/notifications" as any)}
                 className="relative mr-3 h-12 w-12 items-center justify-center rounded-2xl bg-white/10"
               >
-                <Text className="text-lg">🔔</Text>
+                <Ionicons
+                  name="notifications-outline"
+                  size={22}
+                  color="white"
+                />
                 {notificationCount > 0 ? (
                   <View className="absolute right-1 top-1 min-w-5 rounded-full bg-red-500 px-1">
-                    <Text className="text-center text-xs font-bold text-white">{notificationCount}</Text>
+                    <Text className="text-center text-xs font-bold text-white">
+                      {notificationCount}
+                    </Text>
                   </View>
                 ) : null}
               </Pressable>
@@ -109,56 +144,119 @@ export default function StudentHomeScreen() {
 
           <View className="mt-6 flex-row">
             <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
-              <Text className="text-2xl font-extrabold text-orange-300">{groupCount}</Text>
-              <Text className="mt-1 text-sm font-medium text-white/80">Courses</Text>
+              <Text className="text-2xl font-extrabold text-orange-300">
+                {groupCount}
+              </Text>
+              <Text className="mt-1 text-sm font-medium text-white/80">
+                Courses
+              </Text>
             </View>
             <View className="mr-3 flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
-              <Text className="text-2xl font-extrabold text-orange-300">{unreadCount}</Text>
-              <Text className="mt-1 text-sm font-medium text-white/80">Unread</Text>
+              <Text className="text-2xl font-extrabold text-orange-300">
+                {unreadCount}
+              </Text>
+              <Text className="mt-1 text-sm font-medium text-white/80">
+                Unread
+              </Text>
             </View>
             <View className="flex-1 rounded-3xl border border-white/15 bg-white/10 p-4">
-              <Text className="text-2xl font-extrabold text-orange-300">{groupCount}</Text>
-              <Text className="mt-1 text-sm font-medium text-white/80">Groups</Text>
+              <Text className="text-2xl font-extrabold text-orange-300">
+                {groupCount}
+              </Text>
+              <Text className="mt-1 text-sm font-medium text-white/80">
+                Groups
+              </Text>
             </View>
           </View>
         </View>
 
-        <ScrollView className="flex-1 bg-white px-6 pt-6" contentContainerStyle={{ paddingBottom: 18 }}>
+        <ScrollView
+          className="flex-1 bg-white px-6 pt-6"
+          contentContainerStyle={{ paddingBottom: 18 }}
+        >
           <BroadcastHomeBanner />
           <View className="rounded-3xl border-l-[6px] border-blue-500 bg-blue-50 px-4 py-4">
             <Text className="text-lg font-bold text-blue-900">
               {user?.programme ?? user?.department ?? "Student Portal"}
             </Text>
             <Text className="mt-1 text-sm text-blue-900/80">
-              {user?.faculty ?? "Your registered academic profile will appear here."}
+              {user?.faculty ??
+                "Your registered academic profile will appear here."}
             </Text>
           </View>
 
           <View className="mb-2 mt-7 flex-row items-center justify-between">
-            <Text className="text-sm font-extrabold text-slate-900">Quick Links</Text>
-            <Text className="text-xs font-semibold text-slate-400">Jump back in</Text>
+            <Text className="text-sm font-extrabold text-slate-900">
+              Quick Links
+            </Text>
+            <Text className="text-xs font-semibold text-slate-400">
+              Jump back in
+            </Text>
           </View>
           <View className="flex-row flex-wrap justify-between">
             {[
-              { title: 'Assignments', subtitle: pendingAssignments > 0 ? `${pendingAssignments} assignment${pendingAssignments === 1 ? '' : 's'} pending` : 'View your assignments', icon: '📋', tone: 'bg-blue-50', route: '/(student)/tasks/assignments' },
-              { title: 'Courses', subtitle: `${groupCount} active course group${groupCount === 1 ? '' : 's'}`, icon: '📚', tone: 'bg-emerald-50', route: '/(student)/courses' },
-              { title: 'Quizzes', subtitle: availableQuizzes > 0 ? `${availableQuizzes} available now` : 'View course quizzes', icon: '🧪', tone: 'bg-amber-50', route: '/(student)/tasks/quizzes' },
-              { title: 'Announcements', subtitle: unreadAnnouncements > 0 ? `${unreadAnnouncements} unread update${unreadAnnouncements === 1 ? '' : 's'}` : 'View official updates', icon: '📣', tone: 'bg-purple-50', route: '/(student)/announcements' },
+              {
+                title: "Assignments",
+                subtitle:
+                  pendingAssignments > 0
+                    ? `${pendingAssignments} assignment${pendingAssignments === 1 ? "" : "s"} pending`
+                    : "View your assignments",
+                icon: "document-text-outline",
+                tone: "bg-blue-50",
+                route: "/(student)/tasks/assignments",
+              },
+              {
+                title: "Courses",
+                subtitle: `${groupCount} active course group${groupCount === 1 ? "" : "s"}`,
+                icon: "library-outline",
+                tone: "bg-emerald-50",
+                route: "/(student)/courses",
+              },
+              {
+                title: "Quizzes",
+                subtitle:
+                  availableQuizzes > 0
+                    ? `${availableQuizzes} available now`
+                    : "View course quizzes",
+                icon: "help-circle-outline",
+                tone: "bg-amber-50",
+                route: "/(student)/tasks/quizzes",
+              },
+              {
+                title: "Announcements",
+                subtitle:
+                  unreadAnnouncements > 0
+                    ? `${unreadAnnouncements} unread update${unreadAnnouncements === 1 ? "" : "s"}`
+                    : "View official updates",
+                icon: "megaphone-outline",
+                tone: "bg-purple-50",
+                route: "/(student)/announcements",
+              },
             ].map((link) => (
               <Pressable
                 key={link.title}
                 onPress={() => router.push(link.route as any)}
                 className={`mb-3 w-[48.5%] rounded-2xl p-4 ${link.tone}`}
               >
-                <Text className="text-2xl">{link.icon}</Text>
-                <Text className="mt-3 text-sm font-extrabold text-slate-900">{link.title}</Text>
-                <Text className="mt-1 text-xs leading-4 text-slate-500">{link.subtitle}</Text>
+                <Ionicons
+                  name={link.icon as ComponentProps<typeof Ionicons>["name"]}
+                  size={24}
+                  color="#2563EB"
+                />
+                <Text className="mt-3 text-sm font-extrabold text-slate-900">
+                  {link.title}
+                </Text>
+                <Text className="mt-1 text-xs leading-4 text-slate-500">
+                  {link.subtitle}
+                </Text>
               </Pressable>
             ))}
           </View>
 
           <View className="mb-2 mt-5 flex-row items-center justify-between">
-            <Text className="text-sm font-extrabold text-slate-900">Recent Chats</Text>
+            <Text className="text-sm font-extrabold text-slate-900">
+              Recent Chats
+            </Text>
             <Pressable onPress={() => setShowRecentChats((prev) => !prev)}>
               <Text className="text-sm font-bold text-blue-600">
                 {showRecentChats ? "Hide" : "Show"}
@@ -175,10 +273,21 @@ export default function StudentHomeScreen() {
                   className="flex-row items-center border-b border-slate-200 px-1 py-5"
                 >
                   <View className="h-14 w-14 items-center justify-center rounded-full bg-sky-100">
-                    <Text className="text-lg">{item.type === "group" ? "👥" : "💬"}</Text>
+                    <Ionicons
+                      name={
+                        item.type === "group"
+                          ? "people-outline"
+                          : "chatbubble-outline"
+                      }
+                      size={22}
+                      color="#2563EB"
+                    />
                   </View>
                   <View className="ml-3 flex-1">
-                    <Text className="text-lg font-bold text-slate-900" numberOfLines={1}>
+                    <Text
+                      className="text-lg font-bold text-slate-900"
+                      numberOfLines={1}
+                    >
                       {item.title}
                     </Text>
                     <Text className="text-sm text-slate-400" numberOfLines={1}>
@@ -187,7 +296,9 @@ export default function StudentHomeScreen() {
                   </View>
                   <View className="items-end self-start pt-0.5">
                     <Text className="text-sm text-slate-400">
-                      {item.lastMessage?.createdAt ? formatTime(item.lastMessage.createdAt) : ""}
+                      {item.lastMessage?.createdAt
+                        ? formatTime(item.lastMessage.createdAt)
+                        : ""}
                     </Text>
                     {item.unreadCount > 0 ? (
                       <View className="mt-1 min-w-5 rounded-full bg-blue-600 px-1.5 py-0.5">
@@ -201,7 +312,11 @@ export default function StudentHomeScreen() {
               ))}
               {recentThreads.length === 0 ? (
                 <View className="items-center py-10">
-                  <Text className="text-3xl">💬</Text>
+                  <Ionicons
+                    name="chatbubbles-outline"
+                    size={34}
+                    color="#94A3B8"
+                  />
                   <Text className="mt-2 text-sm font-semibold text-slate-500">
                     No conversations yet
                   </Text>

@@ -1,7 +1,7 @@
-import { router } from 'expo-router';
-import { BottomNav } from '@/src/components/common/BottomNav';
+import { router } from "expo-router";
+import { BottomNav } from "@/src/components/common/BottomNav";
 
-type LecturerTab = 'home' | 'chats' | 'courses' | 'tasks';
+type LecturerTab = "home" | "chats" | "courses" | "tasks";
 
 type Props = {
   active?: LecturerTab;
@@ -13,29 +13,29 @@ export function LecturerBottomNav({ active, unreadCount = 0 }: Props) {
     <BottomNav
       items={[
         {
-          label: 'Home',
-          icon: '🏠',
-          active: active === 'home',
-          onPress: () => router.replace('/(lecturer)/home'),
+          label: "Home",
+          icon: "home-outline",
+          active: active === "home",
+          onPress: () => router.replace("/(lecturer)/home"),
         },
         {
-          label: 'Chats',
-          icon: '💬',
+          label: "Chats",
+          icon: "chatbubbles-outline",
           badge: unreadCount,
-          active: active === 'chats',
-          onPress: () => router.replace('/(lecturer)/chats'),
+          active: active === "chats",
+          onPress: () => router.replace("/(lecturer)/chats"),
         },
         {
-          label: 'Courses',
-          icon: '📚',
-          active: active === 'courses',
-          onPress: () => router.replace('/(lecturer)/courses'),
+          label: "Courses",
+          icon: "library-outline",
+          active: active === "courses",
+          onPress: () => router.replace("/(lecturer)/courses"),
         },
         {
-          label: 'Course Tools',
-          icon: '📝',
-          active: active === 'tasks',
-          onPress: () => router.replace('/(lecturer)/tasks' as any),
+          label: "Course Tools",
+          icon: "construct-outline",
+          active: active === "tasks",
+          onPress: () => router.replace("/(lecturer)/tasks" as any),
         },
       ]}
     />

@@ -5,8 +5,6 @@ import { StatusBar } from "expo-status-bar";
 import { useMemo, useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -22,13 +20,24 @@ import {
   getProgrammes,
 } from "@/src/constants/htuAcademics";
 import { authService } from "@/src/services/auth.service";
+import { KeyboardAwareView } from "@/src/components/common/KeyboardAwareView";
 
 type Role = "student" | "lecturer";
 type Step = "account" | "details";
-type DropdownKey = "faculty" | "department" | "awardType" | "programme" | "yearGroup";
+type DropdownKey =
+  | "faculty"
+  | "department"
+  | "awardType"
+  | "programme"
+  | "yearGroup";
 
 const HND_LEVELS = ["Level 100", "Level 200", "Level 300"] as const;
-const BTECH_LEVELS = ["Level 100", "Level 200", "Level 300", "Level 400"] as const;
+const BTECH_LEVELS = [
+  "Level 100",
+  "Level 200",
+  "Level 300",
+  "Level 400",
+] as const;
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -97,7 +106,7 @@ export default function RegisterScreen() {
 
     try {
       setLoading(true);
-      const session = await authService.register({
+      const result = await authService.register({
         name: fullName.trim(),
         email: email.trim().toLowerCase(),
         password,
@@ -112,9 +121,9 @@ export default function RegisterScreen() {
         awardType: role === "student" ? awardType : undefined,
       });
 
-      router.replace(
-        session.user.role === "lecturer" ? "/(lecturer)/home" : "/(student)/home",
-      );
+      Alert.alert("Account created", result.message, [
+        { text: "Sign In", onPress: () => router.replace("/(auth)/login") },
+      ]);
     } catch (error) {
       Alert.alert(
         "Registration failed",
@@ -198,7 +207,12 @@ export default function RegisterScreen() {
     <View className="mb-4">
       <Text className="mb-2 text-sm font-semibold text-slate-600">{label}</Text>
       <View className="flex-row items-center rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5">
-        <Text className="mr-3 text-sm">🔐</Text>
+        <Ionicons
+          name="lock-closed-outline"
+          size={20}
+          color="#64748B"
+          style={{ marginRight: 12 }}
+        />
         <TextInput
           value={value}
           onChangeText={onChangeText}
@@ -222,34 +236,41 @@ export default function RegisterScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A1628]">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-[#0A1628]">
       <StatusBar style="light" hidden={false} backgroundColor="#0A1628" />
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}>
-          <View className="flex-1 items-center">
+      <KeyboardAwareView keyboardVerticalOffset={0}>
+        <ScrollView
+          className="flex-1 bg-white"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 48 }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          automaticallyAdjustKeyboardInsets
+        >
+          <View className="flex-1 items-center bg-white">
             <LinearGradient
               colors={["#0A1628", "#1A3A6B"]}
               className="w-full max-w-[520px] items-center px-6 pb-8 pt-20"
             >
               <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
-                <Text className="text-3xl">🎓</Text>
+                <Ionicons name="school-outline" size={34} color="#2563EB" />
               </View>
               <Text className="mt-4 text-xl font-extrabold text-white">
                 {step === "account" ? "Create Account" : "Academic Details"}
               </Text>
               <Text className="mt-2 text-lg text-white/75">
-                {step === "account" ? "Join the campus network" : "Ho Technical University"}
+                {step === "account"
+                  ? "Join the campus network"
+                  : "Ho Technical University"}
               </Text>
             </LinearGradient>
 
-            <View className="mt-5 w-full max-w-[520px] flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-6">
+            <View className="-mt-5 w-full max-w-[520px] flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-8">
               {step === "account" ? (
                 <>
                   <View className="mb-4">
-                    <Text className="mb-2 text-sm font-semibold text-slate-600">Full Name</Text>
+                    <Text className="mb-2 text-sm font-semibold text-slate-600">
+                      Full Name
+                    </Text>
                     <TextInput
                       value={fullName}
                       onChangeText={setFullName}
@@ -265,15 +286,21 @@ export default function RegisterScreen() {
                     </Text>
                     <TextInput
                       value={role === "student" ? studentId : staffId}
-                      onChangeText={role === "student" ? setStudentId : setStaffId}
-                      placeholder={role === "student" ? "0323080542" : "STAFF-001"}
+                      onChangeText={
+                        role === "student" ? setStudentId : setStaffId
+                      }
+                      placeholder={
+                        role === "student" ? "0323080542" : "STAFF-001"
+                      }
                       className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-lg text-slate-900"
                       autoCapitalize="characters"
                     />
                   </View>
 
                   <View className="mb-4">
-                    <Text className="mb-2 text-sm font-semibold text-slate-600">Email Address</Text>
+                    <Text className="mb-2 text-sm font-semibold text-slate-600">
+                      Email Address
+                    </Text>
                     <TextInput
                       value={email}
                       onChangeText={setEmail}
@@ -284,8 +311,12 @@ export default function RegisterScreen() {
                     />
                   </View>
 
-                  {passwordInput("Password", password, setPassword, passwordVisible, () =>
-                    setPasswordVisible((visible) => !visible),
+                  {passwordInput(
+                    "Password",
+                    password,
+                    setPassword,
+                    passwordVisible,
+                    () => setPasswordVisible((visible) => !visible),
                   )}
                   {passwordInput(
                     "Confirm Password",
@@ -297,17 +328,21 @@ export default function RegisterScreen() {
 
                   {password.length > 0 && !passwordOk ? (
                     <Text className="mb-4 text-sm font-medium text-rose-600">
-                      Use at least 8 chars, with one uppercase letter and one number.
+                      Use at least 8 chars, with one uppercase letter and one
+                      number.
                     </Text>
                   ) : null}
-                  {confirmPassword.length > 0 && password !== confirmPassword ? (
+                  {confirmPassword.length > 0 &&
+                  password !== confirmPassword ? (
                     <Text className="mb-4 text-sm font-medium text-rose-600">
                       Passwords do not match.
                     </Text>
                   ) : null}
 
                   <View className="mb-6">
-                    <Text className="mb-2 text-sm font-semibold text-slate-600">Select Role</Text>
+                    <Text className="mb-2 text-sm font-semibold text-slate-600">
+                      Select Role
+                    </Text>
                     <View className="flex-row">
                       {(["student", "lecturer"] as const).map((item) => (
                         <Pressable
@@ -318,7 +353,9 @@ export default function RegisterScreen() {
                           }}
                           className={`mr-2.5 flex-1 items-center rounded-xl border px-3 py-3 ${role === item ? "border-blue-600 bg-blue-50" : "border-slate-300 bg-slate-100"}`}
                         >
-                          <Text className={`text-sm font-semibold capitalize ${role === item ? "text-blue-700" : "text-slate-700"}`}>
+                          <Text
+                            className={`text-sm font-semibold capitalize ${role === item ? "text-blue-700" : "text-slate-700"}`}
+                          >
                             {item}
                           </Text>
                         </Pressable>
@@ -330,7 +367,9 @@ export default function RegisterScreen() {
                     onPress={handleNext}
                     className="items-center rounded-xl bg-blue-600 px-4 py-3.5 active:bg-blue-700"
                   >
-                    <Text className="text-lg font-bold text-white">Continue</Text>
+                    <Text className="text-lg font-bold text-white">
+                      Continue
+                    </Text>
                   </Pressable>
                 </>
               ) : (
@@ -359,23 +398,44 @@ export default function RegisterScreen() {
                   )}
                   {role === "student" ? (
                     <>
-                      {dropdown("awardType", "Award Type", awardType, AWARD_TYPES, (value) => {
-                        const nextAwardType = value as AwardType;
-                        const nextYearGroups = nextAwardType === "BTech" ? BTECH_LEVELS : HND_LEVELS;
+                      {dropdown(
+                        "awardType",
+                        "Award Type",
+                        awardType,
+                        AWARD_TYPES,
+                        (value) => {
+                          const nextAwardType = value as AwardType;
+                          const nextYearGroups =
+                            nextAwardType === "BTech"
+                              ? BTECH_LEVELS
+                              : HND_LEVELS;
 
-                        setAwardType(nextAwardType);
-                        setProgramme("");
-                        setYearGroup((current) => nextYearGroups.includes(current as never) ? current : nextYearGroups[0]);
-                      })}
+                          setAwardType(nextAwardType);
+                          setProgramme("");
+                          setYearGroup((current) =>
+                            nextYearGroups.includes(current as never)
+                              ? current
+                              : nextYearGroups[0],
+                          );
+                        },
+                      )}
                       {dropdown(
                         "programme",
                         "Programme",
                         programme,
                         programmes,
                         setProgramme,
-                        department ? "Select programme" : "Select department first",
+                        department
+                          ? "Select programme"
+                          : "Select department first",
                       )}
-                      {dropdown("yearGroup", "Year Group", yearGroup, yearGroups, setYearGroup)}
+                      {dropdown(
+                        "yearGroup",
+                        "Year Group",
+                        yearGroup,
+                        yearGroups,
+                        setYearGroup,
+                      )}
                     </>
                   ) : null}
 
@@ -384,7 +444,9 @@ export default function RegisterScreen() {
                       onPress={() => setStep("account")}
                       className="mr-3 flex-1 items-center rounded-xl border border-slate-300 px-4 py-3.5"
                     >
-                      <Text className="text-lg font-bold text-slate-700">Back</Text>
+                      <Text className="text-lg font-bold text-slate-700">
+                        Back
+                      </Text>
                     </Pressable>
                     <Pressable
                       disabled={loading}
@@ -399,15 +461,19 @@ export default function RegisterScreen() {
                 </>
               )}
 
-              <Pressable onPress={() => router.replace("/(auth)/login")} className="mt-5">
+              <Pressable
+                onPress={() => router.replace("/(auth)/login")}
+                className="mt-5"
+              >
                 <Text className="text-center text-sm text-slate-500">
-                  Already have an account? <Text className="font-semibold text-blue-600">Sign in</Text>
+                  Already have an account?{" "}
+                  <Text className="font-semibold text-blue-600">Sign in</Text>
                 </Text>
               </Pressable>
             </View>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareView>
     </SafeAreaView>
   );
 }

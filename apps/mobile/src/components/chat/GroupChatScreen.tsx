@@ -308,8 +308,8 @@ export default function GroupChatScreen() {
 
       <KeyboardAvoidingView
         className="flex-1 bg-[#F2F4F8]"
-        behavior="padding"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 24}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
       >
         <FilterRow<string>
           filters={Object.keys(isLecturer ? lecturerActions : studentActions)}

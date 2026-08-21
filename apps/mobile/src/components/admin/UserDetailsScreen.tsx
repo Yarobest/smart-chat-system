@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "@/src/components/common/StatusBar";
@@ -15,7 +17,7 @@ function DetailRow({
   value,
   valueAccent,
 }: {
-  icon: string;
+  icon: ComponentProps<typeof Ionicons>["name"];
   label: string;
   value: string;
   valueAccent?: string;
@@ -24,7 +26,7 @@ function DetailRow({
     <View className="mb-3 flex-row items-center justify-between rounded-2xl bg-white px-4 py-4 shadow-sm shadow-slate-200">
       <View className="mr-3 flex-1 flex-row items-center">
         <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
-          <Text className="text-lg">{icon}</Text>
+          <Ionicons name={icon} size={20} color="#64748B" />
         </View>
         <Text
           className="flex-1 text-sm font-semibold text-slate-900"
@@ -196,18 +198,18 @@ export default function UserDetailsScreen() {
               Account Info
             </Text>
             <DetailRow
-              icon="📧"
+              icon="mail-outline"
               label="Email"
               value={user.email}
               valueAccent="text-blue-600"
             />
             <DetailRow
-              icon="📅"
+              icon="calendar-outline"
               label="Joined"
               value={new Date(user.createdAt).toLocaleDateString()}
             />
             <DetailRow
-              icon="📱"
+              icon="phone-portrait-outline"
               label="Last Seen"
               value={
                 user.lastSeenAt
@@ -216,7 +218,7 @@ export default function UserDetailsScreen() {
               }
             />
             <DetailRow
-              icon="🔐"
+              icon="business-outline"
               label="Faculty"
               value={user.faculty ?? "Not set"}
             />

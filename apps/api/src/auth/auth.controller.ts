@@ -16,7 +16,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Register a user and return a session token' })
+  @ApiOperation({ summary: 'Register a user, then require a separate login' })
   @ApiBody({ type: RegisterDto })
   @ApiResponse({ status: 201, description: 'User registered successfully' })
   register(@Body() body: RegisterDto) {
@@ -29,6 +29,49 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Login successful' })
   login(@Body() body: LoginDto) {
     return this.authService.login(body);
+  }
+
+  @Post('google')
+  @ApiOperation({
+    summary: 'Sign in with a verified HTU Google Workspace account',
+  })
+  googleLogin(@Body() body: unknown) {
+    return this.authService.googleLogin(body);
+  }
+
+  @Post('google/complete-profile')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Complete a first-time Google user academic profile',
+  })
+  completeGoogleProfile(
+    @Headers('authorization') authorization: string | undefined,
+    @Body() body: unknown,
+  ) {
+    return this.authService.completeGoogleProfile(
+      this.getBearerToken(authorization),
+      body,
+    );
+  }
+
+  @Post('forgot-password')
+  @ApiOperation({
+    summary: 'Send a password reset code when the account exists',
+  })
+  forgotPassword(@Body() body: unknown) {
+    return this.authService.forgotPassword(body);
+  }
+
+  @Post('verify-reset-code')
+  @ApiOperation({ summary: 'Verify a password reset code' })
+  verifyResetCode(@Body() body: unknown) {
+    return this.authService.verifyResetCode(body);
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset a password with a valid email code' })
+  resetPassword(@Body() body: unknown) {
+    return this.authService.resetPassword(body);
   }
 
   @Post('logout')

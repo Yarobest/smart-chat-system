@@ -25,7 +25,9 @@ export class RegisterDto {
   @ApiPropertyOptional({ example: 'STAFF-001' })
   staffId?: string;
 
-  @ApiPropertyOptional({ example: 'Faculty of Applied Sciences and Technology' })
+  @ApiPropertyOptional({
+    example: 'Faculty of Applied Sciences and Technology',
+  })
   faculty?: string;
 
   @ApiPropertyOptional({ example: 'Computer Science' })

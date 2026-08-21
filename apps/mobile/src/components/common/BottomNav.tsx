@@ -1,8 +1,10 @@
 import { Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 
 type Item = {
   label: string;
-  icon: string;
+  icon: ComponentProps<typeof Ionicons>["name"];
   active?: boolean;
   onPress?: () => void;
   badge?: number;
@@ -26,7 +28,11 @@ export function BottomNav({ items }: Props) {
                 </Text>
               </View>
             ) : null}
-            <Text className="text-2xl">{item.icon}</Text>
+            <Ionicons
+              name={item.icon}
+              size={24}
+              color={item.active ? "#2563EB" : "#94A3B8"}
+            />
           </View>
           <Text
             numberOfLines={1}

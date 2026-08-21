@@ -1,15 +1,16 @@
-import { useEffect, useMemo } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { StatusBar } from '@/src/components/common/StatusBar';
-import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
-import { useAuth } from '@/src/hooks/useAuth';
-import { useNotifications } from '@/src/hooks/useNotifications';
-import { authService } from '@/src/services/auth.service';
-import { getInitials } from '@/src/utils/getInitials';
-import { useLiveThreads } from '@/src/hooks/useLiveThreads';
-import { BroadcastHomeBanner } from '@/src/components/broadcasts/BroadcastHomeBanner';
+import { useEffect, useMemo } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { StatusBar } from "@/src/components/common/StatusBar";
+import { LecturerBottomNav } from "@/src/components/common/LecturerBottomNav";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useNotifications } from "@/src/hooks/useNotifications";
+import { authService } from "@/src/services/auth.service";
+import { getInitials } from "@/src/utils/getInitials";
+import { useLiveThreads } from "@/src/hooks/useLiveThreads";
+import { BroadcastHomeBanner } from "@/src/components/broadcasts/BroadcastHomeBanner";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function LecturerHomeScreen() {
   const { user, token } = useAuth();
@@ -20,9 +21,12 @@ export default function LecturerHomeScreen() {
     if (token) authService.me().catch(() => null);
   }, [token]);
 
-  const displayName = user?.name ?? 'Lecturer';
-  const initials = getInitials(displayName) || 'LE';
-  const groupThreads = useMemo(() => threads.filter((thread) => thread.type === 'group'), [threads]);
+  const displayName = user?.name ?? "Lecturer";
+  const initials = getInitials(displayName) || "LE";
+  const groupThreads = useMemo(
+    () => threads.filter((thread) => thread.type === "group"),
+    [threads],
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
@@ -31,25 +35,34 @@ export default function LecturerHomeScreen() {
         <View className="px-4 pb-6 pt-4">
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
-              <Text className="text-sm text-slate-300">Good Day 👋</Text>
-              <Text className="text-2xl font-extrabold text-white" numberOfLines={1}>
+              <Text className="text-sm text-slate-300">Good Day</Text>
+              <Text
+                className="text-2xl font-extrabold text-white"
+                numberOfLines={1}
+              >
                 {displayName}
               </Text>
             </View>
             <View className="flex-row items-center gap-3">
               <Pressable
-                onPress={() => router.push('/(lecturer)/notifications' as any)}
+                onPress={() => router.push("/(lecturer)/notifications" as any)}
                 className="relative h-10 w-10 items-center justify-center rounded-full bg-white/10"
               >
-                <Text className="text-lg">🔔</Text>
+                <Ionicons
+                  name="notifications-outline"
+                  size={21}
+                  color="white"
+                />
                 {notificationCount > 0 ? (
                   <View className="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-500 px-1">
-                    <Text className="text-center text-xs font-bold text-white">{notificationCount}</Text>
+                    <Text className="text-center text-xs font-bold text-white">
+                      {notificationCount}
+                    </Text>
                   </View>
                 ) : null}
               </Pressable>
               <Pressable
-                onPress={() => router.replace('/(lecturer)/profile')}
+                onPress={() => router.replace("/(lecturer)/profile")}
                 className="h-10 w-10 items-center justify-center rounded-full bg-orange-500"
               >
                 <Text className="text-sm font-bold text-white">{initials}</Text>
@@ -59,13 +72,20 @@ export default function LecturerHomeScreen() {
 
           <View className="mt-5 flex-row gap-3">
             {[
-              { label: 'Groups', value: String(groupThreads.length) },
-              { label: 'Members', value: String(studentCount) },
-              { label: 'Unread', value: String(unreadCount) },
+              { label: "Groups", value: String(groupThreads.length) },
+              { label: "Members", value: String(studentCount) },
+              { label: "Unread", value: String(unreadCount) },
             ].map((stat) => (
-              <View key={stat.label} className="flex-1 items-start rounded-2xl bg-white/10 px-4 py-4">
-                <Text className="text-2xl font-extrabold text-amber-300">{stat.value}</Text>
-                <Text className="mt-0.5 text-xs text-slate-400">{stat.label}</Text>
+              <View
+                key={stat.label}
+                className="flex-1 items-start rounded-2xl bg-white/10 px-4 py-4"
+              >
+                <Text className="text-2xl font-extrabold text-amber-300">
+                  {stat.value}
+                </Text>
+                <Text className="mt-0.5 text-xs text-slate-400">
+                  {stat.label}
+                </Text>
               </View>
             ))}
           </View>
@@ -84,14 +104,19 @@ export default function LecturerHomeScreen() {
                   Welcome, {displayName}
                 </Text>
                 <Text className="text-sm leading-5 text-amber-600">
-                  {user?.department ?? 'Your department'} · {user?.faculty ?? 'Ho Technical University'}
+                  {user?.department ?? "Your department"} ·{" "}
+                  {user?.faculty ?? "Ho Technical University"}
                 </Text>
               </View>
 
               <View className="mb-3 flex-row items-center justify-between">
-                <Text className="text-base font-extrabold text-slate-900">My Conversations</Text>
-                <Pressable onPress={() => router.replace('/(lecturer)/chats')}>
-                  <Text className="text-sm font-semibold text-blue-600">See All</Text>
+                <Text className="text-base font-extrabold text-slate-900">
+                  My Conversations
+                </Text>
+                <Pressable onPress={() => router.replace("/(lecturer)/chats")}>
+                  <Text className="text-sm font-semibold text-blue-600">
+                    See All
+                  </Text>
                 </Pressable>
               </View>
 
@@ -100,7 +125,7 @@ export default function LecturerHomeScreen() {
                   key={thread.id}
                   onPress={() =>
                     router.push(
-                      thread.type === 'group'
+                      thread.type === "group"
                         ? (`/(lecturer)/groups/${thread.id}` as any)
                         : (`/(lecturer)/chats/${thread.id}` as any),
                     )
@@ -109,20 +134,36 @@ export default function LecturerHomeScreen() {
                 >
                   <View className="flex-1 flex-row items-center gap-3 pr-3">
                     <View className="h-12 w-12 items-center justify-center rounded-2xl bg-blue-50">
-                      <Text className="text-2xl">{thread.type === 'group' ? '👥' : '💬'}</Text>
+                      <Ionicons
+                        name={
+                          thread.type === "group"
+                            ? "people-outline"
+                            : "chatbubble-outline"
+                        }
+                        size={23}
+                        color="#2563EB"
+                      />
                     </View>
                     <View className="flex-1">
-                      <Text className="text-sm font-extrabold text-slate-900" numberOfLines={1}>
+                      <Text
+                        className="text-sm font-extrabold text-slate-900"
+                        numberOfLines={1}
+                      >
                         {thread.title}
                       </Text>
-                      <Text className="text-xs text-slate-400" numberOfLines={1}>
-                        {thread.lastMessage?.text || 'No messages yet'}
+                      <Text
+                        className="text-xs text-slate-400"
+                        numberOfLines={1}
+                      >
+                        {thread.lastMessage?.text || "No messages yet"}
                       </Text>
                     </View>
                   </View>
                   {thread.unreadCount > 0 ? (
                     <View className="rounded-full bg-blue-600 px-2 py-1">
-                      <Text className="text-xs font-bold text-white">{thread.unreadCount}</Text>
+                      <Text className="text-xs font-bold text-white">
+                        {thread.unreadCount}
+                      </Text>
                     </View>
                   ) : null}
                 </Pressable>
@@ -131,9 +172,11 @@ export default function LecturerHomeScreen() {
               {threads.length === 0 ? (
                 <View className="flex-1 items-center justify-center pb-16">
                   <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-                    <Text className="text-3xl">✉️</Text>
+                    <Ionicons name="mail-outline" size={32} color="#94A3B8" />
                   </View>
-                  <Text className="text-base font-bold text-slate-700">No conversations yet</Text>
+                  <Text className="text-base font-bold text-slate-700">
+                    No conversations yet
+                  </Text>
                 </View>
               ) : null}
             </View>

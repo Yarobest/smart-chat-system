@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
+import { EmailService } from './email.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,6 +13,10 @@ describe('AuthService', () => {
         {
           provide: PrismaService,
           useValue: {},
+        },
+        {
+          provide: EmailService,
+          useValue: { sendPasswordResetCode: jest.fn() },
         },
       ],
     }).compile();

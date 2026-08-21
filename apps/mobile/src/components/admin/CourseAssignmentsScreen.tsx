@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AdminBottomNav } from "@/src/components/common/AdminBottomNav";
@@ -49,7 +50,7 @@ export default function CourseAssignmentsScreen() {
               onPress={() => router.push("/(admin)/courses/create" as never)}
               className="w-[48.5%] rounded-2xl border border-blue-200 bg-white p-4 active:bg-blue-50"
             >
-              <Text className="text-xl">📘</Text>
+              <Ionicons name="book-outline" size={23} color="#2563EB" />
               <Text className="mt-3 text-base font-extrabold text-slate-900">
                 Create Course
               </Text>
@@ -64,7 +65,7 @@ export default function CourseAssignmentsScreen() {
               onPress={() => router.push("/(admin)/courses/assign" as never)}
               className="w-[48.5%] rounded-2xl border border-emerald-200 bg-white p-4 active:bg-emerald-50"
             >
-              <Text className="text-xl">🔗</Text>
+              <Ionicons name="link-outline" size={23} color="#059669" />
               <Text className="mt-3 text-base font-extrabold text-slate-900">
                 Assign Course
               </Text>

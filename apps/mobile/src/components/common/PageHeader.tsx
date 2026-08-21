@@ -8,7 +8,7 @@ type PageHeaderProps = {
 export function PageHeader({ title, subtitle }: PageHeaderProps) {
   return (
     <View className="bg-[#051839] px-4 pb-5 pt-6">
-      <Text className="text-2xl font-extrabold text-white" numberOfLines={1} ellipsizeMode="tail">
+      <Text className="text-2xl font-extrabold text-white" numberOfLines={1} ellipsizeMode="tail" adjustsFontSizeToFit minimumFontScale={0.75}>
         {title}
       </Text>
       {subtitle ? (

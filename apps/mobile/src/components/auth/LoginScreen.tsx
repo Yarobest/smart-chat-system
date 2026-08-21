@@ -64,13 +64,15 @@ export default function LoginScreen() {
       <StatusBar style="light" hidden={false} backgroundColor="#0A1628" />
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
       >
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          automaticallyAdjustKeyboardInsets
           showsVerticalScrollIndicator={false}
         >
           <View className="flex-1">
@@ -81,9 +83,7 @@ export default function LoginScreen() {
               className="items-center px-6 pb-8 pt-20"
             >
               <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
-                <Text allowFontScaling className="text-3xl">
-                  🎓
-                </Text>
+                <Ionicons name="school-outline" size={34} color="#2563EB" />
               </View>
               <Text
                 allowFontScaling
@@ -108,7 +108,12 @@ export default function LoginScreen() {
                   Email Address
                 </Text>
                 <View className="flex-row items-center rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5">
-                  <Text className="mr-3 text-sm">📧</Text>
+                  <Ionicons
+                    name="mail-outline"
+                    size={20}
+                    color="#64748B"
+                    style={{ marginRight: 12 }}
+                  />
                   <TextInput
                     value={email}
                     onChangeText={setEmail}
@@ -129,7 +134,12 @@ export default function LoginScreen() {
                   Password
                 </Text>
                 <View className="flex-row items-center rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5">
-                  <Text className="mr-3 text-sm">🔐</Text>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color="#64748B"
+                    style={{ marginRight: 12 }}
+                  />
                   <TextInput
                     value={password}
                     onChangeText={setPassword}
@@ -142,7 +152,9 @@ export default function LoginScreen() {
                     onPress={() => setPasswordVisible((visible) => !visible)}
                     className="ml-2 h-9 w-9 items-center justify-center rounded-full active:bg-slate-200"
                     accessibilityRole="button"
-                    accessibilityLabel={passwordVisible ? "Hide password" : "Show password"}
+                    accessibilityLabel={
+                      passwordVisible ? "Hide password" : "Show password"
+                    }
                   >
                     <Ionicons
                       name={passwordVisible ? "eye-off-outline" : "eye-outline"}
@@ -189,23 +201,6 @@ export default function LoginScreen() {
                   >
                     Register
                   </Text>
-                </Text>
-              </Pressable>
-
-              <View className="my-5 flex-row items-center">
-                <View className="h-px flex-1 bg-slate-200" />
-                <Text
-                  allowFontScaling
-                  className="mx-3 text-sm font-medium text-slate-400"
-                >
-                  OR
-                </Text>
-                <View className="h-px flex-1 bg-slate-200" />
-              </View>
-
-              <Pressable className="items-center rounded-2xl border border-slate-300 bg-white px-4 py-4 active:bg-slate-50">
-                <Text allowFontScaling className="text-lg text-slate-700">
-                  🏫 Sign in with HTU ID
                 </Text>
               </Pressable>
             </View>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AdminBottomNav } from "@/src/components/common/AdminBottomNav";
@@ -62,19 +63,19 @@ export default function UserManagementScreen() {
   const summary = [
     {
       label: `${studentsCount} Students`,
-      icon: "🎓",
+      icon: "school-outline" as const,
       container: "bg-blue-50",
       text: "text-blue-600",
     },
     {
       label: `${lecturersCount} Lecturers`,
-      icon: "👨‍🏫",
+      icon: "person-outline" as const,
       container: "bg-amber-50",
       text: "text-amber-600",
     },
     {
       label: `${onlineCount} Online`,
-      icon: "✅",
+      icon: "checkmark-circle-outline" as const,
       container: "bg-emerald-50",
       text: "text-emerald-600",
     },
@@ -131,7 +132,12 @@ export default function UserManagementScreen() {
         >
           <View className="bg-white px-4 pb-6 pt-4">
             <View className="flex-row items-center rounded-xl border border-slate-200 bg-[#F4F7FD] px-4 py-3">
-              <Text className="mr-3 text-xl text-slate-400">⌕</Text>
+              <Ionicons
+                name="search-outline"
+                size={21}
+                color="#94A3B8"
+                style={{ marginRight: 12 }}
+              />
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -179,9 +185,22 @@ export default function UserManagementScreen() {
                   key={item.label}
                   className={`mb-2 rounded-full px-4 py-2 ${item.container}`}
                 >
-                  <Text className={`text-sm font-bold ${item.text}`}>
-                    {item.icon} {item.label}
-                  </Text>
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name={item.icon}
+                      size={16}
+                      color={
+                        item.text.includes("blue")
+                          ? "#2563EB"
+                          : item.text.includes("amber")
+                            ? "#D97706"
+                            : "#059669"
+                      }
+                    />
+                    <Text className={`ml-1.5 text-sm font-bold ${item.text}`}>
+                      {item.label}
+                    </Text>
+                  </View>
                 </View>
               ))}
             </View>

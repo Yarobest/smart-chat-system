@@ -1,4 +1,5 @@
 import { Modal, Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface LogoutModalProps {
   visible: boolean;
@@ -23,7 +24,7 @@ export function LogoutModal({
       <View className="rounded-t-3xl bg-white px-6 pb-10 pt-6">
         <View className="mb-4 items-center">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-red-50">
-            <Text className="text-4xl">🚪</Text>
+            <Ionicons name="log-out-outline" size={32} color="#EF4444" />
           </View>
         </View>
 

@@ -110,6 +110,8 @@ model User {
   name         String
   email        String    @unique
   passwordHash String
+  googleSubject String?   @unique
+  profileCompleted Boolean @default(true)
   role         UserRole  @default(STUDENT)
   studentId    String?
   staffId      String?
@@ -125,6 +127,7 @@ model User {
   updatedAt    DateTime  @updatedAt
 
   sessions            AuthSession[]
+  passwordResetCodes  PasswordResetCode[]
   ownedConversations  Conversation[]       @relation("ConversationOwner")
   memberships         ConversationMember[]
   messages            Message[]
@@ -197,6 +200,21 @@ model Conversation {
   @@index([programme])
   @@index([yearGroup])
   @@index([awardType])
+}
+
+model PasswordResetCode {
+  id        String    @id @default(cuid())
+  userId    String
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
 }
 
 model Course {

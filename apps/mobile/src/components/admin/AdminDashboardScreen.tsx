@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -10,7 +12,7 @@ import { StatusBar } from "@/src/components/common/StatusBar";
 import { AdminDashboard, adminService } from "@/src/services/admin.service";
 
 type DashboardStat = {
-  icon: string;
+  icon: ComponentProps<typeof Ionicons>["name"];
   value: string;
   label: string;
   trend: string;
@@ -20,28 +22,28 @@ type DashboardStat = {
 const getStats = (dashboard: AdminDashboard | null): DashboardStat[] =>
   [
     {
-      icon: "👥",
+      icon: "people-outline",
       value: (dashboard?.stats.totalUsers ?? 0).toLocaleString(),
       label: "Total Users",
       trend: `${dashboard?.stats.students ?? 0} students · ${dashboard?.stats.lecturers ?? 0} lecturers`,
       trendColor: "text-emerald-500",
     },
     {
-      icon: "🟢",
+      icon: "radio-button-on-outline",
       value: (dashboard?.stats.onlineUsers ?? 0).toLocaleString(),
       label: "Online Now",
       trend: "Live from database",
       trendColor: "text-emerald-500",
     },
     {
-      icon: "🏫",
+      icon: "chatbubbles-outline",
       value: (dashboard?.stats.conversations ?? 0).toLocaleString(),
       label: "Chat Spaces",
       trend: "Direct and course group rooms",
       trendColor: "text-emerald-500",
     },
     {
-      icon: "🛡️",
+      icon: "shield-checkmark-outline",
       value: (dashboard?.stats.admins ?? 0).toLocaleString(),
       label: "Admins",
       trend: "Admin accounts",
@@ -51,28 +53,28 @@ const getStats = (dashboard: AdminDashboard | null): DashboardStat[] =>
 
 const quickActions = [
   {
-    icon: "👥",
+    icon: "people-outline",
     title: "Users",
     subtitle: "Live accounts",
     accent: "border-emerald-400",
     onPress: () => router.push("/(admin)/users"),
   },
   {
-    icon: "📚",
+    icon: "library-outline",
     title: "Courses",
     subtitle: "Manage courses",
     accent: "border-purple-400",
     onPress: () => router.push("/(admin)/courses"),
   },
   {
-    icon: "📊",
+    icon: "bar-chart-outline",
     title: "Analytics",
     subtitle: "Live reports",
     accent: "border-emerald-500",
     onPress: () => router.push("/(admin)/analytics/reports-and-analytics"),
   },
   {
-    icon: "📣",
+    icon: "megaphone-outline",
     title: "Broadcast",
     subtitle: "School notices",
     accent: "border-cyan-400",
@@ -93,7 +95,7 @@ function StatCard({
       onPress={onPress}
       className="mb-3 w-[48.5%] rounded-2xl bg-white p-4 shadow-sm shadow-slate-200"
     >
-      <Text className="text-lg">{icon}</Text>
+      <Ionicons name={icon} size={22} color="#2563EB" />
       <Text
         className="mt-3 text-xl font-extrabold text-slate-900"
         numberOfLines={1}
@@ -180,7 +182,11 @@ export default function AdminDashboardScreen() {
                     {dashboard?.recentUsers.length ?? 0}
                   </Text>
                 </View>
-                <Text className="text-lg text-white">🔔</Text>
+                <Ionicons
+                  name="notifications-outline"
+                  size={21}
+                  color="white"
+                />
               </Pressable>
               <Pressable
                 onPress={() => router.push("/(admin)/profile")}
@@ -223,9 +229,12 @@ export default function AdminDashboardScreen() {
               }`}
             >
               <View className="flex-row items-start">
-                <Text className="mr-3 mt-0.5 text-2xl">
-                  {error ? "🚨" : "📡"}
-                </Text>
+                <Ionicons
+                  name={error ? "warning-outline" : "pulse-outline"}
+                  size={24}
+                  color={error ? "#F43F5E" : "#2563EB"}
+                  style={{ marginRight: 12, marginTop: 2 }}
+                />
                 <View className="flex-1">
                   <Text
                     className={`text-sm font-extrabold ${error ? "text-rose-500" : "text-blue-600"}`}
@@ -265,7 +274,7 @@ export default function AdminDashboardScreen() {
                   onPress={action.onPress}
                   className={`mb-3 w-[48.5%] rounded-2xl border bg-white px-4 py-4 shadow-sm shadow-slate-200 ${action.accent}`}
                 >
-                  <Text className="text-xl">{action.icon}</Text>
+                  <Ionicons name={action.icon} size={23} color="#2563EB" />
                   <Text
                     className="mt-4 text-sm font-extrabold text-slate-900"
                     numberOfLines={1}

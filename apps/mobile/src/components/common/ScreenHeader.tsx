@@ -11,7 +11,7 @@ export function ScreenHeader({ title, onBackPress, fallbackRoute }: Props) {
         onPress={onBackPress}
         className="mr-3 h-10 w-10 items-center justify-center rounded-xl bg-white/10 active:bg-white/20"
       />
-      <Text numberOfLines={1} className="flex-1 text-xl font-extrabold text-white">{title}</Text>
+      <Text numberOfLines={1} ellipsizeMode="tail" adjustsFontSizeToFit minimumFontScale={0.75} className="flex-1 text-xl font-extrabold text-white">{title}</Text>
     </View>
   );
 }

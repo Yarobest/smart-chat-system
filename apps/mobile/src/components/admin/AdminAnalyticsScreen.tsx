@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { StatusBar } from "../common/StatusBar";
 import { AdminBottomNav } from "../common/AdminBottomNav";
@@ -24,14 +26,22 @@ export default function AdminAnalyticsScreen() {
   );
   const cards = data
     ? [
-        ["Users", data.stats.users, "👥"],
-        ["Active Courses", data.stats.activeCourses, "📚"],
-        ["Messages", data.stats.messages, "💬"],
-        ["Submissions", data.stats.submissions, "📋"],
-        ["Quiz Attempts", data.stats.quizAttempts, "🧪"],
-        ["Material Opens", data.stats.materialReads, "📖"],
-        ["Announcement Reads", data.stats.announcementReads, "📣"],
-        ["Broadcast Read Rate", `${data.stats.broadcastReadRate}%`, "📡"],
+        ["Users", data.stats.users, "people-outline"],
+        ["Active Courses", data.stats.activeCourses, "library-outline"],
+        ["Messages", data.stats.messages, "chatbubbles-outline"],
+        ["Submissions", data.stats.submissions, "document-text-outline"],
+        ["Quiz Attempts", data.stats.quizAttempts, "help-circle-outline"],
+        ["Material Opens", data.stats.materialReads, "book-outline"],
+        [
+          "Announcement Reads",
+          data.stats.announcementReads,
+          "megaphone-outline",
+        ],
+        [
+          "Broadcast Read Rate",
+          `${data.stats.broadcastReadRate}%`,
+          "radio-outline",
+        ],
       ]
     : [];
   const max = Math.max(
@@ -58,7 +68,11 @@ export default function AdminAnalyticsScreen() {
               key={String(label)}
               className="mb-3 w-[48.5%] rounded-2xl border border-slate-200 bg-white p-4"
             >
-              <Text className="text-xl">{icon}</Text>
+              <Ionicons
+                name={icon as ComponentProps<typeof Ionicons>["name"]}
+                size={23}
+                color="#2563EB"
+              />
               <Text className="mt-3 text-2xl font-extrabold text-slate-900">
                 {value}
               </Text>

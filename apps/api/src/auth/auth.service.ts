@@ -4,16 +4,29 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { randomBytes, pbkdf2Sync, timingSafeEqual, createHash } from 'crypto';
+import {
+  randomBytes,
+  randomInt,
+  pbkdf2Sync,
+  timingSafeEqual,
+  createHash,
+} from 'crypto';
 import { User, UserRole } from '@prisma/client';
+import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from './email.service';
 
 @Injectable()
 export class AuthService {
   private readonly passwordIterations = 120000;
   private readonly sessionDays = 30;
+  private readonly resetCodeMinutes = 10;
+  private readonly googleClient = new OAuth2Client();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   async register(body: unknown) {
     const input = this.parseRegisterBody(body);
@@ -45,11 +58,9 @@ export class AuthService {
       },
     });
     await this.addStudentToMatchingCourseGroups(user);
-    const token = await this.createSession(user.id);
-
     return {
-      token,
       user: this.toPublicUser(user),
+      message: 'Account created. Sign in to continue.',
     };
   }
 
@@ -69,6 +80,181 @@ export class AuthService {
     return {
       token,
       user: this.toPublicUser(user),
+    };
+  }
+
+  async googleLogin(body: unknown) {
+    const data = this.asRecord(body);
+    const idToken = this.requiredString(data.idToken, 'idToken');
+    const audiences = [
+      process.env.GOOGLE_WEB_CLIENT_ID,
+      process.env.GOOGLE_ANDROID_CLIENT_ID,
+      process.env.GOOGLE_IOS_CLIENT_ID,
+      process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+      process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    ]
+      .map((value) => value?.trim())
+      .filter((value): value is string => Boolean(value));
+    const allowedDomain = (process.env.GOOGLE_WORKSPACE_DOMAIN ?? 'htu.edu.gh')
+      .trim()
+      .toLowerCase();
+
+    if (!audiences.length) {
+      throw new BadRequestException('Google sign-in is not configured');
+    }
+
+    const ticket = await this.googleClient
+      .verifyIdToken({ idToken, audience: audiences })
+      .catch(() => null);
+    const payload = ticket?.getPayload();
+    if (
+      !payload?.sub ||
+      !payload.email ||
+      !payload.email_verified ||
+      payload.hd?.toLowerCase() !== allowedDomain
+    ) {
+      throw new UnauthorizedException(
+        `Use a verified ${allowedDomain} Google Workspace account`,
+      );
+    }
+
+    const email = payload.email.toLowerCase();
+    const localPart = email.slice(0, email.indexOf('@'));
+    const inferredRole = /^\d+$/.test(localPart)
+      ? UserRole.STUDENT
+      : UserRole.LECTURER;
+    let user = await this.db().user.findFirst({
+      where: { OR: [{ googleSubject: payload.sub }, { email }] },
+    });
+
+    if (user) {
+      if (user.googleSubject && user.googleSubject !== payload.sub) {
+        throw new ConflictException(
+          'This HTU email is linked to another Google account',
+        );
+      }
+      user = await this.db().user.update({
+        where: { id: user.id },
+        data: {
+          googleSubject: payload.sub,
+          avatarUrl: user.avatarUrl ?? payload.picture ?? undefined,
+        },
+      });
+    } else {
+      user = await this.db().user.create({
+        data: {
+          name: payload.name?.trim() || localPart,
+          email,
+          googleSubject: payload.sub,
+          avatarUrl: payload.picture,
+          passwordHash: this.hashPassword(
+            randomBytes(32).toString('base64url'),
+          ),
+          role: inferredRole,
+          studentId: inferredRole === UserRole.STUDENT ? localPart : undefined,
+          profileCompleted: false,
+        },
+      });
+    }
+
+    const token = await this.createSession(user.id);
+    return { token, user: this.toPublicUser(user) };
+  }
+
+  async completeGoogleProfile(token: string | undefined, body: unknown) {
+    const session = await this.authenticate(token);
+    const data = this.asRecord(body);
+    const current = session.user;
+    const student = current.role === UserRole.STUDENT;
+    const updated = await this.db().user.update({
+      where: { id: current.id },
+      data: {
+        faculty: this.requiredString(data.faculty, 'faculty'),
+        department: this.requiredString(data.department, 'department'),
+        staffId: student
+          ? current.staffId
+          : this.requiredString(data.staffId, 'staffId'),
+        programme: student
+          ? this.requiredString(data.programme, 'programme')
+          : current.programme,
+        yearGroup: student
+          ? this.requiredString(data.yearGroup, 'yearGroup')
+          : current.yearGroup,
+        awardType: student
+          ? this.requiredAwardType(data.awardType)
+          : current.awardType,
+        profileCompleted: true,
+      },
+    });
+
+    await this.addStudentToMatchingCourseGroups(updated);
+    return { user: this.toPublicUser(updated) };
+  }
+
+  async forgotPassword(body: unknown) {
+    const email = this.requiredEmail(this.asRecord(body).email);
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    const neutral = {
+      message:
+        'If an account exists for this email, a reset code has been sent.',
+    };
+    if (!user) return neutral;
+
+    const latest = await this.db().passwordResetCode.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (latest && Date.now() - new Date(latest.createdAt).getTime() < 60_000) {
+      return neutral;
+    }
+
+    const code = String(randomInt(100000, 1000000));
+    await this.db().passwordResetCode.create({
+      data: {
+        userId: user.id,
+        codeHash: this.hashToken(`${email}:${code}`),
+        expiresAt: new Date(Date.now() + this.resetCodeMinutes * 60_000),
+      },
+    });
+    await this.emailService.sendPasswordResetCode(email, code);
+    return neutral;
+  }
+
+  async verifyResetCode(body: unknown) {
+    const { email, code } = this.parseResetCode(body);
+    await this.getValidResetCode(email, code);
+    return { valid: true };
+  }
+
+  async resetPassword(body: unknown) {
+    const data = this.asRecord(body);
+    const { email, code } = this.parseResetCode(data);
+    const password = this.requiredPassword(data.password);
+    const confirmPassword = this.requiredString(
+      data.confirmPassword,
+      'confirmPassword',
+    );
+    if (password !== confirmPassword) {
+      throw new BadRequestException('password and confirmPassword must match');
+    }
+
+    const reset = await this.getValidResetCode(email, code);
+    await this.db().$transaction([
+      this.db().user.update({
+        where: { id: reset.userId },
+        data: { passwordHash: this.hashPassword(password) },
+      }),
+      this.db().passwordResetCode.update({
+        where: { id: reset.id },
+        data: { usedAt: new Date() },
+      }),
+      this.db().authSession.updateMany({
+        where: { userId: reset.userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
+    return {
+      message: 'Password reset successfully. Sign in with your new password.',
     };
   }
 
@@ -128,6 +314,9 @@ export class AuthService {
       isOnline: user.isOnline,
       lastSeenAt: user.lastSeenAt?.toISOString() ?? null,
       createdAt: user.createdAt.toISOString(),
+      profileCompleted:
+        (user as User & { profileCompleted?: boolean }).profileCompleted ??
+        true,
     };
   }
 
@@ -196,8 +385,13 @@ export class AuthService {
     });
 
     const conversationIds = offerings
-      .map((offering: { conversationId: string | null }) => offering.conversationId)
-      .filter((conversationId: string | null): conversationId is string => Boolean(conversationId));
+      .map(
+        (offering: { conversationId: string | null }) =>
+          offering.conversationId,
+      )
+      .filter((conversationId: string | null): conversationId is string =>
+        Boolean(conversationId),
+      );
 
     if (!conversationIds.length) return;
 
@@ -334,6 +528,40 @@ export class AuthService {
 
   private hashToken(token: string) {
     return createHash('sha256').update(token).digest('hex');
+  }
+
+  private parseResetCode(body: unknown) {
+    const data = this.asRecord(body);
+    const email = this.requiredEmail(data.email);
+    const code = this.requiredString(data.code, 'code');
+    if (!/^\d{6}$/.test(code)) {
+      throw new BadRequestException('code must contain 6 digits');
+    }
+    return { email, code };
+  }
+
+  private async getValidResetCode(email: string, code: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new BadRequestException('Invalid or expired reset code');
+    const reset = await this.db().passwordResetCode.findFirst({
+      where: { userId: user.id, usedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
+    const valid =
+      reset &&
+      new Date(reset.expiresAt).getTime() > Date.now() &&
+      reset.attempts < 5 &&
+      reset.codeHash === this.hashToken(`${email}:${code}`);
+    if (!valid) {
+      if (reset) {
+        await this.db().passwordResetCode.update({
+          where: { id: reset.id },
+          data: { attempts: { increment: 1 } },
+        });
+      }
+      throw new BadRequestException('Invalid or expired reset code');
+    }
+    return reset;
   }
 
   private requiredEmail(value: unknown) {
