@@ -129,10 +129,10 @@ export default function StudentProfileScreen() {
             </Text>
 
             {[
-              { label: 'My Courses', icon: 'book-outline', onPress: () => router.push('/(student)/courses') },
-              { label: 'Announcements', icon: 'megaphone-outline', onPress: () => router.push('/(student)/announcements') },
-              { label: 'Institutional Notices', icon: 'radio-outline', onPress: () => router.push('/(student)/broadcasts' as any) },
-              { label: 'Settings', icon: 'settings-outline', onPress: () => router.push('/(student)/settings') },
+              { label: 'My Courses', icon: 'book-outline', onPress: () => router.push('/(student)/profile/courses' as any) },
+              { label: 'Announcements', icon: 'megaphone-outline', onPress: () => router.push('/(student)/profile/announcements' as any) },
+              { label: 'Institutional Notices', icon: 'radio-outline', onPress: () => router.push('/(student)/profile/broadcasts' as any) },
+              { label: 'Settings', icon: 'settings-outline', onPress: () => router.push('/(student)/profile/settings' as any) },
             ].map((item) => (
               <Pressable
                 key={item.label}

@@ -5,6 +5,8 @@ export default function ProfileLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="courses/index" />
+      <Stack.Screen name="announcements/index" />
+      <Stack.Screen name="broadcasts/index" />
       <Stack.Screen name="settings/index" />
     </Stack>
   );
