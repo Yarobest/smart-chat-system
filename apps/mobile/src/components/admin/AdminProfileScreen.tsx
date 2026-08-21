@@ -127,8 +127,8 @@ export default function AdminProfileScreen() {
         </View>
 
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ paddingBottom: 18 }}
+          className="flex-1 bg-[#F4F7FD]"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 18 }}
           showsVerticalScrollIndicator={false}
         >
           <View className="-mt-3 px-4 py-4">

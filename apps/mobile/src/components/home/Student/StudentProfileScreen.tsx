@@ -36,10 +36,10 @@ export default function StudentProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#051839]">
       <StatusBar style="light" backgroundColor="#051839" />
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#F5F7FA]">
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ paddingBottom: 12 }}
+          className="flex-1 bg-[#F5F7FA]"
+          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
           <View className="bg-[#102B57] px-4 pb-6 pt-6">
@@ -75,7 +75,7 @@ export default function StudentProfileScreen() {
             </View>
           </View>
 
-          <View className="bg-[#F5F7FA] px-4 py-4">
+          <View className="flex-1 bg-[#F5F7FA] px-4 py-4">
             <Text className="mb-3 text-sm font-extrabold tracking-wide text-slate-400">
               PERSONAL INFO
             </Text>
@@ -164,7 +164,7 @@ export default function StudentProfileScreen() {
           </View>
         </ScrollView>
 
-        <StudentBottomNav unreadCount={unreadCount} />
+        <StudentBottomNav active="home" unreadCount={unreadCount} />
         <LogoutModal
           visible={logoutVisible}
           onCancel={() => setLogoutVisible(false)}
