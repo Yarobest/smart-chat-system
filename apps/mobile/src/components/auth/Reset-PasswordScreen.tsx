@@ -165,7 +165,12 @@ export default function ResetPasswordScreen() {
                 onPress={handleReset}
                 className={`mt-6 items-center rounded-xl px-4 py-3.5 ${loading || !email ? "bg-slate-400" : "bg-blue-600 active:bg-blue-700"}`}
               >
-                <Text className="text-lg font-bold text-white">
+                <Text
+                  className="text-lg font-bold text-white"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.82}
+                >
                   {loading ? "Resetting..." : "Reset Password"}
                 </Text>
               </Pressable>
