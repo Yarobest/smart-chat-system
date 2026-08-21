@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   Alert,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -76,25 +77,39 @@ export default function LoginScreen() {
               start={{ x: 0, y: 0 }}
               end={{ x: 2, y: 2 }}
               className="w-full max-w-[520px] items-center px-6 pb-8 pt-20"
+              style={{
+                alignItems: "center",
+                alignSelf: "stretch",
+                justifyContent: "center",
+                maxWidth: 520,
+                minHeight: Platform.OS === "ios" ? 245 : undefined,
+                width: "100%",
+              }}
             >
               <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
                 <Ionicons name="school-outline" size={34} color="#2563EB" />
               </View>
               <Text
                 allowFontScaling
-                className="mt-4 text-xl font-extrabold text-white"
+                className="mt-4 w-full text-center text-xl font-extrabold text-white"
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 minimumFontScale={0.85}
               >
                 Welcome Back
               </Text>
-              <Text allowFontScaling className="mt-2 text-lg text-white/75">
+              <Text
+                allowFontScaling
+                className="mt-2 w-full text-center text-lg text-white/75"
+              >
                 Sign in to continue
               </Text>
             </LinearGradient>
 
-            <View className="-mt-5 w-full max-w-[520px] flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-8">
+            <View
+              className="mt-3 w-full max-w-[520px] flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-8"
+              style={{ alignSelf: "stretch", maxWidth: 520, width: "100%" }}
+            >
               <View className="mb-4">
                 <Text
                   allowFontScaling
