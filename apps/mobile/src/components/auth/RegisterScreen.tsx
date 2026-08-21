@@ -442,7 +442,7 @@ export default function RegisterScreen() {
                   <View className="flex-row">
                     <Pressable
                       onPress={() => setStep("account")}
-                      className="mr-3 flex-1 items-center rounded-xl border border-slate-300 px-4 py-3.5"
+                      className="mr-3 basis-[34%] items-center rounded-xl border border-slate-300 px-4 py-3.5"
                     >
                       <Text className="text-lg font-bold text-slate-700">
                         Back
@@ -453,7 +453,12 @@ export default function RegisterScreen() {
                       onPress={handleRegister}
                       className={`flex-1 items-center rounded-xl px-4 py-3.5 ${loading ? "bg-slate-300" : "bg-blue-600 active:bg-blue-700"}`}
                     >
-                      <Text className="text-lg font-bold text-white">
+                      <Text
+                        className="text-lg font-bold text-white"
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.82}
+                      >
                         {loading ? "Creating..." : "Create Account"}
                       </Text>
                     </Pressable>
