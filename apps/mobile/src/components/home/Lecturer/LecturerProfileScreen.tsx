@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
 import { LogoutModal } from '@/src/components/auth/Logout';
@@ -42,7 +43,7 @@ export default function LecturerProfileScreen() {
               <View className="relative h-24 w-24 items-center justify-center rounded-full border-2 border-orange-300 bg-orange-500">
                 <Text className="text-5xl font-bold text-white">{initials}</Text>
                 <View className="absolute -bottom-0.5 -right-0.5 h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-500">
-                  <Text className="text-lg text-white">✏️</Text>
+                  <Ionicons name="pencil" size={16} color="white" />
                 </View>
               </View>
 
@@ -83,7 +84,7 @@ export default function LecturerProfileScreen() {
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
               <View className="flex-row items-center gap-3">
                 <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                  <Text className="text-base">📧</Text>
+                  <Ionicons name="mail-outline" size={18} color="#7C3AED" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Email</Text>
@@ -98,7 +99,7 @@ export default function LecturerProfileScreen() {
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
               <View className="flex-row items-center gap-3">
                 <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                  <Text className="text-base">🏛️</Text>
+                  <Ionicons name="business-outline" size={18} color="#7C3AED" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Department</Text>
@@ -113,7 +114,7 @@ export default function LecturerProfileScreen() {
             <View className="mb-5 rounded-2xl border border-slate-200 bg-white px-4 py-4">
               <View className="flex-row items-center gap-3">
                 <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                  <Text className="text-base">📞</Text>
+                  <Ionicons name="call-outline" size={18} color="#7C3AED" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Office</Text>
@@ -130,12 +131,12 @@ export default function LecturerProfileScreen() {
             </Text>
 
             {[
-              { label: 'My Courses', icon: '📚', onPress: () => router.push('./courses') },
-              { label: 'Post Announcement', icon: '📣', onPress: () => router.push('./announcements/compose') },
-              { label: 'Institutional Notices', icon: '📡', onPress: () => router.push('/(lecturer)/broadcasts' as any) },
-              { label: 'My Students', icon: '👥', onPress: () => router.push('./groups') },
-              { label: 'Notifications', icon: '🔔', onPress: () => router.push('./notifications') },
-              { label: 'Settings', icon: '⚙️', onPress: () => router.push('./settings') },
+              { label: 'My Courses', icon: 'book-outline', onPress: () => router.push('./courses') },
+              { label: 'Post Announcement', icon: 'megaphone-outline', onPress: () => router.push('./announcements/compose') },
+              { label: 'Institutional Notices', icon: 'radio-outline', onPress: () => router.push('/(lecturer)/broadcasts' as any) },
+              { label: 'My Students', icon: 'people-outline', onPress: () => router.push('./groups') },
+              { label: 'Notifications', icon: 'notifications-outline', onPress: () => router.push('./notifications') },
+              { label: 'Settings', icon: 'settings-outline', onPress: () => router.push('./settings') },
             ].map((item) => (
               <Pressable
                 key={item.label}
@@ -144,7 +145,7 @@ export default function LecturerProfileScreen() {
               >
                 <View className="flex-row items-center gap-3">
                   <View className="h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                    <Text className="text-base">{item.icon}</Text>
+                    <Ionicons name={item.icon as any} size={18} color="#7C3AED" />
                   </View>
                   <Text className="text-lg font-semibold text-slate-900">{item.label}</Text>
                 </View>
@@ -159,7 +160,7 @@ export default function LecturerProfileScreen() {
             >
               <View className="flex-row items-center gap-3">
                 <View className="h-8 w-8 items-center justify-center rounded-md bg-red-100">
-                  <Text className="text-base">🚪</Text>
+                  <Ionicons name="log-out-outline" size={18} color="#EF4444" />
                 </View>
                 <Text className="text-lg font-semibold text-red-500">Logout</Text>
               </View>

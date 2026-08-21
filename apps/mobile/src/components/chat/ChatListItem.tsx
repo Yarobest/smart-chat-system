@@ -1,4 +1,6 @@
 import { Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 import { Badge } from "@/src/components/common/Badge";
 
 type Props = {
@@ -6,7 +8,7 @@ type Props = {
   preview: string;
   time: string;
   unreadCount?: number;
-  avatar?: string;
+  avatar?: ComponentProps<typeof Ionicons>["name"];
   toneClass?: string;
   online?: boolean;
   onPress?: () => void;
@@ -17,7 +19,7 @@ export function ChatListItem({
   preview,
   time,
   unreadCount = 0,
-  avatar = "💬",
+  avatar = "chatbubble-ellipses-outline",
   toneClass = "bg-slate-200",
   online = false,
   onPress,
@@ -31,7 +33,7 @@ export function ChatListItem({
         <View
           className={`h-14 w-14 items-center justify-center rounded-full ${toneClass}`}
         >
-          <Text className="text-lg">{avatar}</Text>
+          <Ionicons name={avatar} size={23} color="#2563EB" />
         </View>
         {online ? (
           <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-emerald-500" />

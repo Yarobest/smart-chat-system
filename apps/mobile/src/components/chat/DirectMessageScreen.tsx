@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
@@ -22,6 +22,7 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { ChatAttachment, Message } from "@/src/types/chat.types";
 import { formatTime } from "@/src/utils/formatTime";
 import { getInitials } from "@/src/utils/getInitials";
+import { goBackOrReplace } from "@/src/utils/navigation";
 
 type TypingUser = { id: string; name: string };
 
@@ -36,7 +37,7 @@ export default function DirectMessageScreen() {
   const lastTypingAt = useRef(0);
 
   const handleBack = useCallback(() => {
-    router.replace(user?.role === "lecturer" ? "/(lecturer)/chats" : "/(student)/chats");
+    goBackOrReplace(user?.role === "lecturer" ? "/(lecturer)/chats" : "/(student)/chats");
   }, [user?.role]);
 
   useFocusEffect(
@@ -243,9 +244,16 @@ export default function DirectMessageScreen() {
                   ) : null}
                   {message.attachments?.map((attachment) => (
                     <View key={`${message.id}-${attachment.name}`} className="mt-2 rounded-xl bg-black/10 px-3 py-2">
-                      <Text className={`text-sm font-semibold ${mine ? "text-white" : "text-slate-700"}`}>
-                        {attachment.type === "image" ? "🖼️" : "📎"} {attachment.name}
-                      </Text>
+                      <View className="flex-row items-center">
+                        <Ionicons
+                          name={attachment.type === "image" ? "image-outline" : "attach-outline"}
+                          size={15}
+                          color={mine ? "white" : "#334155"}
+                        />
+                        <Text className={`ml-1.5 flex-1 text-sm font-semibold ${mine ? "text-white" : "text-slate-700"}`}>
+                          {attachment.name}
+                        </Text>
+                      </View>
                     </View>
                   ))}
                 </View>
@@ -269,9 +277,17 @@ export default function DirectMessageScreen() {
                   }
                   className="mb-2 mr-2 rounded-full bg-blue-50 px-3 py-1"
                 >
-                  <Text className="text-xs font-semibold text-blue-700">
-                    {attachment.type === "image" ? "🖼️" : "📎"} {attachment.name} ×
-                  </Text>
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name={attachment.type === "image" ? "image-outline" : "attach-outline"}
+                      size={13}
+                      color="#1D4ED8"
+                    />
+                    <Text className="ml-1 text-xs font-semibold text-blue-700">
+                      {attachment.name}
+                    </Text>
+                    <Ionicons name="close" size={13} color="#1D4ED8" />
+                  </View>
                 </Pressable>
               ))}
             </View>
@@ -281,7 +297,7 @@ export default function DirectMessageScreen() {
             onPress={openAttachmentPicker}
             className="mr-2 h-8 w-8 items-center justify-center rounded-full"
           >
-            <Text className="text-lg text-slate-500">📎</Text>
+            <Ionicons name="attach-outline" size={22} color="#64748B" />
           </Pressable>
           <TextInput
             value={text}
@@ -295,7 +311,7 @@ export default function DirectMessageScreen() {
             disabled={sending || (text.trim().length === 0 && attachments.length === 0)}
             className={`ml-2 h-10 w-10 items-center justify-center rounded-full ${sending || (text.trim().length === 0 && attachments.length === 0) ? "bg-slate-300" : "bg-[#2E63DF]"}`}
           >
-            <Text className="text-lg text-white">➤</Text>
+            <Ionicons name="send" size={18} color="white" />
           </Pressable>
           </View>
         </View>

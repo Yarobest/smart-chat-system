@@ -1,5 +1,6 @@
 import { ScrollView, Text, View, Pressable, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { BackButton } from '@/src/components/common/BackButton';
 
 export default function SecurityCenter() {
@@ -25,7 +26,7 @@ export default function SecurityCenter() {
         <View className="px-5 pt-4">
           <View className="rounded-[18px] border border-orange-300 bg-orange-50 p-4">
             <View className="flex-row items-center">
-              <Text className="mr-3 text-2xl">⚠️</Text>
+              <Ionicons name="warning-outline" size={25} color="#F97316" style={{ marginRight: 12 }} />
               <View className="flex-1">
                 <Text className="text-sm font-extrabold text-orange-600">Threat Level: LOW</Text>
                 <Text className="text-xs text-slate-500">3 unresolved · Score 18/100</Text>
@@ -38,7 +39,10 @@ export default function SecurityCenter() {
 
           <View className="rounded-[18px] border-l-4 border-rose-500 bg-white p-4">
             <View className="flex-row justify-between">
-              <Text className="text-sm font-extrabold text-rose-500">🚨 Suspicious Login</Text>
+              <View className="flex-row items-center">
+                <Ionicons name="alert-circle-outline" size={16} color="#F43F5E" />
+                <Text className="ml-1.5 text-sm font-extrabold text-rose-500">Suspicious Login</Text>
+              </View>
               <Text className="text-xs font-extrabold text-rose-500">HIGH</Text>
             </View>
             <Text className="mt-2 text-xs text-slate-500">3 failed · Kofi Agyemang · IP 102.89.xx.xx</Text>
@@ -54,7 +58,10 @@ export default function SecurityCenter() {
 
           <View className="mt-3 rounded-[18px] border-l-4 border-orange-400 bg-white p-4">
             <View className="flex-row justify-between">
-              <Text className="text-sm font-extrabold text-orange-500">🚩 Message Flagged</Text>
+              <View className="flex-row items-center">
+                <Ionicons name="flag-outline" size={16} color="#F97316" />
+                <Text className="ml-1.5 text-sm font-extrabold text-orange-500">Message Flagged</Text>
+              </View>
               <Text className="text-xs font-extrabold text-orange-500">MEDIUM</Text>
             </View>
             <Text className="mt-2 text-xs text-slate-500">CS301 · Flagged by 3 students · 2h ago</Text>
@@ -70,7 +77,10 @@ export default function SecurityCenter() {
 
           <View className="mt-3 rounded-[18px] border-l-4 border-orange-400 bg-white p-4">
             <View className="flex-row justify-between">
-              <Text className="text-sm font-extrabold text-orange-500">🗂️ Storage Warning</Text>
+              <View className="flex-row items-center">
+                <Ionicons name="file-tray-full-outline" size={16} color="#F97316" />
+                <Text className="ml-1.5 text-sm font-extrabold text-orange-500">Storage Warning</Text>
+              </View>
               <Text className="text-xs font-extrabold text-orange-500">LOW</Text>
             </View>
             <Text className="mt-2 text-xs text-slate-500">Archive at 78% (3.9 GB / 5 GB)</Text>
@@ -90,17 +100,26 @@ export default function SecurityCenter() {
 
           <View className="gap-3">
             <View className="flex-row items-center justify-between rounded-[16px] bg-white p-4">
-              <Text className="font-bold text-slate-800">⏱️ Session Timeout</Text>
+              <View className="flex-row items-center">
+                <Ionicons name="time-outline" size={18} color="#64748B" />
+                <Text className="ml-2 font-bold text-slate-800">Session Timeout</Text>
+              </View>
               <Text className="text-xs text-slate-400">30 min</Text>
             </View>
 
             <View className="flex-row items-center justify-between rounded-[16px] bg-white p-4">
-              <Text className="font-bold text-slate-800">🛡️ 2FA Enforcement</Text>
+              <View className="flex-row items-center">
+                <Ionicons name="shield-checkmark-outline" size={18} color="#64748B" />
+                <Text className="ml-2 font-bold text-slate-800">2FA Enforcement</Text>
+              </View>
               <Switch value={false} />
             </View>
 
             <View className="flex-row items-center justify-between rounded-[16px] bg-white p-4">
-              <Text className="font-bold text-slate-800">🚫 Profanity Filter</Text>
+              <View className="flex-row items-center">
+                <Ionicons name="ban-outline" size={18} color="#64748B" />
+                <Text className="ml-2 font-bold text-slate-800">Profanity Filter</Text>
+              </View>
               <Switch value />
             </View>
           </View>

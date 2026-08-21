@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { StudentBottomNav } from '@/src/components/common/StudentBottomNav';
 import { PageHeader } from '@/src/components/common/PageHeader';
@@ -39,7 +40,7 @@ export default function TaskScreen() {
     {
       title: 'Assignments',
       description: 'View, submit and track graded coursework.',
-      icon: '📋',
+      icon: 'clipboard-outline',
       tone: 'bg-blue-50 border-blue-100',
       badge: pending > 0 ? `${pending} pending` : `${assignments.length} available`,
       badgeTone: pending > 0 ? 'text-amber-700 bg-amber-100' : 'text-blue-700 bg-blue-100',
@@ -47,8 +48,8 @@ export default function TaskScreen() {
       onPress: () => router.push('/(student)/tasks/assignments' as any),
       available: true,
     },
-    { title: 'Notes & Slides', description: 'Course notes and lecturer slides.', icon: '📚', tone: 'bg-emerald-50 border-emerald-100', available: true, badge: materials.some(x=>x.isNew) ? `${materials.filter(x=>x.isNew).length} new` : `${materials.length} available`, badgeTone: 'text-emerald-700 bg-emerald-100', detail: 'Live from your lecturers', onPress: () => router.push('/(student)/tasks/notes' as any) },
-    { title: 'Quizzes', description: 'Available and completed course quizzes.', icon: '🧪', tone: 'bg-amber-50 border-amber-100', available: true, badge: availableQuizzes > 0 ? `${availableQuizzes} available` : `${quizzes.length} published`, badgeTone: 'text-amber-700 bg-amber-100', detail: 'Timed and autosaved', onPress: () => router.push('/(student)/tasks/quizzes' as any) },
+    { title: 'Notes & Slides', description: 'Course notes and lecturer slides.', icon: 'book-outline', tone: 'bg-emerald-50 border-emerald-100', available: true, badge: materials.some(x=>x.isNew) ? `${materials.filter(x=>x.isNew).length} new` : `${materials.length} available`, badgeTone: 'text-emerald-700 bg-emerald-100', detail: 'Live from your lecturers', onPress: () => router.push('/(student)/tasks/notes' as any) },
+    { title: 'Quizzes', description: 'Available and completed course quizzes.', icon: 'flask-outline', tone: 'bg-amber-50 border-amber-100', available: true, badge: availableQuizzes > 0 ? `${availableQuizzes} available` : `${quizzes.length} published`, badgeTone: 'text-amber-700 bg-amber-100', detail: 'Timed and autosaved', onPress: () => router.push('/(student)/tasks/quizzes' as any) },
   ];
 
   return (
@@ -72,7 +73,7 @@ export default function TaskScreen() {
           >
             <View className="flex-row items-start">
               <View className="mr-4 h-12 w-12 items-center justify-center rounded-2xl bg-white">
-                <Text className="text-2xl">{category.icon}</Text>
+                <Ionicons name={category.icon as any} size={23} color="#2563EB" />
               </View>
               <View className="flex-1">
                 <View className="flex-row items-start justify-between gap-2">

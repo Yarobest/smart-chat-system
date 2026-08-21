@@ -402,14 +402,18 @@ export default function CreateAssignmentScreen() {
             onPress={attachQuestion}
             className="items-center rounded-2xl border border-dashed border-blue-300 bg-blue-50 px-4 py-4"
           >
-            <Text className="font-bold text-blue-700">
-              📎 Attach question sheet
-            </Text>
+            <View className="flex-row items-center">
+              <Ionicons name="attach-outline" size={18} color="#1D4ED8" />
+              <Text className="ml-1.5 font-bold text-blue-700">
+                Attach question sheet
+              </Text>
+            </View>
           </Pressable>
           {attachments.map((file) => (
-            <Text key={file.uri} className="text-sm text-slate-600">
-              ✓ {file.name}
-            </Text>
+            <View key={file.uri} className="flex-row items-center">
+              <Ionicons name="checkmark" size={15} color="#16A34A" />
+              <Text className="ml-1 text-sm text-slate-600">{file.name}</Text>
+            </View>
           ))}
 
           {isEditing ? (

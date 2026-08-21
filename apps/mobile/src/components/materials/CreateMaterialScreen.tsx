@@ -242,7 +242,10 @@ export default function CreateMaterialScreen() {
             onPress={pick}
             className="items-center rounded-lg border border-dashed border-blue-300 bg-blue-50 py-4"
           >
-            <Text className="font-bold text-blue-700">📎 Upload files</Text>
+            <View className="flex-row items-center">
+              <Ionicons name="cloud-upload-outline" size={18} color="#1D4ED8" />
+              <Text className="ml-1.5 font-bold text-blue-700">Upload files</Text>
+            </View>
           </Pressable>
           {files.map((f, i) => (
             <View

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
 import { useLiveThreads } from '@/src/hooks/useLiveThreads';
@@ -41,7 +42,7 @@ export default function LecturerMyCoursesScreen() {
         >
           {!loading && courses.length === 0 ? (
             <View className="mt-20 items-center justify-center px-6">
-              <Text className="text-4xl">📚</Text>
+              <Ionicons name="book-outline" size={44} color="#94A3B8" />
               <Text className="mt-3 text-center text-base font-bold text-slate-600">
                 No assigned courses yet
               </Text>
@@ -77,12 +78,18 @@ export default function LecturerMyCoursesScreen() {
                   </View>
 
                   <View className="mt-4 flex-row flex-wrap gap-4">
-                    <Text className="text-xs font-semibold text-slate-500">
-                      👥 {course.memberCount ?? 0} members
-                    </Text>
-                    <Text className="text-xs font-semibold text-slate-500">
-                      💬 {course.unreadCount} unread
-                    </Text>
+                    <View className="flex-row items-center">
+                      <Ionicons name="people-outline" size={13} color="#64748B" />
+                      <Text className="ml-1 text-xs font-semibold text-slate-500">
+                        {course.memberCount ?? 0} members
+                      </Text>
+                    </View>
+                    <View className="flex-row items-center">
+                      <Ionicons name="chatbubble-ellipses-outline" size={13} color="#64748B" />
+                      <Text className="ml-1 text-xs font-semibold text-slate-500">
+                        {course.unreadCount} unread
+                      </Text>
+                    </View>
                   </View>
                 </View>
 

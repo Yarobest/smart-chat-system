@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { StudentBottomNav } from '@/src/components/common/StudentBottomNav';
 import { LogoutModal } from '@/src/components/auth/Logout';
@@ -46,7 +47,7 @@ export default function StudentProfileScreen() {
               <View className="relative h-24 w-24 items-center justify-center rounded-full border-2 border-orange-300 bg-orange-500">
                 <Text className="text-5xl font-bold text-white">{initials}</Text>
                 <View className="absolute -bottom-0.5 -right-0.5 h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-500">
-                  <Text className="text-lg text-white">✏️</Text>
+                  <Ionicons name="pencil" size={16} color="white" />
                 </View>
               </View>
               <Text className="mt-4 text-xl font-extrabold text-white">{displayName}</Text>
@@ -82,7 +83,7 @@ export default function StudentProfileScreen() {
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
               <View className="flex-row items-center">
                 <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                  <Text className="text-base">📧</Text>
+                  <Ionicons name="mail-outline" size={18} color="#7C3AED" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Email</Text>
@@ -96,7 +97,7 @@ export default function StudentProfileScreen() {
             <View className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
               <View className="flex-row items-center">
                 <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                  <Text className="text-base">🏛️</Text>
+                  <Ionicons name="business-outline" size={18} color="#7C3AED" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Department</Text>
@@ -110,7 +111,7 @@ export default function StudentProfileScreen() {
             <View className="mb-5 rounded-2xl border border-slate-200 bg-white px-4 py-4">
               <View className="flex-row items-center">
                 <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                  <Text className="text-base">🗓️</Text>
+                  <Ionicons name="calendar-outline" size={18} color="#7C3AED" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-sm text-slate-400">Year</Text>
@@ -128,10 +129,10 @@ export default function StudentProfileScreen() {
             </Text>
 
             {[
-              { label: 'My Courses', icon: '📚', onPress: () => router.push('/(student)/courses') },
-              { label: 'Announcements', icon: '📣', onPress: () => router.push('/(student)/announcements') },
-              { label: 'Institutional Notices', icon: '📡', onPress: () => router.push('/(student)/broadcasts' as any) },
-              { label: 'Settings', icon: '⚙️', onPress: () => router.push('/(student)/settings') },
+              { label: 'My Courses', icon: 'book-outline', onPress: () => router.push('/(student)/courses') },
+              { label: 'Announcements', icon: 'megaphone-outline', onPress: () => router.push('/(student)/announcements') },
+              { label: 'Institutional Notices', icon: 'radio-outline', onPress: () => router.push('/(student)/broadcasts' as any) },
+              { label: 'Settings', icon: 'settings-outline', onPress: () => router.push('/(student)/settings') },
             ].map((item) => (
               <Pressable
                 key={item.label}
@@ -140,7 +141,7 @@ export default function StudentProfileScreen() {
               >
                 <View className="mr-3 flex-1 flex-row items-center">
                   <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-violet-100">
-                    <Text className="text-base">{item.icon}</Text>
+                    <Ionicons name={item.icon as any} size={18} color="#7C3AED" />
                   </View>
                   <Text numberOfLines={1} className="flex-1 text-base font-semibold text-slate-900">{item.label}</Text>
                 </View>
@@ -154,7 +155,7 @@ export default function StudentProfileScreen() {
             >
               <View className="flex-row items-center">
                 <View className="mr-3 h-8 w-8 items-center justify-center rounded-md bg-red-100">
-                  <Text className="text-base">🚪</Text>
+                  <Ionicons name="log-out-outline" size={18} color="#EF4444" />
                 </View>
                 <Text className="text-base font-semibold text-red-500">Logout</Text>
               </View>

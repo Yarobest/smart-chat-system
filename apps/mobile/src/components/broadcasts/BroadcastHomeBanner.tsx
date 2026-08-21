@@ -40,7 +40,7 @@ export function BroadcastHomeBanner() {
       className={`mb-4 rounded-2xl border p-4 ${item.priority === "urgent" ? "border-red-300 bg-red-50" : item.priority === "important" ? "border-amber-300 bg-amber-50" : "border-blue-200 bg-blue-50"}`}
     >
       <View className="flex-row items-start">
-        <Text className="mr-3 text-2xl">📣</Text>
+        <Ionicons name="megaphone-outline" size={24} color="#2563EB" style={{ marginRight: 12 }} />
         <Pressable
           className="flex-1"
           onPress={() => router.push(`${prefix}/broadcasts/${item.id}` as any)}

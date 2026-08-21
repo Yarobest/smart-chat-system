@@ -9,6 +9,7 @@ import { markNotificationsRead, setNotifications } from '@/src/stores/notificati
 import { notificationService } from '@/src/services/notification.service';
 import { formatTime } from '@/src/utils/formatTime';
 import { useAuth } from '@/src/hooks/useAuth';
+import { goBackOrReplace } from '@/src/utils/navigation';
 
 export default function NotificationsScreen() {
   const { items } = useNotifications();
@@ -28,7 +29,7 @@ export default function NotificationsScreen() {
       <StatusBar style="light" backgroundColor="#051839" />
       <View className="flex-row items-center bg-[#051839] px-4 py-4">
         <Pressable
-          onPress={() => router.replace(backRoute as any)}
+          onPress={() => goBackOrReplace(backRoute)}
           className="mr-3 h-9 w-9 items-center justify-center rounded-full bg-white/10"
         >
           <Ionicons name="chevron-back" size={20} color="white" />
@@ -68,7 +69,7 @@ export default function NotificationsScreen() {
 
         {items.length === 0 ? (
           <View className="items-center py-16">
-            <Text className="text-4xl">🔔</Text>
+            <Ionicons name="notifications-outline" size={42} color="#94A3B8" />
             <Text className="mt-3 text-base font-bold text-slate-600">No notifications yet</Text>
           </View>
         ) : null}

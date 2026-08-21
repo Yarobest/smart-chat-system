@@ -2,6 +2,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from '@/src/components/common/StatusBar';
 import { LecturerBottomNav } from '@/src/components/common/LecturerBottomNav';
 import { formatTime } from '@/src/utils/formatTime';
@@ -72,13 +73,13 @@ export default function LecturerChatsScreen() {
               onPress={() => router.push('/(lecturer)/chats/new' as any)}
               className="h-9 w-9 items-center justify-center rounded-full bg-white/10"
             >
-              <Text className="text-base text-white">✏️</Text>
+              <Ionicons name="pencil" size={17} color="white" />
             </Pressable>
           </View>
 
           {/* Search */}
           <View className="mt-3 flex-row items-center gap-2 rounded-2xl bg-white/10 px-4 py-2.5">
-            <Text className="text-sm text-slate-400">🔍</Text>
+            <Ionicons name="search" size={16} color="#94A3B8" />
             <TextInput
               value={search}
               onChangeText={setSearch}
@@ -101,7 +102,7 @@ export default function LecturerChatsScreen() {
           {/* Course Groups Section */}
           {!loading && threads.length === 0 ? (
             <View className="mt-20 items-center justify-center">
-              <Text className="text-4xl">💬</Text>
+              <Ionicons name="chatbubble-ellipses-outline" size={44} color="#94A3B8" />
               <Text className="mt-3 text-base font-extrabold text-slate-400">NO MESSAGES YET</Text>
             </View>
           ) : null}
@@ -124,7 +125,11 @@ export default function LecturerChatsScreen() {
                   className="flex-row items-center gap-3 border-b border-slate-100 px-4 py-3"
                 >
                   <View className="h-12 w-12 items-center justify-center rounded-2xl bg-blue-50">
-                    <Text className="text-2xl">{thread.type === 'group' ? '👥' : '💬'}</Text>
+                    <Ionicons
+                      name={thread.type === 'group' ? 'people-outline' : 'chatbubble-ellipses-outline'}
+                      size={22}
+                      color="#2563EB"
+                    />
                   </View>
                   <View className="flex-1">
                     <Text className="text-sm font-extrabold text-slate-900">{thread.title}</Text>
@@ -161,7 +166,7 @@ export default function LecturerChatsScreen() {
                     className="h-12 w-12 items-center justify-center rounded-2xl"
                     style={{ backgroundColor: '#EEF2FF' }}
                   >
-                    <Text className="text-2xl">👥</Text>
+                    <Ionicons name="people-outline" size={22} color="#2563EB" />
                   </View>
 
                   {/* Info */}
@@ -218,7 +223,7 @@ export default function LecturerChatsScreen() {
                       className="h-12 w-12 items-center justify-center rounded-full"
                       style={{ backgroundColor: '#F0FDF4' }}
                     >
-                      <Text className="text-2xl">💬</Text>
+                      <Ionicons name="chatbubble-ellipses-outline" size={22} color="#16A34A" />
                     </View>
                     {dm.type === 'direct' && (
                       <View className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
@@ -266,7 +271,7 @@ export default function LecturerChatsScreen() {
           filteredGroups.length === 0 &&
           filteredDirect.length === 0 && (
             <View className="mt-20 items-center justify-center">
-              <Text className="text-4xl">💬</Text>
+              <Ionicons name="chatbubble-ellipses-outline" size={44} color="#94A3B8" />
               <Text className="mt-3 text-base font-semibold text-slate-400">No conversations found</Text>
             </View>
           )}

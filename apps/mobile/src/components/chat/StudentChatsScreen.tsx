@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { ComponentProps, useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "@/src/components/common/StatusBar";
 import { ChatListItem } from "@/src/components/chat/ChatListItem";
 import { StudentBottomNav } from "@/src/components/common/StudentBottomNav";
@@ -11,6 +12,7 @@ import { Thread } from "@/src/types/chat.types";
 import { FilterRow } from "@/src/components/common/FilterRow";
 
 type ChatFilter = "All" | "Direct" | "Groups" | "Unread";
+type IconName = ComponentProps<typeof Ionicons>["name"];
 
 const filters: ChatFilter[] = ["All", "Direct", "Groups", "Unread"];
 
@@ -69,7 +71,9 @@ export default function StudentChatsScreen() {
         ? formatTime(chat.updatedAt)
         : "",
     unreadCount: chat.unreadCount,
-    avatar: chat.type === "group" ? "👥" : "💬",
+    avatar: (chat.type === "group"
+      ? "people-outline"
+      : "chatbubble-ellipses-outline") as IconName,
     toneClass: chat.type === "group" ? "bg-[#DCE9F8]" : "bg-[#BDECCD]",
     online: chat.type === "direct",
   });
@@ -87,7 +91,7 @@ export default function StudentChatsScreen() {
             onPress={() => router.push("/(student)/chats/new" as any)}
             className="mt-1 h-10 w-10 items-center justify-center rounded-full bg-white/10"
           >
-            <Text className="text-lg">✏️</Text>
+            <Ionicons name="pencil" size={18} color="white" />
           </Pressable>
         </View>
       </View>
@@ -97,7 +101,7 @@ export default function StudentChatsScreen() {
         contentContainerStyle={{ paddingBottom: 12 }}
       >
         <View className="mx-4 mt-4 flex-row items-center rounded-2xl border border-[#CFD6E5] bg-[#E5EAF2] px-4 py-2">
-          <Text className="mr-3 text-base text-[#7585A5]">🔍</Text>
+          <Ionicons name="search" size={17} color="#7585A5" style={{ marginRight: 12 }} />
           <TextInput
             placeholder="Search conversations..."
             placeholderTextColor="#8B97B1"
@@ -113,7 +117,7 @@ export default function StudentChatsScreen() {
 
         {!loading && threads.length === 0 ? (
           <View className="mt-24 items-center px-6">
-            <Text className="text-4xl">💬</Text>
+            <Ionicons name="chatbubble-ellipses-outline" size={44} color="#94A3B8" />
             <Text className="mt-3 text-center text-lg font-extrabold text-slate-600">
               NO MESSAGES YET
             </Text>
@@ -190,7 +194,7 @@ export default function StudentChatsScreen() {
         visibleGroupChats.length === 0 &&
         visibleDirectChats.length === 0 ? (
           <View className="mt-16 items-center px-6">
-            <Text className="text-4xl">💬</Text>
+            <Ionicons name="chatbubble-ellipses-outline" size={44} color="#94A3B8" />
             <Text className="mt-3 text-center text-base font-semibold text-slate-500">
               No conversations yet
             </Text>

@@ -24,7 +24,7 @@ export default function StudentSettingsScreen() {
         <View className="mt-4">
           <SectionTitle>NOTIFICATIONS</SectionTitle>
           <SettingRow
-            icon="🔔"
+            icon="notifications-outline"
             label="Push Notifications"
             right={
               <Switch
@@ -36,7 +36,7 @@ export default function StudentSettingsScreen() {
             }
           />
           <SettingRow
-            icon="📣"
+            icon="megaphone-outline"
             label="Announcements"
             right={
               <Switch
@@ -48,7 +48,7 @@ export default function StudentSettingsScreen() {
             }
           />
           <SettingRow
-            icon="💬"
+            icon="chatbubble-ellipses-outline"
             label="Message Previews"
             right={
               <Switch
@@ -63,15 +63,15 @@ export default function StudentSettingsScreen() {
 
         <View className="mt-3">
           <SectionTitle>ACCOUNT</SectionTitle>
-          <SettingRow icon="👤" label="Edit Profile" onPress={() => {}} />
-          <SettingRow icon="🔒" label="Change Password" onPress={() => {}} />
-          <SettingRow icon="🌐" label="Language" right={<Text className="text-sm text-slate-400">English ›</Text>} />
+          <SettingRow icon="person-outline" label="Edit Profile" onPress={() => {}} />
+          <SettingRow icon="lock-closed-outline" label="Change Password" onPress={() => {}} />
+          <SettingRow icon="language-outline" label="Language" right={<Text className="text-sm text-slate-400">English ›</Text>} />
         </View>
 
         <View className="mt-3">
           <SectionTitle>PRIVACY & SECURITY</SectionTitle>
           <SettingRow
-            icon="🛡️"
+            icon="shield-checkmark-outline"
             label="Two-Factor Authentication"
             right={
               <Switch
@@ -82,13 +82,13 @@ export default function StudentSettingsScreen() {
               />
             }
           />
-          <SettingRow icon="📱" label="Active Sessions" onPress={() => {}} />
+          <SettingRow icon="phone-portrait-outline" label="Active Sessions" onPress={() => {}} />
         </View>
 
         <View className="mt-3">
           <SectionTitle>ABOUT</SectionTitle>
           <SettingRow
-            icon="ℹ️"
+            icon="information-circle-outline"
             label="App Version"
             right={<Text className="text-sm text-slate-500">1.0.0</Text>}
           />

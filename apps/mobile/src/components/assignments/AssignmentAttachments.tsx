@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, Image, Modal, Platform, Pressable, Text, View } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import { Ionicons } from '@expo/vector-icons';
 import { File, Paths } from 'expo-file-system';
 import { getContentUriAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
@@ -90,7 +91,12 @@ export function AssignmentAttachments({ files }: Props) {
           )}
           className="flex-row items-center rounded-xl border border-blue-100 bg-blue-50 px-3 py-3"
         >
-          <Text className="mr-2 text-lg">📎</Text>
+          <Ionicons
+            name={isImage(file) ? 'image-outline' : 'attach-outline'}
+            size={19}
+            color="#2563EB"
+            style={{ marginRight: 8 }}
+          />
           <View className="flex-1">
             <Text numberOfLines={1} className="text-sm font-bold text-blue-800">{file.name}</Text>
             <Text className="mt-0.5 text-xs text-blue-600">

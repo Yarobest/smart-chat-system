@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "../common/StatusBar";
 import { AdminBottomNav } from "../common/AdminBottomNav";
 import { FilterRow } from "../common/FilterRow";
@@ -106,7 +107,7 @@ export default function BroadcastManagementScreen() {
                 numberOfLines={2}
                 className="flex-1 text-base font-extrabold text-slate-900"
               >
-                {x.pinned ? "📌 " : ""}
+                {x.pinned ? <Ionicons name="pin" size={14} color="#334155" /> : null}
                 {x.title}
               </Text>
               <Text className="text-xs font-bold uppercase text-blue-700">
@@ -126,7 +127,7 @@ export default function BroadcastManagementScreen() {
         ))}
         {!loading && !visible.length ? (
           <View className="items-center py-16">
-            <Text className="text-4xl">📣</Text>
+            <Ionicons name="megaphone-outline" size={44} color="#94A3B8" />
             <Text className="mt-3 text-base font-bold text-slate-500">
               No broadcasts here
             </Text>

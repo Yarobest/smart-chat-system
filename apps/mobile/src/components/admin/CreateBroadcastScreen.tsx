@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "../common/StatusBar";
 import { ScreenHeader } from "../common/ScreenHeader";
 import { KeyboardAwareView } from "../common/KeyboardAwareView";
@@ -268,7 +269,10 @@ export default function CreateBroadcastScreen() {
             onPress={() => void pick()}
             className="items-center rounded-lg border border-dashed border-blue-300 bg-blue-50 py-4"
           >
-            <Text className="font-bold text-blue-700">📎 Add attachments</Text>
+            <View className="flex-row items-center">
+              <Ionicons name="attach-outline" size={18} color="#1D4ED8" />
+              <Text className="ml-1.5 font-bold text-blue-700">Add attachments</Text>
+            </View>
           </Pressable>
           {attachments.map((f, i) => (
             <View key={f.uri} className="flex-row rounded-lg bg-white p-3">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LogoutModal } from '@/src/components/auth/Logout';
 import { StatusBar } from '@/src/components/common/StatusBar';
@@ -11,12 +12,12 @@ import { AdminDashboard, adminService } from '@/src/services/admin.service';
 import { BackButton } from '@/src/components/common/BackButton';
 
 const adminControls = [
-  { label: 'Live Dashboard', icon: '📊', onPress: () => router.replace('/(admin)/dashboard') },
-  { label: 'User Management', icon: '👥', onPress: () => router.replace('/(admin)/users') },
-  { label: 'Courses & Assignments', icon: '📚', onPress: () => router.replace('/(admin)/courses' as never) },
-  { label: 'Security Center', icon: '🔐', onPress: () => router.replace('/(admin)/notifications?filter=Security') },
-  { label: 'Reports & Analytics', icon: '📈', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
-  { label: 'System Settings', icon: '⚙️', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
+  { label: 'Live Dashboard', icon: 'speedometer-outline', onPress: () => router.replace('/(admin)/dashboard') },
+  { label: 'User Management', icon: 'people-outline', onPress: () => router.replace('/(admin)/users') },
+  { label: 'Courses & Assignments', icon: 'book-outline', onPress: () => router.replace('/(admin)/courses' as never) },
+  { label: 'Security Center', icon: 'shield-checkmark-outline', onPress: () => router.replace('/(admin)/notifications?filter=Security') },
+  { label: 'Reports & Analytics', icon: 'analytics-outline', onPress: () => router.replace('/(admin)/analytics/reports-and-analytics') },
+  { label: 'System Settings', icon: 'settings-outline', onPress: () => router.replace('/(admin)/broadcast/broad-cast') },
 ] as const;
 
 export default function AdminProfileScreen() {
@@ -54,25 +55,25 @@ export default function AdminProfileScreen() {
     {
       label: 'Email',
       value: user?.email ?? 'Not available',
-      icon: '📧',
+      icon: 'mail-outline',
       valueColor: 'text-blue-600',
     },
     {
       label: 'Institution',
       value: 'Ho Technical University',
-      icon: '🏛️',
+      icon: 'business-outline',
       valueColor: 'text-slate-900',
     },
     {
       label: 'Access Level',
       value: displayRole,
-      icon: '🛡️',
+      icon: 'shield-checkmark-outline',
       valueColor: 'text-slate-900',
     },
     {
       label: 'User ID',
       value: user?.staffId ?? user?.studentId ?? user?.id ?? 'Not available',
-      icon: '📅',
+      icon: 'id-card-outline',
       valueColor: 'text-slate-900',
     },
   ] as const;
@@ -93,7 +94,7 @@ export default function AdminProfileScreen() {
             <View className="relative h-20 w-20 items-center justify-center rounded-full border-2 border-white/20 bg-[#F26157]">
               <Text className="text-3xl font-extrabold text-white">{initials}</Text>
               <View className="absolute bottom-0 right-0 h-7 w-7 items-center justify-center rounded-full border-2 border-[#1A2E57] bg-[#3D6EE8]">
-                <Text className="text-xs text-white">✏️</Text>
+                <Ionicons name="pencil" size={14} color="white" />
               </View>
             </View>
 
@@ -101,9 +102,12 @@ export default function AdminProfileScreen() {
             <Text className="mt-1 text-xs font-medium text-white/65" numberOfLines={1}>Admin ID: {user?.id ?? 'Not available'}</Text>
 
             <View className="mt-3 rounded-full bg-[#F26157] px-4 py-2">
-              <Text className="text-xs font-extrabold tracking-wide text-white">
-                ⚙ ADMINISTRATOR
-              </Text>
+              <View className="flex-row items-center">
+                <Ionicons name="settings-outline" size={13} color="white" />
+                <Text className="ml-1 text-xs font-extrabold tracking-wide text-white">
+                  ADMINISTRATOR
+                </Text>
+              </View>
             </View>
 
             <View className="mt-4 flex-row overflow-hidden rounded-[20px] border border-white/10 bg-white/10">
@@ -139,7 +143,7 @@ export default function AdminProfileScreen() {
               >
                 <View className="flex-row items-center">
                   <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
-                    <Text className="text-lg">{item.icon}</Text>
+                    <Ionicons name={item.icon as any} size={20} color="#64748B" />
                   </View>
                   <View>
                     <Text className="text-sm font-medium text-slate-400">{item.label}</Text>
@@ -164,7 +168,7 @@ export default function AdminProfileScreen() {
               >
                 <View className="flex-row items-center">
                   <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
-                    <Text className="text-lg">{item.icon}</Text>
+                    <Ionicons name={item.icon as any} size={20} color="#64748B" />
                   </View>
                   <Text className="text-base font-semibold text-slate-900" numberOfLines={2}>
                     {item.label}
@@ -180,7 +184,7 @@ export default function AdminProfileScreen() {
             >
               <View className="flex-row items-center">
                 <View className="mr-4 h-10 w-10 items-center justify-center rounded-xl bg-red-100">
-                  <Text className="text-lg">🚪</Text>
+                  <Ionicons name="log-out-outline" size={20} color="#EF4444" />
                 </View>
                 <Text className="text-base font-semibold text-red-500">Logout</Text>
               </View>
