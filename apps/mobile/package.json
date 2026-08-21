@@ -7,7 +7,7 @@
     "start": "node ./scripts/start.js --port 8082",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "node ./scripts/start.js --android --port 8082",
-    "ios": "node ./scripts/start.js --ios --port 8082",
+    "ios": "node ./scripts/start.js --go --tunnel",
     "web": "expo start --web",
     "lint": "expo lint app src"
   },
