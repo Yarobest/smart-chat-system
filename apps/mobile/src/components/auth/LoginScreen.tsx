@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -16,6 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { authService } from "@/src/services/auth.service";
 import { Role } from "@/src/types/auth.types";
+import { KeyboardAwareView } from "@/src/components/common/KeyboardAwareView";
 
 const STUDENT_HOME_ROUTE: Href = "/(student)/home";
 const LECTURER_HOME_ROUTE: Href = "/(lecturer)/home";
@@ -60,37 +59,23 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A1628]">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-[#0A1628]">
       <StatusBar style="light" hidden={false} backgroundColor="#0A1628" />
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
-      >
+      <KeyboardAwareView keyboardVerticalOffset={0}>
         <ScrollView
-          className="w-full flex-1"
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingBottom: 120,
-            width: "100%",
-          }}
+          className="flex-1 bg-white"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 48 }}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           automaticallyAdjustKeyboardInsets
           showsVerticalScrollIndicator={false}
         >
-          <View className="w-full flex-1">
+          <View className="flex-1 items-center bg-white">
             <LinearGradient
               colors={["#0A1628", "#1A3A6B"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 2, y: 2 }}
-              style={{
-                alignItems: "center",
-                paddingBottom: 48,
-                paddingHorizontal: 24,
-                paddingTop: 80,
-                width: "100%",
-              }}
+              className="w-full max-w-[520px] items-center px-6 pb-8 pt-20"
             >
               <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white">
                 <Ionicons name="school-outline" size={34} color="#2563EB" />
@@ -109,7 +94,7 @@ export default function LoginScreen() {
               </Text>
             </LinearGradient>
 
-            <View className="-mt-4 w-full flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-7">
+            <View className="-mt-5 w-full max-w-[520px] flex-1 rounded-t-3xl bg-white px-6 pb-8 pt-8">
               <View className="mb-4">
                 <Text
                   allowFontScaling
@@ -117,23 +102,15 @@ export default function LoginScreen() {
                 >
                   Email Address
                 </Text>
-                <View className="flex-row items-center rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5">
-                  <Ionicons
-                    name="mail-outline"
-                    size={20}
-                    color="#64748B"
-                    style={{ marginRight: 12 }}
-                  />
-                  <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="Enter your email"
-                    placeholderTextColor="#94A3B8"
-                    className="flex-1 text-lg text-slate-900"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                  />
-                </View>
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="stephen@htu.edu.gh"
+                  placeholderTextColor="#94A3B8"
+                  className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-lg text-slate-900"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
               </View>
 
               <View className="mb-6">
@@ -216,7 +193,7 @@ export default function LoginScreen() {
             </View>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareView>
     </SafeAreaView>
   );
 }
