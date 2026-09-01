@@ -63,7 +63,7 @@ export default function StudentChatsScreen() {
   const toChatListItem = (chat: Thread) => ({
     title: chat.title,
     preview: chat.lastMessage
-      ? `${chat.type === "group" ? "Anonymous" : (chat.lastMessage.sender?.name ?? "Someone")}: ${chat.lastMessage.text || "Attachment"}`
+      ? `${chat.type === "group" ? (chat.lastMessage.sender?.name ?? "Anonymous") : (chat.lastMessage.sender?.name ?? "Someone")}: ${chat.lastMessage.text || "Attachment"}`
       : "No messages yet",
     time: chat.lastMessage?.createdAt
       ? formatTime(chat.lastMessage.createdAt)

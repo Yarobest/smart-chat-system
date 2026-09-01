@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -13,6 +11,7 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScreenHeader } from "@/src/components/common/ScreenHeader";
 import { StatusBar } from "@/src/components/common/StatusBar";
+import { KeyboardAwareView } from "@/src/components/common/KeyboardAwareView";
 import {
   AWARD_TYPES,
   AwardType,
@@ -302,13 +301,9 @@ export default function AssignCourseScreen() {
       <StatusBar style="light" backgroundColor="#0A1628" />
       <ScreenHeader title="Assign Course" fallbackRoute="/(admin)/courses" />
 
-      <KeyboardAvoidingView
-        className="flex-1 bg-[#F3F6FD]"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={16}
-      >
+      <KeyboardAwareView>
         <ScrollView
-          className="flex-1"
+          className="flex-1 bg-[#F3F6FD]"
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ padding: 16, paddingBottom: 36 }}
         >
@@ -413,7 +408,7 @@ export default function AssignCourseScreen() {
             </Pressable>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareView>
     </SafeAreaView>
   );
 }

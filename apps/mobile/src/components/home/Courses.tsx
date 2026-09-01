@@ -143,7 +143,7 @@ export default function MyCoursesScreen() {
                   <View className="mt-4 border-t border-slate-100 px-4 py-3">
                     <Text className="text-xs font-bold text-slate-400">LATEST ACTIVITY</Text>
                     <Text className="mt-1 text-sm text-slate-600" numberOfLines={1}>
-                      Anonymous: {course.lastMessage.text || 'Attachment'}
+                      {course.lastMessage.sender?.name ?? 'Anonymous'}: {course.lastMessage.text || 'Attachment'}
                     </Text>
                   </View>
                 ) : null}

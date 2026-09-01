@@ -22,6 +22,7 @@ const LECTURER_HOME_ROUTE: Href = "/(lecturer)/home";
 const ADMIN_DASHBOARD_ROUTE: Href = "/(admin)/dashboard";
 const FORGOT_PASSWORD_ROUTE: Href = "/(auth)/forgot-password";
 const REGISTER_ROUTE: Href = "/(auth)/register";
+const HTU_EMAIL_DOMAIN = "@htu.edu.gh";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -37,15 +38,25 @@ export default function LoginScreen() {
   };
 
   const handleSignIn = async () => {
-    if (!email.trim() || !password) {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || !password) {
       Alert.alert("Missing details", "Enter your email and password.");
+      return;
+    }
+
+    if (!normalizedEmail.endsWith(HTU_EMAIL_DOMAIN)) {
+      Alert.alert(
+        "Invalid email",
+        "Use your HTU email address ending with @htu.edu.gh.",
+      );
       return;
     }
 
     try {
       setLoading(true);
       const session = await authService.login({
-        email: email.trim().toLowerCase(),
+        email: normalizedEmail,
         password,
       });
       router.replace(routeForRole(session.user.role));

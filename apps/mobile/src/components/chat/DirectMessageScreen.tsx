@@ -201,7 +201,7 @@ export default function DirectMessageScreen() {
 
       <KeyboardAvoidingView
         className="flex-1 bg-[#F2F4F8]"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="padding"
         keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
       >
         {messages.length === 0 ? (

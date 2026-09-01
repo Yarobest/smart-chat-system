@@ -65,7 +65,8 @@ export class AdminDashboardService {
       recentMessages: recentMessages.map((message) => ({
         id: message.id,
         text: message.text,
-        senderName: message.sender.name,
+        senderName:
+          message.sender?.name ?? message.anonymousSenderName ?? 'Anonymous',
         conversationTitle:
           message.conversation.title ?? message.conversation.type.toLowerCase(),
         createdAt: message.createdAt.toISOString(),

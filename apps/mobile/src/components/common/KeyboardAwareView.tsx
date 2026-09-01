@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { KeyboardAvoidingView } from "react-native";
 export function KeyboardAwareView({
   children,
   keyboardVerticalOffset = 16,
@@ -9,7 +9,7 @@ export function KeyboardAwareView({
   return (
     <KeyboardAvoidingView
       className="flex-1"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior="padding"
       keyboardVerticalOffset={keyboardVerticalOffset}
     >
       {children}
