@@ -16,6 +16,17 @@ function fileUrl(uri: string) {
   return uri.startsWith('http://') || uri.startsWith('https://') ? uri : `${API_URL}${uri}`;
 }
 
+function attachmentUrls(uri: string) {
+  const primary = fileUrl(uri);
+  const urls = [primary];
+
+  if (!uri.startsWith('http://') && !uri.startsWith('https://') && uri.startsWith('/')) {
+    urls.push(`${API_URL}${uri.startsWith('/api/') ? uri.slice(4) : `/api${uri}`}`);
+  }
+
+  return [...new Set(urls)];
+}
+
 function isImage(file: AssignmentFile) {
   return file.type?.startsWith('image/') || /\.(png|jpe?g|gif|webp)$/i.test(file.name);
 }
@@ -39,7 +50,7 @@ export function AssignmentAttachments({ files }: Props) {
     setOpening(file.uri);
     try {
       if (Platform.OS === 'web') {
-        const response = await fetch(fileUrl(file.uri), { headers });
+        const response = await fetch(attachmentUrls(file.uri)[0], { headers });
         if (!response.ok) throw new Error('Could not download this attachment');
         const blob = await response.blob();
         const objectUrl = URL.createObjectURL(blob);
@@ -49,10 +60,30 @@ export function AssignmentAttachments({ files }: Props) {
       }
 
       const destination = new File(Paths.cache, safeFileName(file.name));
-      const downloaded = await File.downloadFileAsync(fileUrl(file.uri), destination, {
-        headers,
-        idempotent: true,
-      });
+      let downloaded: { uri: string } | null = null;
+      let lastError: unknown;
+
+      for (const url of attachmentUrls(file.uri)) {
+        try {
+          downloaded = await File.downloadFileAsync(url, destination, {
+            headers,
+            idempotent: true,
+          });
+          break;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (!downloaded) {
+        const message = lastError instanceof Error ? lastError.message : '';
+        if (message.includes('status: 404')) {
+          throw new Error('This file is no longer available on the server. Please ask the lecturer to upload it again.');
+        }
+
+        throw new Error('Could not download this file. Check your connection and try again.');
+      }
+
       if (Platform.OS === 'android') {
         const contentUri = await getContentUriAsync(downloaded.uri);
         try {
@@ -63,7 +94,13 @@ export function AssignmentAttachments({ files }: Props) {
           });
           return;
         } catch {
-          // Some Android devices have no viewer registered for the file type.
+          if (await Sharing.isAvailableAsync()) {
+            await Sharing.shareAsync(downloaded.uri, {
+              mimeType: file.type ?? 'application/octet-stream',
+              dialogTitle: `Choose an app for ${file.name}`,
+            });
+            return;
+          }
         }
       }
 

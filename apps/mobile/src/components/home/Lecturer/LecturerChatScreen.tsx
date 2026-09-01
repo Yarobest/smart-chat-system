@@ -47,7 +47,7 @@ export default function LecturerChatsScreen() {
 
   const preview = (thread: Thread) =>
     thread.lastMessage
-      ? `${thread.type === 'group' ? 'Anonymous' : (thread.lastMessage.sender?.name ?? 'Someone')}: ${thread.lastMessage.text || 'Attachment'}`
+      ? `${thread.type === 'group' ? (thread.lastMessage.sender?.name ?? 'Anonymous') : (thread.lastMessage.sender?.name ?? 'Someone')}: ${thread.lastMessage.text || 'Attachment'}`
       : 'No messages yet';
 
   const time = (thread: Thread) =>

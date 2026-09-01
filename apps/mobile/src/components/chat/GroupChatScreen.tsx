@@ -48,7 +48,7 @@ const lecturerActions = {
 } as const;
 
 export default function GroupChatScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
   const { user } = useAuth();
   const isLecturer = user?.role === "lecturer";
   const [title, setTitle] = useState("Course Group");
@@ -65,8 +65,13 @@ export default function GroupChatScreen() {
   const lastTypingAt = useRef(0);
 
   const handleBack = useCallback(() => {
+    if (user?.role === "lecturer" && from === "students") {
+      goBackOrReplace("/(lecturer)/groups");
+      return;
+    }
+
     goBackOrReplace(user?.role === "lecturer" ? "/(lecturer)/chats" : "/(student)/chats");
-  }, [user?.role]);
+  }, [from, user?.role]);
 
   useFocusEffect(
     useCallback(() => {
@@ -309,7 +314,7 @@ export default function GroupChatScreen() {
 
       <KeyboardAvoidingView
         className="flex-1 bg-[#F2F4F8]"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="padding"
         keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
       >
         <FilterRow<string>
@@ -365,6 +370,7 @@ export default function GroupChatScreen() {
           ) : null}
           {visibleMessages.map((message) => {
             const mine = message.isMine ?? message.senderId === user?.id;
+            const senderName = message.sender?.name ?? "Anonymous";
             return (
             <View
               key={message.id}
@@ -372,7 +378,7 @@ export default function GroupChatScreen() {
             >
               {!mine ? (
                 <Text className="mb-1 text-sm font-semibold text-[#2E63DF]">
-                  Anonymous
+                  {senderName}
                 </Text>
               ) : null}
               <View

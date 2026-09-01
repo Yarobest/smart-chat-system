@@ -131,12 +131,12 @@ export default function LecturerProfileScreen() {
             </Text>
 
             {[
-              { label: 'My Courses', icon: 'book-outline', onPress: () => router.push('./courses') },
-              { label: 'Post Announcement', icon: 'megaphone-outline', onPress: () => router.push('./announcements/compose') },
+              { label: 'My Courses', icon: 'book-outline', onPress: () => router.push('/(lecturer)/courses' as any) },
+              { label: 'Post Announcement', icon: 'megaphone-outline', onPress: () => router.push('/(lecturer)/announcements/compose' as any) },
               { label: 'Institutional Notices', icon: 'radio-outline', onPress: () => router.push('/(lecturer)/broadcasts' as any) },
-              { label: 'My Students', icon: 'people-outline', onPress: () => router.push('./groups') },
-              { label: 'Notifications', icon: 'notifications-outline', onPress: () => router.push('./notifications') },
-              { label: 'Settings', icon: 'settings-outline', onPress: () => router.push('./settings') },
+              { label: 'My Students', icon: 'people-outline', onPress: () => router.push('/(lecturer)/groups' as any) },
+              { label: 'Notifications', icon: 'notifications-outline', onPress: () => router.push('/(lecturer)/notifications' as any) },
+              { label: 'Settings', icon: 'settings-outline', onPress: () => router.push('/(lecturer)/settings' as any) },
             ].map((item) => (
               <Pressable
                 key={item.label}

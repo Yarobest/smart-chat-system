@@ -11,6 +11,7 @@ import {
   Message,
   User,
 } from '@prisma/client';
+import { randomInt, randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -57,7 +58,9 @@ export class ChatService {
         const unreadCount = await this.prisma.message.count({
           where: {
             conversationId: conversation.id,
-            senderId: { not: userId },
+            ...(conversation.type === ConversationType.DIRECT
+              ? { senderId: { not: userId } }
+              : {}),
             deletedAt: null,
             createdAt: currentMember?.lastReadAt
               ? { gt: currentMember.lastReadAt }
@@ -265,6 +268,12 @@ export class ChatService {
   async sendMessage(userId: string, conversationId: string, body: unknown) {
     await this.assertMember(userId, conversationId);
 
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { type: true },
+    });
+    const anonymous = conversation?.type === ConversationType.GROUP;
+    const anonymousSender = anonymous ? this.createAnonymousSender() : null;
     const data = this.asRecord(body);
     const text = this.optionalString(data.text) ?? '';
     const attachments = this.parseAttachments(data.attachments);
@@ -277,7 +286,9 @@ export class ChatService {
       const createdMessage = await tx.message.create({
         data: {
           conversationId,
-          senderId: userId,
+          senderId: anonymous ? null : userId,
+          anonymousSenderId: anonymousSender?.id,
+          anonymousSenderName: anonymousSender?.name,
           text,
           metadata:
             attachments.length > 0
@@ -291,20 +302,19 @@ export class ChatService {
         where: { id: conversationId },
         data: { updatedAt: new Date() },
       });
+      await tx.conversationMember.update({
+        where: { conversationId_userId: { conversationId, userId } },
+        data: { lastReadAt: new Date() },
+      });
 
       return createdMessage;
-    });
-
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
-      select: { type: true },
     });
 
     return this.toMessageResponse(
       message,
       false,
       userId,
-      conversation?.type === ConversationType.GROUP,
+      anonymous,
     );
   }
 
@@ -419,27 +429,70 @@ export class ChatService {
   }
 
   private toMessageResponse(
-    message: Message & { sender: User },
+    message: Message & { sender: User | null },
     seen = false,
     currentUserId?: string,
     anonymous = false,
   ) {
-    const isMine = message.senderId === currentUserId;
+    const isMine = Boolean(message.senderId && message.senderId === currentUserId);
+    const anonymousSender = this.getAnonymousSender(message);
 
     return {
       id: message.id,
       conversationId: message.conversationId,
       text: message.text,
       sender: anonymous
-        ? { name: 'Anonymous', role: 'anonymous' }
-        : this.toPublicUser(message.sender),
-      senderId: anonymous && !isMine ? null : message.senderId,
-      isMine,
+        ? {
+            id: anonymousSender.id,
+            name: anonymousSender.name,
+            role: 'anonymous',
+          }
+        : message.sender
+          ? this.toPublicUser(message.sender)
+          : { name: 'Unknown', role: 'unknown' },
+      senderId: anonymous ? null : message.senderId,
+      isMine: anonymous ? false : isMine,
       attachments: this.getAttachments(message.metadata),
       seen,
       editedAt: message.editedAt?.toISOString() ?? null,
-      createdAt: message.createdAt.toISOString(),
+      createdAt: this.toVisibleMessageTime(message.createdAt, anonymous),
     };
+  }
+
+  private createAnonymousSender() {
+    const anonymousNumber = randomInt(1000, 10000);
+
+    return {
+      id: `anon_${randomUUID()}`,
+      name: `Anonymous ${anonymousNumber}`,
+    };
+  }
+
+  private getAnonymousSender(message: Message) {
+    if (message.anonymousSenderId && message.anonymousSenderName) {
+      return {
+        id: message.anonymousSenderId,
+        name: message.anonymousSenderName,
+      };
+    }
+
+    const suffix = message.id.slice(-4).toUpperCase();
+
+    return {
+      id: `anon_${message.id}`,
+      name: `Anonymous ${suffix}`,
+    };
+  }
+
+  private toVisibleMessageTime(createdAt: Date, anonymous: boolean) {
+    if (!anonymous) {
+      return createdAt.toISOString();
+    }
+
+    const fifteenMinutes = 15 * 60 * 1000;
+    const bucketedTime = Math.floor(createdAt.getTime() / fifteenMinutes) * fifteenMinutes;
+
+    return new Date(bucketedTime).toISOString();
   }
 
   private toPublicUser(user: User) {
