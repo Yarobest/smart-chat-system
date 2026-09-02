@@ -28,6 +28,32 @@ export class AdminCourseOfferingsService {
     };
   }
 
+  async findOne(id: string) {
+    const offeringId = this.requiredString(id, 'id');
+    const offering = await this.db().courseOffering.findUnique({
+      where: { id: offeringId },
+      include: {
+        course: true,
+        academicSession: true,
+        lecturer: true,
+        conversation: {
+          include: {
+            members: {
+              include: { user: true },
+              orderBy: { joinedAt: 'asc' },
+            },
+          },
+        },
+      },
+    });
+
+    if (!offering) {
+      throw new NotFoundException('Course assignment not found');
+    }
+
+    return { offering: this.toDetailsResponse(offering) };
+  }
+
   async create(body: unknown) {
     const data = this.asRecord(body);
     const courseId = this.requiredString(data.courseId, 'courseId');
@@ -139,6 +165,28 @@ export class AdminCourseOfferingsService {
     return { offering: this.toResponse(offering) };
   }
 
+  async remove(id: string) {
+    const offeringId = this.requiredString(id, 'id');
+    const offering = await this.db().courseOffering.findUnique({
+      where: { id: offeringId },
+      select: { id: true, conversationId: true },
+    });
+
+    if (!offering) {
+      throw new NotFoundException('Course assignment not found');
+    }
+
+    await this.db().$transaction(async (tx: any) => {
+      await tx.courseOffering.delete({ where: { id: offering.id } });
+
+      if (offering.conversationId) {
+        await tx.conversation.delete({ where: { id: offering.conversationId } });
+      }
+    });
+
+    return { deleted: true, id: offering.id };
+  }
+
   private toResponse(offering: any) {
     return {
       id: offering.id,
@@ -166,6 +214,38 @@ export class AdminCourseOfferingsService {
         memberCount: offering.conversation?.members?.length ?? 0,
       },
       createdAt: offering.createdAt.toISOString(),
+    };
+  }
+
+  private toDetailsResponse(offering: any) {
+    const members = offering.conversation?.members ?? [];
+    const students = members
+      .filter((member: any) => member.user?.role === 'STUDENT')
+      .map((member: any) => ({
+        id: member.user.id,
+        name: member.user.name,
+        email: member.user.email,
+        studentId: member.user.studentId,
+        faculty: member.user.faculty,
+        department: member.user.department,
+        programme: member.user.programme,
+        awardType: member.user.awardType,
+        yearGroup: member.user.yearGroup,
+        joinedAt: member.joinedAt.toISOString(),
+      }));
+
+    return {
+      ...this.toResponse(offering),
+      course: {
+        ...this.toResponse(offering).course,
+        description: offering.course.description,
+        creditHours: offering.course.creditHours,
+      },
+      group: {
+        ...this.toResponse(offering).group,
+        studentsCount: students.length,
+      },
+      students,
     };
   }
 
