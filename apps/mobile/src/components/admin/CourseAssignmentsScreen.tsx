@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Swipeable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AdminBottomNav } from "@/src/components/common/AdminBottomNav";
 import { AdminPageHeader } from "@/src/components/common/AdminPageHeader";
@@ -15,6 +16,7 @@ import {
 export default function CourseAssignmentsScreen() {
   const [offerings, setOfferings] = useState<AdminCourseOffering[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = async () => {
     const offeringData = await adminService.offerings();
@@ -31,6 +33,51 @@ export default function CourseAssignmentsScreen() {
       )
       .finally(() => setLoading(false));
   }, []);
+
+  const deleteOffering = (offering: AdminCourseOffering) => {
+    Alert.alert(
+      "Delete assignment?",
+      `${offering.course.code} will be removed from this class. Linked group chats, assignments, quizzes, materials, and announcements for this assignment will also be removed.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setDeletingId(offering.id);
+            try {
+              await adminService.deleteOffering(offering.id);
+              setOfferings((current) =>
+                current.filter((item) => item.id !== offering.id),
+              );
+            } catch (error) {
+              Alert.alert(
+                "Delete failed",
+                error instanceof Error
+                  ? error.message
+                  : "Unable to delete this course assignment",
+              );
+            } finally {
+              setDeletingId(null);
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const renderDeleteAction = (offering: AdminCourseOffering) => (
+    <Pressable
+      onPress={() => deleteOffering(offering)}
+      disabled={deletingId === offering.id}
+      className="mb-3 ml-3 w-20 items-center justify-center rounded-2xl bg-red-500 active:bg-red-600"
+    >
+      <Ionicons name="trash-outline" size={24} color="white" />
+      <Text className="mt-1 text-xs font-extrabold text-white">
+        {deletingId === offering.id ? "..." : "Delete"}
+      </Text>
+    </Pressable>
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-[#051839]" edges={["top"]}>
@@ -79,36 +126,44 @@ export default function CourseAssignmentsScreen() {
           </View>
 
           <Text className="mb-3 text-base font-extrabold text-slate-900">
-            Active Assignments
+            Active Courses Assign
           </Text>
           {offerings.map((offering) => (
-            <Pressable
+            <Swipeable
               key={offering.id}
-              className="mb-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200"
+              renderRightActions={() => renderDeleteAction(offering)}
+              overshootRight={false}
             >
-              <View className="flex-row justify-between">
-                <View className="flex-1 pr-3">
-                  <Text
-                    className="text-base font-extrabold text-slate-900"
-                    numberOfLines={2}
-                  >
-                    {offering.course.code} · {offering.course.name}
-                  </Text>
-                  <Text className="mt-1 text-sm text-slate-500">
-                    {offering.academicYear} · {offering.semester}
-                  </Text>
-                  <Text className="mt-1 text-sm text-slate-500">
-                    {offering.lecturer.name} · {offering.group.memberCount}{" "}
-                    members
-                  </Text>
+              <Pressable
+                onPress={() =>
+                  router.push(`/(admin)/courses/${offering.id}` as never)
+                }
+                className="mb-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200 active:bg-slate-50"
+              >
+                <View className="flex-row justify-between">
+                  <View className="flex-1 pr-3">
+                    <Text
+                      className="text-base font-extrabold text-slate-900"
+                      numberOfLines={2}
+                    >
+                      {offering.course.code} · {offering.course.name}
+                    </Text>
+                    <Text className="mt-1 text-sm text-slate-500">
+                      {offering.academicYear} · {offering.semester}
+                    </Text>
+                    <Text className="mt-1 text-sm text-slate-500">
+                      {offering.lecturer.name} · {offering.group.memberCount}{" "}
+                      members
+                    </Text>
+                  </View>
+                  <View className="self-start rounded-lg bg-emerald-50 px-3 py-1">
+                    <Text className="text-xs font-extrabold text-emerald-600">
+                      {offering.status}
+                    </Text>
+                  </View>
                 </View>
-                <View className="self-start rounded-lg bg-emerald-50 px-3 py-1">
-                  <Text className="text-xs font-extrabold text-emerald-600">
-                    {offering.status}
-                  </Text>
-                </View>
-              </View>
-            </Pressable>
+              </Pressable>
+            </Swipeable>
           ))}
           {loading ? (
             <PageLoader label="Loading course assignments..." />

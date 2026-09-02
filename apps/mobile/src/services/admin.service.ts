@@ -95,6 +95,28 @@ export type AdminCourseOffering = {
   };
 };
 
+export type AdminCourseOfferingDetails = AdminCourseOffering & {
+  course: AdminCourse & {
+    description?: string | null;
+    creditHours?: number | null;
+  };
+  group: AdminCourseOffering["group"] & {
+    studentsCount: number;
+  };
+  students: Array<{
+    id: string;
+    name: string;
+    email: string;
+    studentId: string | null;
+    faculty: string | null;
+    department: string | null;
+    programme: string | null;
+    awardType: string | null;
+    yearGroup: string | null;
+    joinedAt: string;
+  }>;
+};
+
 export type CreateAdminCourseInput = {
   code: string;
   name: string;
@@ -123,6 +145,8 @@ export const adminService = {
   lecturers: () => api<AdminUsersResponse>('/admin/users?role=lecturer'),
   offerings: () =>
     api<{ offerings: AdminCourseOffering[] }>('/admin/course-offerings'),
+  offering: (id: string) =>
+    api<{ offering: AdminCourseOfferingDetails }>(`/admin/course-offerings/${id}`),
   createCourse: (input: CreateAdminCourseInput) =>
     api<{ course: AdminCourse }>('/admin/courses', {
       method: 'POST',
@@ -132,5 +156,9 @@ export const adminService = {
     api<{ offering: AdminCourseOffering }>('/admin/course-offerings', {
       method: 'POST',
       body: JSON.stringify(input),
+    }),
+  deleteOffering: (id: string) =>
+    api<{ deleted: true; id: string }>(`/admin/course-offerings/${id}`, {
+      method: 'DELETE',
     }),
 };

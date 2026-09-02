@@ -9,6 +9,7 @@ export default function AdminLayout() {
       <Stack.Screen name="users/index" />
       <Stack.Screen name="users/[id]" />
       <Stack.Screen name="courses/index" />
+      <Stack.Screen name="courses/[id]" />
       <Stack.Screen name="courses/create" />
       <Stack.Screen name="courses/assign" />
       <Stack.Screen name="broadcast/index" />

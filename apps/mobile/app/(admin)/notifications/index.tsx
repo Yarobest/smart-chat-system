@@ -1,1 +1,1 @@
-import{DataUnavailableScreen}from'@/src/components/common/DataUnavailableScreen';export default function Page(){return <DataUnavailableScreen title="Notifications" fallbackRoute="/(admin)/dashboard" message="Admin system notifications will appear here when a notification backend is connected."/>}
+export { default } from '@/src/components/notifications/NotificationsScreen';

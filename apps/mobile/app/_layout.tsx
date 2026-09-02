@@ -1,8 +1,10 @@
+import 'react-native-gesture-handler';
 import { Component, type ReactNode } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, LogBox, Pressable, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css';
 import { useColorScheme } from '@/src/hooks/use-color-scheme';
 
@@ -73,16 +75,18 @@ export default function RootLayout() {
 
   return (
     <RootErrorBoundary>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(student)" />
-          <Stack.Screen name="(lecturer)" />
-          <Stack.Screen name="(admin)" />
-        </Stack>
-        <StatusBar style="auto" hidden={false} />
-      </ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(student)" />
+            <Stack.Screen name="(lecturer)" />
+            <Stack.Screen name="(admin)" />
+          </Stack>
+          <StatusBar style="auto" hidden={false} />
+        </ThemeProvider>
+      </GestureHandlerRootView>
     </RootErrorBoundary>
   );
 }
